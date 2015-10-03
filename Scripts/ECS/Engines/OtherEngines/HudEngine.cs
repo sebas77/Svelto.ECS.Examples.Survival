@@ -39,21 +39,6 @@ namespace GUIEngines
             }
         }
 
-        //this is an important example in the process of IoC code design.
-        //I had to options here, write an observer which send an event when the 
-        //damage image had to flash, or let the engine decide to flash when
-        //the player is damaged.
-        //if I chose to create an observer to communicate when the hud has to flash
-        //it would have meant for the other engines to know the concept of flashing image
-        //there is difference semantically between writing
-        //observer.Dispatch(FlashImage);
-        //and
-        //observer.Dispatch(PlayerIsDamaged)
-        //if the image flashes for other reasons, the external entites
-        //would take control over the behaviour of the flashing image
-        //dectacting when it had to flash
-        //instead different entities must throw the event that makes sense
-        //in their context and the hudengine will decide what to do with those
         private void OnDamageEvent(IHealthComponent sender, DamageInfo damaged)
         {
             var damageComponent = _guiNode.damageImageComponent;
