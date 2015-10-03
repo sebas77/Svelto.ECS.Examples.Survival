@@ -1,6 +1,6 @@
 ﻿using Svelto.ES;
 
-namespace SharedEngines
+namespace HealthEngines
 {
     public class DamageNodeHolder : UnityNodeHolder<DamageNode>
     {

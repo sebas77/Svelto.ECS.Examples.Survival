@@ -3,7 +3,7 @@ using Svelto.ES;
 using System;
 using System.Collections.Generic;
 
-namespace SharedEngines
+namespace HealthEngines
 {
     public class HealthEngine : INodeEngine
     {

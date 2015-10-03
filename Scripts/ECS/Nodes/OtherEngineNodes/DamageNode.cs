@@ -2,7 +2,7 @@ using SharedComponents;
 using Svelto.ES;
 using UnityEngine;
 
-namespace SharedEngines
+namespace HealthEngines
 {
     public class DamageNode: INodeWithReferenceID<GameObject>
     {
