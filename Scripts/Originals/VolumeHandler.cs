@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class VolumeHandler : MonoBehaviour
 {
 	// Use this for initialization
-	void Start () 
+	void Start ()
 	{
 		if (GameObject.Find("EffectsSlider"))
 		    GameObject.Find("EffectsSlider").GetComponent<Slider>().onValueChanged.AddListener(SetVolume);

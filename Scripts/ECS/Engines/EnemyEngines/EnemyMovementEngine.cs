@@ -1,14 +1,17 @@
-using SharedComponents;
+using Components.Damageable;
+using Nodes.Enemies;
 using Svelto.ES;
 using Svelto.Ticker;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EnemyEngines
+namespace Engines.Enemies
 {
-    public class EnemyMovementEngine : INodeEngine, ITickable
+    public class EnemyMovementEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {
+        public IEngineNodeDB nodesDB { set; private get; }
+
         public Type[] AcceptedNodes()
         {
             return _acceptedNodes;
@@ -21,9 +24,7 @@ namespace EnemyEngines
                 var enemyNode = obj as EnemyNode;
                 var healthEventsComponent = enemyNode.healthComponent;
 
-                healthEventsComponent.isDead.observers += StopEnemyOnDeath;
-
-                _enemyNodes.Add(healthEventsComponent, enemyNode);
+                healthEventsComponent.isDead.subscribers += StopEnemyOnDeath;
             }
             else
                 _targetNode = obj as EnemyTargetNode;
@@ -36,7 +37,7 @@ namespace EnemyEngines
                 var enemyNode = obj as EnemyNode;
                 var healthEventsComponent = enemyNode.healthComponent;
 
-                RemoveComponent(healthEventsComponent);
+                healthEventsComponent.isDead.subscribers -= StopEnemyOnDeath;
             }
             else
                 _targetNode = null;
@@ -44,37 +45,28 @@ namespace EnemyEngines
 
         public void Tick(float deltaSec)
         {
-            for (var en = _enemyNodes.Values.GetEnumerator(); en.MoveNext();)
+            var enemies = nodesDB.QueryNodes<EnemyNode>();
+
+            for (var i = 0; i < enemies.Count; i++)
             {
-                var component = en.Current.movementComponent;
+                var component = enemies[i].movementComponent;
 
                 component.navMesh.SetDestination(_targetNode.targetPositionComponent.position);
             }
         }
 
-        void RemoveComponent(IHealthComponent healthEventsComponent)
+        void StopEnemyOnDeath(int sender, int targetID)
         {
-            if (healthEventsComponent != null)
-                healthEventsComponent.isDead.observers -= StopEnemyOnDeath;
-
-            _enemyNodes.Remove(healthEventsComponent);
-        }
-
-        void StopEnemyOnDeath(IHealthComponent sender, GameObject target)
-        {
-            EnemyNode node = _enemyNodes[sender];
+            EnemyNode node = nodesDB.QueryNode<EnemyNode>(sender);
 
             node.movementComponent.navMesh.enabled = false;
             var capsuleCollider = node.movementComponent.capsuleCollider;
             capsuleCollider.isTrigger = true;
             capsuleCollider.GetComponent<Rigidbody>().isKinematic = true;
-
-            RemoveComponent(sender);
         }
 
-        Type[] _acceptedNodes = new Type[2] { typeof(EnemyNode), typeof(EnemyTargetNode) };
+        readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
 
-        EnemyTargetNode                           _targetNode;
-        Dictionary<IHealthComponent, EnemyNode>   _enemyNodes = new Dictionary<IHealthComponent, EnemyNode>();
+        EnemyTargetNode              _targetNode;
     }
 }

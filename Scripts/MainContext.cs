@@ -1,10 +1,10 @@
-using EnemyEngines;
-using EnemyObservables;
-using GUIEngines;
-using PlayerEngines;
-using ScoreObservers;
-using HealthEngines;
-using Soundengines;
+using Engines.Enemies;
+using Engines.Health;
+using Engines.HUD;
+using Engines.Player;
+using Engines.Sound;
+using Observables.Enemies;
+using Observers.HUD;
 using Svelto.Context;
 using Svelto.ES;
 using Svelto.Ticker;
@@ -12,9 +12,7 @@ using UnityEngine;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where the framework can be initialised.
-namespace CompleteProject
-{
-    public class Main : ICompositionRoot, IUnityContextHierarchyChangedListener
+public class Main : ICompositionRoot
     {
         public Main()
         {
@@ -23,27 +21,27 @@ namespace CompleteProject
 
         void SetupEnginesAndComponents()
         {
-            _enginesRoot = new UnityEnginesRoot();
-            _tickEngine = new UnityTicker();
+			_tickEngine = new UnityTicker();
+            _entityFactory = _enginesRoot = new EnginesRoot(_tickEngine);
+            
+			GameObjectFactory factory = new GameObjectFactory();
 
             var enemyKilledObservable = new EnemyKilledObservable();
-            var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver(enemyKilledObservable);
+            var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver((EnemyKilledObservable)enemyKilledObservable);
 
-            GameObjectFactory factory = new GameObjectFactory(this);
-
-            AddEngine(new PlayerMovementEngine());
+			AddEngine(new PlayerMovementEngine());
             AddEngine(new PlayerAnimationEngine());
             AddEngine(new PlayerShootingEngine(enemyKilledObservable));
             AddEngine(new PlayerShootingFXsEngine());
 
-            AddEngine(new EnemySpawnerEngine(factory));
+            AddEngine(new EnemySpawnerEngine(factory, _entityFactory));
             AddEngine(new EnemyAttackEngine());
             AddEngine(new EnemyMovementEngine());
             AddEngine(new EnemyAnimationEngine());
-            
+
             AddEngine(new DamageSoundEngine());
             AddEngine(new HealthEngine());
-            AddEngine(new HudEngine());
+            AddEngine(new HUDEngine());
             AddEngine(new ScoreEngine(scoreOnEnemyKilledObserver));
         }
 
@@ -55,37 +53,29 @@ namespace CompleteProject
             _enginesRoot.AddEngine(engine);
         }
 
-        public void OnContextInitialized()
-        {}
-
-        public void OnContextDestroyed()
-        {}
-
-        public void OnMonobehaviourAdded(MonoBehaviour component)
-        {}
-
-        public void OnMonobehaviourRemoved(MonoBehaviour component)
-        {}
-
-        public void OnGameObjectAdded(GameObject entity)
+        void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
-            _enginesRoot.AddGameObjectEntity(entity);
+			IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
+
+			for (int i = 0; i < entities.Length; i++)
+				_entityFactory.BuildEntity((entities[i] as MonoBehaviour).gameObject.GetInstanceID(), entities[i].BuildDescriptorType());
         }
 
-        public void OnGameObjectRemoved(GameObject entity)
-        {
-            _enginesRoot.RemoveGameObjectEntity(entity);
-        }
+        void ICompositionRoot.OnContextInitialized()
+        {}
 
-        UnityEnginesRoot    _enginesRoot;
-        UnityTicker         _tickEngine;
+        void ICompositionRoot.OnContextDestroyed()
+        {}
+
+		EnginesRoot     _enginesRoot;
+		IEntityFactory  _entityFactory;
+        UnityTicker 	_tickEngine;
     }
 
     //A GameObject containing UnityContext must be present in the scene
-    //All the monobehaviours present in the scene statically that need 
+    //All the monobehaviours present in the scene statically that need
     //to notify the Context, must belong to GameObjects children of UnityContext.
 
     public class MainContext : UnityContext<Main>
-    {
-    }
-}
+    {}
+

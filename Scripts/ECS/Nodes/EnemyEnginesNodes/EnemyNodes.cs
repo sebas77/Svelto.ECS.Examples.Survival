@@ -1,41 +1,34 @@
-using EnemyComponents;
-using SharedComponents;
+using Components.Base;
+using Components.Damageable;
+using Components.Enemy;
 using Svelto.ES;
-using UnityEngine;
 
-namespace EnemyEngines
+namespace Nodes.Enemies
 {
-    public class EnemyNode: INodeWithReferenceID<GameObject>
+    public class EnemyNode: NodeWithID
     {
         public IEnemyAttackComponent      attackComponent;
         public IEnemyAttackDataComponent  attackDamageComponent;
         public IEnemyTriggerComponent     targetTriggerComponent;
         public IEnemyMovementComponent    movementComponent;
         public IEnemyVFXComponent         vfxComponent;
-        
+
         public IHealthComponent           healthComponent;
         public IAnimationComponent        animationComponent;
         public ITransformComponent        transformComponent;
-                
-        public EnemyNode(GameObject ID) { this.ID = ID; }
-        public GameObject ID { get; private set; }
+
+        public IRemoveEntityComponent     removeEntityComponent;
     }
 
-    public class EnemySpawningNode : INodeWithReferenceID<GameObject>
+    public class EnemySpawningNode : NodeWithID
     {
         public IEnemySpawnerComponent[] spawnerComponents;
-
-        public EnemySpawningNode(GameObject ID) { this.ID = ID; }
-        public GameObject ID { get; private set; }
     }
 
-    public class EnemyTargetNode: INodeWithReferenceID<GameObject>
+    public class EnemyTargetNode: NodeWithID
     {
         public IDamageEventComponent    damageEventComponent;
         public IPositionComponent       targetPositionComponent;
         public IHealthComponent         healthComponent;
-
-        public EnemyTargetNode(GameObject ID) { this.ID = ID; }
-        public GameObject ID { get; private set; }
     }
 }

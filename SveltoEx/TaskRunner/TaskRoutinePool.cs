@@ -36,7 +36,7 @@ namespace Svelto.Tasks.Internal
         TaskRoutine CreateEmptyTask()
 	    {
 		    PausableTask ptask = new PausableTask(_runner);
-		
+
 		    return new TaskRoutine(ptask);
 	    }
 

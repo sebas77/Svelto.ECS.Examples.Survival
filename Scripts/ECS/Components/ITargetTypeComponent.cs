@@ -1,6 +1,8 @@
-namespace PlayerComponents
+using Svelto.ES;
+
+namespace Components.Player
 {
-    public interface ITargetTypeComponent
+    public interface ITargetTypeComponent: IComponent
     {
         PlayerTargetType targetType { get; }
     }
@@ -11,4 +13,10 @@ namespace PlayerComponents
         Bear,
         Hellephant
     }
+
+	public enum PlayerDamagedType
+	{
+		Hurt,
+		Killed,
+	}
 }

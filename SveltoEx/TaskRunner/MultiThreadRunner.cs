@@ -1,4 +1,3 @@
-using Svelto.Tasks.Internal;
 using System.Collections;
 using System.Threading;
 
@@ -8,22 +7,16 @@ namespace Svelto.Tasks
     {
 		public MultiThreadRunner()
 		{
-			paused = false;	
+			paused = false;
 			stopped = false;
 		}
 
-		public MultiThreadRunner(ThreadPriority priority)
-		{
-			paused = false;	
-			stopped = false;
-		}
-
-        public void StartCoroutine(IEnumerator task)
-        {	
+		public void StartCoroutine(IEnumerator task)
+        {
 			stopped = false;
 			paused = false;
 
-            ThreadPool.QueueUserWorkItem((stateInfo) => { while (stopped == false && task.MoveNext() == true); });
+            ThreadPool.QueueUserWorkItem((stateInfo) => { while (stopped == false && task.MoveNext() == true) { } });
         }
 
         public void StopAllCoroutines()
@@ -36,7 +29,7 @@ namespace Svelto.Tasks
             stopped = true;
             Thread.MemoryBarrier();
         }
-		
+
 		public bool paused { set; get; }
 		public bool stopped { private set; get; }
     }

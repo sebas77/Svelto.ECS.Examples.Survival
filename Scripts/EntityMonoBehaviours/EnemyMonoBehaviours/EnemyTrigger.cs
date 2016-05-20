@@ -1,28 +1,28 @@
 using System;
 using UnityEngine;
-using EnemyComponents;
+using Components.Enemy;
 
-namespace CompleteProject
+namespace Implementators.Enemies
 {
     public class EnemyTrigger : MonoBehaviour, IEnemyTriggerComponent, IEnemyAttackComponent
     {
         public GameObject ID { get { return gameObject; } }
 
-        public event Action<GameObject, bool> entityInRange;
+        public event Action<int, bool> entityInRange;
 
-        bool IEnemyTriggerComponent.playerInRange { set { _playerInRange = value; } }
-        bool IEnemyAttackComponent.playerInRange { get { return _playerInRange; } }
+        bool IEnemyTriggerComponent.targetInRange { set { _playerInRange = value; } }
+        bool IEnemyAttackComponent.targetInRange { get { return _playerInRange; } }
 
         void OnTriggerEnter(Collider other)
         {
             if (entityInRange != null)
-                entityInRange(other.gameObject, true);
+                entityInRange(other.gameObject.GetInstanceID(), true);
         }
 
         void OnTriggerExit(Collider other)
         {
             if (entityInRange != null)
-                entityInRange(other.gameObject, false);
+                entityInRange(other.gameObject.GetInstanceID(), false);
         }
 
         bool    _playerInRange;

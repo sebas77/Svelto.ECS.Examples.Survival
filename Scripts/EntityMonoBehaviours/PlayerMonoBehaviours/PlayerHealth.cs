@@ -1,7 +1,8 @@
-using SharedComponents;
+using Components.Base;
+using Components.Damageable;
 using UnityEngine;
 
-namespace CompleteProject
+namespace Implementators.Player
 {
     public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IDamageEventComponent
     {
@@ -12,9 +13,9 @@ namespace CompleteProject
         int  IHealthComponent.currentHealth   { get { return _currentHealth; } set { _currentHealth = value; } }
         bool IHealthComponent.hasBeenDamaged  { get; set; }
 
-        Dispatcher<IDamageEventComponent, DamageInfo>    IDamageEventComponent.damageReceived { get { return _damageReceived; } }
-        Dispatcher<IHealthComponent, GameObject>          IHealthComponent.isDead         { get { return _isDead; } }
-        Dispatcher<IHealthComponent, DamageInfo>  IHealthComponent.isDamaged { get { return _isDamaged; } }
+        Dispatcher<int, DamageInfo>    IDamageEventComponent.damageReceived { get { return _damageReceived; } }
+        Dispatcher<int, int>           IHealthComponent.isDead         { get { return _isDead; } }
+        Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged { get { return _isDamaged; } }
 
         AudioSource IDamageSoundComponent.audioSource { get { return _playerAudio; } }
         AudioClip   IDamageSoundComponent.death       { get { return deathClip; } }
@@ -27,15 +28,15 @@ namespace CompleteProject
             // Set the initial health of the player.
             _currentHealth = startingHealth;
 
-            _isDead = new DispatcherOnChange<IHealthComponent, GameObject>(this);
-            _isDamaged = new DispatcherOnChange<IHealthComponent, DamageInfo>(this);
-            _damageReceived = new Dispatcher<IDamageEventComponent, DamageInfo>(this);
+            _isDead = new DispatcherOnChange<int, int>(this.GetInstanceID());
+            _isDamaged = new DispatcherOnChange<int, DamageInfo>(this.GetInstanceID());
+            _damageReceived = new Dispatcher<int, DamageInfo>(this.GetInstanceID());
         }
 
         /// <summary>
         /// I decided to leave this one for compatibility, probably some ugly animation callback.
         /// </summary>
-        public void RestartLevel() 
+        public void RestartLevel()
         {
             Application.LoadLevel (Application.loadedLevel);
         }
@@ -43,8 +44,8 @@ namespace CompleteProject
         int                 _currentHealth;
         AudioSource         _playerAudio;                                    // Reference to the AudioSource component.
 
-        Dispatcher<IHealthComponent, GameObject>            _isDead;
-        Dispatcher<IHealthComponent, DamageInfo>            _isDamaged;
-        Dispatcher<IDamageEventComponent, DamageInfo>      _damageReceived;
+        Dispatcher<int, int>         _isDead;
+        Dispatcher<int, DamageInfo>  _isDamaged;
+        Dispatcher<int, DamageInfo>  _damageReceived;
     }
 }

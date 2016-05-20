@@ -1,54 +1,44 @@
 using System;
 using Svelto.ES;
-using SharedComponents;
-using System.Collections.Generic;
-using UnityEngine;
+using Nodes.Sound;
+using Components.Damageable;
 
-namespace Soundengines
+namespace Engines.Sound
 {
-    public class DamageSoundEngine : INodeEngine
+    public class DamageSoundEngine : SingleNodeEngine<DamageSoundNode>, IQueryableNodeEngine
     {
-        public Type[] AcceptedNodes()
-        {
-            return _acceptedNodes;
-        }
-
-        public void Add(INode node)
+        override protected void Add(DamageSoundNode node)
         {
             var healthComponent = (node as DamageSoundNode).healthComponent;
 
-            healthComponent.isDead.observers += TriggerDeathSound;
-            healthComponent.isDamaged.observers += TriggerDamageAudio;
-
-            _damageSoundNodes[healthComponent] = (node as DamageSoundNode).audioComponent;
+            healthComponent.isDead.subscribers += TriggerDeathSound;
+            healthComponent.isDamaged.subscribers += TriggerDamageAudio;
         }
 
-        public void Remove(INode node)
+        override protected void Remove(DamageSoundNode node)
         {
             var healthComponent = (node as DamageSoundNode).healthComponent;
 
-            healthComponent.isDead.observers -= TriggerDeathSound;
-            healthComponent.isDamaged.observers -= TriggerDamageAudio;
-
-             _damageSoundNodes.Remove(healthComponent);
+            healthComponent.isDead.subscribers -= TriggerDeathSound;
+            healthComponent.isDamaged.subscribers -= TriggerDamageAudio;
         }
 
-       void TriggerDeathSound(IHealthComponent sender, GameObject target)
+       void TriggerDeathSound(int sender, int targetID)
        {
-            var playerAudio =  _damageSoundNodes[sender];
+            var playerAudioNode =  nodesDB.QueryNode<DamageSoundNode>(sender);
+            var playerAudio = playerAudioNode.audioComponent;
 
             playerAudio.audioSource.PlayOneShot(playerAudio.death);
        }
-    
-        void TriggerDamageAudio(IHealthComponent sender, DamageInfo isDamaged)
-        {
-            var playerAudio = _damageSoundNodes[sender];
 
-            playerAudio.audioSource.PlayOneShot(playerAudio.damage);
-        }
+       void TriggerDamageAudio(int sender, DamageInfo isDamaged)
+       {
+           var playerAudioNode = nodesDB.QueryNode<DamageSoundNode>(sender);
+           var playerAudio = playerAudioNode.audioComponent;
 
-        Type[] _acceptedNodes = new Type[1] { typeof(DamageSoundNode) };
+           playerAudio.audioSource.PlayOneShot(playerAudio.damage);
+       }
 
-        Dictionary<IHealthComponent, IDamageSoundComponent>  _damageSoundNodes = new Dictionary<IHealthComponent, IDamageSoundComponent>();
+       public IEngineNodeDB nodesDB { set; private get; }
     }
 }

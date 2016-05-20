@@ -1,8 +1,8 @@
+using Components.Gun;
 using System;
-using GunComponents;
 using UnityEngine;
 
-namespace CompleteProject
+namespace Implementators.Player
 {
     public class PlayerShooting : MonoBehaviour, IGunComponent, IGunFXComponent
     {
@@ -13,7 +13,7 @@ namespace CompleteProject
         float IGunComponent.timeBetweenBullets { get { return timeBetweenBullets; } }
         float IGunComponent.range { get { return range; } }
         int IGunComponent.damagePerShot { get { return damagePerShot; } }
-        Dispatcher<IGunComponent, bool> IGunComponent.targetHit { get { return _targetHit; } }
+        DispatcherOnSet<int, bool> IGunComponent.targetHit { get { return _targetHit; } }
         Vector3 IGunComponent.lastTargetPosition { set { _lastTargetPosition = value; } get { return _lastTargetPosition; } }
         float IGunComponent.timer { get; set; }
         Ray IGunComponent.shootRay
@@ -44,17 +44,18 @@ namespace CompleteProject
             _gunAudio = GetComponent<AudioSource> ();
             _gunLight = GetComponent<Light> ();
 
-            _targetHit = new DispatcherOnChange<IGunComponent, bool>(this);
+            _targetHit = new DispatcherOnSet<int, bool>(this.GetInstanceID());
         }
 
-        Transform _transform;
-        ParticleSystem _gunParticles;                    // Reference to the particle system.
-        LineRenderer _gunLine;                           // Reference to the line renderer.
-        AudioSource _gunAudio;                           // Reference to the audio source.
-        Light _gunLight;                                 // Reference to the light component.
-        float _effectsDisplayTime = 0.2f;                // The proportion of the timeBetweenBullets that the effects will display for.
-        private Ray _shootRay;
-        private DispatcherOnChange<IGunComponent, bool> _targetHit;
-        private Vector3 _lastTargetPosition;
+        Transform       _transform;
+        ParticleSystem  _gunParticles;                    // Reference to the particle system.
+        LineRenderer    _gunLine;                           // Reference to the line renderer.
+        AudioSource     _gunAudio;                           // Reference to the audio source.
+        Light           _gunLight;                                 // Reference to the light component.
+        float           _effectsDisplayTime = 0.2f;                // The proportion of the timeBetweenBullets that the effects will display for.
+        Ray             _shootRay;
+        Vector3         _lastTargetPosition;
+
+        DispatcherOnSet<int, bool> _targetHit;
     }
 }

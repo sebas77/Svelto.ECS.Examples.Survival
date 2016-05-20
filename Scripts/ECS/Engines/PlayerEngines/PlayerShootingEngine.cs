@@ -3,12 +3,13 @@ using Svelto.ES;
 using Svelto.Ticker;
 using UnityEngine;
 using System.Collections.Generic;
-using SharedComponents;
-using EnemyObservables;
+using Nodes.Player;
+using Components.Damageable;
+using Observables.Enemies;
 
-namespace PlayerEngines
+namespace Engines.Player
 {
-    public class PlayerShootingEngine : INodeEngine, ITickable
+    public class PlayerShootingEngine : INodesEngine, ITickable
     {
         public PlayerShootingEngine(EnemyKilledObservable enemyKilledObservable)
         {
@@ -26,7 +27,7 @@ namespace PlayerEngines
             {
                 var targetNode = obj as PlayerTargetNode;
 
-                targetNode.healthComponent.isDead.observers += OnTargetDead;
+                targetNode.healthComponent.isDead.subscribers += OnTargetDead;
 
                 _playerTargets[targetNode.ID] = targetNode;
             }
@@ -41,7 +42,7 @@ namespace PlayerEngines
             {
                 var targetNode = obj as PlayerTargetNode;
 
-                targetNode.healthComponent.isDead.observers -= OnTargetDead;
+                targetNode.healthComponent.isDead.subscribers -= OnTargetDead;
 
                 _playerTargets.Remove(targetNode.ID);
             }
@@ -49,6 +50,8 @@ namespace PlayerEngines
 
         public void Tick(float deltaSec)
         {
+            if (_playerGunNode == null) return;
+
             var playerGunComponent = _playerGunNode.gunComponent;
 
             playerGunComponent.timer += deltaSec;
@@ -69,30 +72,33 @@ namespace PlayerEngines
                 var hitGO = shootHit.collider.gameObject;
 
                 PlayerTargetNode targetComponent = null;
-                if (hitGO.layer == ENEMY_LAYER && _playerTargets.TryGetValue(hitGO, out targetComponent))
+                if (hitGO.layer == ENEMY_LAYER && _playerTargets.TryGetValue(hitGO.GetInstanceID(), out targetComponent))
                 {
-                    targetComponent.damageEventComponent.damageReceived.Dispatch(new DamageInfo(playerGunComponent.damagePerShot, shootHit.point));
+                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, shootHit.point);
+                    targetComponent.damageEventComponent.damageReceived.Dispatch(ref damageInfo);
+
                     playerGunComponent.lastTargetPosition = shootHit.point;
-                    playerGunComponent.targetHit.Dispatch(true);
+                    playerGunComponent.targetHit.value = true;
 
                     return;
                 }
             }
-            
-            playerGunComponent.targetHit.Dispatch(false);
+
+            playerGunComponent.targetHit.value = false;
         }
 
-        void OnTargetDead(IHealthComponent arg1, GameObject target)
+        void OnTargetDead(int senderHealth, int targetID)
         {
-            var playerTarget = _playerTargets[target];
+            var playerTarget = _playerTargets[targetID];
 
-            _enemyKilledObservable.Dispatch(playerTarget.targetTypeComponent.targetType);
+            var targetType = playerTarget.targetTypeComponent.targetType;
+            _enemyKilledObservable.Dispatch(ref targetType);
         }
 
-        Type[] _acceptedNodes = new Type[2] { typeof(PlayerTargetNode), typeof(PlayerGunNode) };
+        readonly Type[] _acceptedNodes = { typeof(PlayerTargetNode), typeof(PlayerGunNode) };
 
         PlayerGunNode                                   _playerGunNode;
-        Dictionary<GameObject, PlayerTargetNode>        _playerTargets = new Dictionary<GameObject, PlayerTargetNode>();
+        Dictionary<int, PlayerTargetNode>               _playerTargets = new Dictionary<int, PlayerTargetNode>();
 
         EnemyKilledObservable _enemyKilledObservable;
 

@@ -1,8 +1,9 @@
+using Svelto.ES;
 using UnityEngine;
 
-namespace GunComponents
+namespace Components.Gun
 {
-	public interface IGunComponent
+	public interface IGunComponent: IComponent
     {
         float   timeBetweenBullets { get; }
         Ray     shootRay { get; }
@@ -10,11 +11,11 @@ namespace GunComponents
         int     damagePerShot { get; }
         float   timer { get; set; }
         Vector3 lastTargetPosition { get; set; }
-        
-        Dispatcher<IGunComponent, bool> targetHit { get; }
+
+        DispatcherOnSet<int, bool> targetHit { get; }
     }
 
-    public interface IGunFXComponent
+    public interface IGunFXComponent: IComponent
     {
         ParticleSystem  particles { get; }
         LineRenderer    line { get; }

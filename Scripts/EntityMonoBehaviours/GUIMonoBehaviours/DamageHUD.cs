@@ -1,8 +1,8 @@
-using GUIComponents;
+using Components.HUD;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CompleteProject
+namespace Implementators.HUD
 {
     public class DamageHUD: MonoBehaviour, IDamageHUDComponent
     {

@@ -1,26 +1,27 @@
+using Svelto.ES;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GUIComponents
+namespace Components.HUD
 {
-    public interface IAnimatorHUDComponent
+    public interface IAnimatorHUDComponent: IComponent
     {
         Animator hudAnimator { get; }
     }
 
-    public interface IDamageHUDComponent
+    public interface IDamageHUDComponent: IComponent
     {
         Image damageImage { get; }
         float flashSpeed { get; }
         Color flashColor { get; }
     }
 
-    public interface IHealthSliderComponent
+    public interface IHealthSliderComponent: IComponent
     {
         Slider healthSlider { get; }
     }
 
-    public interface IScoreComponent
+    public interface IScoreComponent: IComponent
     {
         int score { set; get; }
     }

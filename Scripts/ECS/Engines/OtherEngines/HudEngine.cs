@@ -1,13 +1,16 @@
-using SharedComponents;
+using Components.Damageable;
+using Nodes.HUD;
 using Svelto.ES;
 using Svelto.Ticker;
 using System;
 using UnityEngine;
 
-namespace GUIEngines
+namespace Engines.HUD
 {
-    public class HudEngine : INodeEngine, ITickable
+    public class HUDEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {
+        public IEngineNodeDB nodesDB { set; private get; }
+
         public Type[] AcceptedNodes()
         {
             return _acceptedNodes;
@@ -15,56 +18,58 @@ namespace GUIEngines
 
         public void Add(INode obj)
         {
-            if (obj is GUINode)
-                _guiNode = obj as GUINode;
+            if (obj is HUDNode)
+                _guiNode = obj as HUDNode;
             else
             {
-                var damageEventNode = obj as GUIDamageEventNode; 
+                var damageEventNode = obj as HUDDamageEventNode;
 
-                damageEventNode.healthComponent.isDamaged.observers += OnDamageEvent;
-                damageEventNode.healthComponent.isDead.observers += OnDeadEvent;
+				damageEventNode.healthComponent.isDamaged.subscribers += OnDamageEvent;
+                damageEventNode.healthComponent.isDead.subscribers += OnDeadEvent;
             }
         }
 
         public void Remove(INode obj)
         {
-            if (obj is GUINode)
+            if (obj is HUDNode)
                 _guiNode = null;
             else
             {
-                var damageEventNode = obj as GUIDamageEventNode; 
+                var damageEventNode = obj as HUDDamageEventNode;
 
-                damageEventNode.healthComponent.isDamaged.observers -= OnDamageEvent;
-                damageEventNode.healthComponent.isDead.observers -= OnDeadEvent;
+				damageEventNode.healthComponent.isDamaged.subscribers -= OnDamageEvent;
+				damageEventNode.healthComponent.isDead.subscribers -= OnDeadEvent;
             }
         }
 
-        private void OnDamageEvent(IHealthComponent sender, DamageInfo damaged)
+        private void OnDamageEvent(int sender, DamageInfo damaged)
         {
             var damageComponent = _guiNode.damageImageComponent;
             var damageImage = damageComponent.damageImage;
 
             damageImage.color = damageComponent.flashColor;
 
-            _guiNode.healthSliderComponent.healthSlider.value = sender.currentHealth;
+            _guiNode.healthSliderComponent.healthSlider.value = nodesDB.QueryNode<HUDDamageEventNode>(sender).healthComponent.currentHealth;
         }
 
-        private void OnDeadEvent(IHealthComponent arg1, GameObject arg2)
+        private void OnDeadEvent(int healthSender, int targetID)
         {
             _guiNode.HUDAnimator.hudAnimator.SetTrigger("GameOver");
         }
 
         public void Tick(float deltaSec)
         {
+            if (_guiNode == null) return;
+
             var damageComponent = _guiNode.damageImageComponent;
             var damageImage = damageComponent.damageImage;
 
             damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * deltaSec);
         }
 
-        Type[] _acceptedNodes = new Type[2] { typeof(GUINode), typeof(GUIDamageEventNode) };
+        readonly Type[] _acceptedNodes = { typeof(HUDNode), typeof(HUDDamageEventNode) };
 
-        GUINode             _guiNode;
+        HUDNode             _guiNode;
     }
 }
 

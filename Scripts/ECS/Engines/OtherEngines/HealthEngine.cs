@@ -1,37 +1,31 @@
-using SharedComponents;
+using Components.Damageable;
+using Nodes.DamageableEntities;
 using Svelto.ES;
-using System;
-using System.Collections.Generic;
 
-namespace HealthEngines
+namespace Engines.Health
 {
-    public class HealthEngine : INodeEngine
+    public class HealthEngine : SingleNodeEngine<DamageNode>, IQueryableNodeEngine
     {
-        public Type[] AcceptedNodes() { return _acceptedNodes; }
+        public IEngineNodeDB nodesDB { set; private get; }
 
-        public void Add(INode obj)
+        override protected void Add(DamageNode node)
         {
-            var node = (obj as DamageNode);
-            var healthComponent = (obj as DamageNode).damageEventComponent;
+            var healthComponent = node.damageEventComponent;
 
-            healthComponent.damageReceived.observers += TriggerDamage;
-
-            _enemyEventComponents[healthComponent] = node;
+            healthComponent.damageReceived.subscribers += TriggerDamage;
         }
 
-        public void Remove(INode obj)
+        override protected void Remove(DamageNode node)
         {
-           var healthComponent = (obj as DamageNode).damageEventComponent;
+            var healthComponent = node.damageEventComponent;
 
-           if (healthComponent != null)
-               healthComponent.damageReceived.observers -= TriggerDamage;
-
-           _enemyEventComponents.Remove(healthComponent);
+           healthComponent.damageReceived.subscribers -= TriggerDamage;
         }
 
-        private void TriggerDamage(IDamageEventComponent component, DamageInfo damage)
+        private void TriggerDamage(int ID, DamageInfo damage)
         {
-            var node = _enemyEventComponents[component];
+            var node = nodesDB.QueryNode<DamageNode>(ID);
+
             var healthComponent = node.healthComponent;
 
             healthComponent.currentHealth -= damage.damagePerShot;
@@ -39,20 +33,17 @@ namespace HealthEngines
             if (healthComponent.currentHealth <= 0)
                 Death(node);
             else
-                healthComponent.isDamaged.Dispatch(damage); //it must be responsability of the engine to decide if the entity has actually been damaged
+                healthComponent.isDamaged.Dispatch(ref damage);
         }
 
         void Death(DamageNode node)
         {
             var healthComponent = node.healthComponent;
+            var ID = node.ID;
 
-            healthComponent.isDead.Dispatch(node.ID);
+            healthComponent.isDead.Dispatch(ref ID);
 
             Remove(node);
         }
-
-        Type[] _acceptedNodes = new Type[1] { typeof(DamageNode) };
-
-        Dictionary<IDamageEventComponent, DamageNode>     _enemyEventComponents = new Dictionary<IDamageEventComponent, DamageNode>();
     }
 }

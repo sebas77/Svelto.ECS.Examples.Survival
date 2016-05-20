@@ -5,25 +5,26 @@ using System;
 
 namespace Svelto.Tasks.Internal
 {
-	internal class MonoRunner: IRunner
+	class MonoRunner: IRunner
 	{
 		RunnerBehaviour 	_component;
 
         public bool paused { set; get; }
         public bool stopped { private set; get; }
-				
+
 		void Init()
-		{
-			GameObject go = new GameObject("TaskRunner");
+        {
+            GameObject go = new GameObject("TaskRunner")
+            {
+                hideFlags = HideFlags.HideInHierarchy
+            };
 
-			go.hideFlags = HideFlags.HideInHierarchy;
+            if ((_component = go.GetComponent<RunnerBehaviour>()) == null)
+                _component = go.AddComponent<RunnerBehaviour>();
 
-			if ((_component = go.GetComponent<RunnerBehaviour>()) == null)
-				_component = go.AddComponent<RunnerBehaviour>();
-
-			paused = false;
-			stopped = false;
-		}
+            paused = false;
+            stopped = false;
+        }
 
         public void StopAllCoroutines()
 		{

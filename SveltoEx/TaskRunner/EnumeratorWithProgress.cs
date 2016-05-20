@@ -5,15 +5,17 @@ namespace Svelto.Tasks
 	public class EnumeratorWithProgress: IEnumerator
 	{
 		public 	float progress { get { return _progressFunction();} }
-		
+
 		public object Current { get { return _enumerator.Current; } }
-		
+
+        EnumeratorWithProgress() { }
+
 		public EnumeratorWithProgress(IEnumerator enumerator, System.Func<float> progressFunction)
 		{
 			_enumerator = enumerator;
 			_progressFunction = progressFunction;
 		}
-		
+
 		virtual public bool MoveNext()
 		{
 			return _enumerator.MoveNext();
@@ -22,7 +24,7 @@ namespace Svelto.Tasks
 		{
 			_enumerator.Reset();
 		}
-		
+
 		System.Func<float> _progressFunction;
 		IEnumerator _enumerator;
 	}

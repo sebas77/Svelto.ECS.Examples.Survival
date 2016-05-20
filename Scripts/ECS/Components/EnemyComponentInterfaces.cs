@@ -1,41 +1,42 @@
+using Svelto.ES;
 using UnityEngine;
 
-namespace EnemyComponents
+namespace Components.Enemy
 {
-    public interface IEnemyAttackComponent
+    public interface IEnemyAttackComponent: IComponent
     {
-        bool playerInRange { get; }
+        bool targetInRange { get; }
     }
 
-    public interface IEnemyAttackDataComponent
+    public interface IEnemyAttackDataComponent: IComponent
     {
         int   damage            { get; }
         float attackInterval    { get; }
         float timer             { get; set; }
     }
 
-    public interface IEnemyMovementComponent
+    public interface IEnemyMovementComponent: IComponent
     {
         NavMeshAgent navMesh            { get; }
         float sinkSpeed                 { get; }
         CapsuleCollider capsuleCollider { get; }
     }
 
-    public interface IEnemySpawnerComponent
+    public interface IEnemySpawnerComponent: IComponent
     {
         GameObject enemyPrefab  { get; }
         Transform[] spawnPoints { get; }
         float spawnTime         { get; }
     }
 
-    public interface IEnemyTriggerComponent
+    public interface IEnemyTriggerComponent: IComponent
     {
-        event System.Action<GameObject, bool> entityInRange;
+        event System.Action<int, bool> entityInRange;
 
-        bool playerInRange { set; }
+        bool targetInRange { set; }
     }
 
-    public interface IEnemyVFXComponent
+    public interface IEnemyVFXComponent: IComponent
     {
         ParticleSystem hitParticles { get; }
     }

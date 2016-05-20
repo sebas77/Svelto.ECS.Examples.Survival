@@ -1,7 +1,7 @@
-using EnemyComponents;
+using Components.Enemy;
 using UnityEngine;
 
-namespace CompleteProject
+namespace Implementators.Enemies
 {
     public class EnemySpawner : MonoBehaviour, IEnemySpawnerComponent
     {

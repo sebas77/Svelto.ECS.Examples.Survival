@@ -1,7 +1,8 @@
+using Components.Player;
 using Svelto.Observer;
 
-namespace EnemyObservables
+namespace Observables.Enemies
 {
-    public class EnemyKilledObservable : Observable<PlayerComponents.PlayerTargetType>
+    public class EnemyKilledObservable : Observable<PlayerTargetType>
     { }
 }

@@ -1,13 +1,14 @@
-using EnemyComponents;
+using Components.Enemy;
+using Nodes.Enemies;
 using Svelto.DataStructures;
 using Svelto.ES;
 using Svelto.Ticker;
 using System;
 using UnityEngine;
 
-namespace EnemyEngines
+namespace Engines.Enemies
 {
-    public class EnemySpawnerEngine : INodeEngine, IIntervaledTickable
+    public class EnemySpawnerEngine : INodesEngine, IIntervaledTickable
     {
         internal class EnemySpawnerData
         {
@@ -25,9 +26,10 @@ namespace EnemyEngines
             }
         }
 
-        public EnemySpawnerEngine(Svelto.Factories.IGameObjectFactory factory)
+        public EnemySpawnerEngine(Svelto.Factories.IGameObjectFactory factory, IEntityFactory entityFactory)
         {
             _factory = factory;
+            _entityFactory = entityFactory;
         }
 
         public Type[] AcceptedNodes()
@@ -37,7 +39,7 @@ namespace EnemyEngines
 
         public void Add(INode obj)
         {
-            IEnemySpawnerComponent[] spawnerComponents = (obj as EnemySpawningNode).spawnerComponents;
+            var spawnerComponents = (obj as EnemySpawningNode).spawnerComponents;
 
             for (int i = 0; i < spawnerComponents.Length; i++)
                 _enemiestoSpawn.Add(new EnemySpawnerData(spawnerComponents[i]));
@@ -62,6 +64,7 @@ namespace EnemyEngines
 
                     // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
                     var go = _factory.Build(spawnData.enemy);
+                    _entityFactory.BuildEntity(go.GetInstanceID(), go.GetComponent<IEntityDescriptorHolder>().BuildDescriptorType());
                     var transform = go.transform;
                     var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
 
@@ -75,8 +78,9 @@ namespace EnemyEngines
             }
         }
 
-        Type[]                              _acceptedNodes = new Type[1] { typeof(EnemySpawningNode) };
+        readonly Type[] _acceptedNodes = { typeof(EnemySpawningNode) };
         FasterList<EnemySpawnerData>        _enemiestoSpawn = new FasterList<EnemySpawnerData>();
         Svelto.Factories.IGameObjectFactory _factory;
+        IEntityFactory _entityFactory;
     }
 }

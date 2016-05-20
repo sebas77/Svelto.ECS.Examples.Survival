@@ -1,15 +1,11 @@
-using SharedComponents;
+using Components.Damageable;
 using Svelto.ES;
-using UnityEngine;
 
-namespace HealthEngines
+namespace Nodes.DamageableEntities
 {
-    public class DamageNode: INodeWithReferenceID<GameObject>
+    public class DamageNode: NodeWithID
     {
         public IDamageEventComponent    damageEventComponent;
         public IHealthComponent         healthComponent;
-
-        public DamageNode(GameObject ID) { this.ID = ID; }
-        public GameObject ID { get; private set; }
     }
 }

@@ -1,13 +1,13 @@
 using System;
 using Svelto.ES;
-using SharedComponents;
-using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using Nodes.Enemies;
+using Components.Damageable;
 
-namespace EnemyEngines
+namespace Engines.Enemies
 {
-    public class EnemyAnimationEngine : INodeEngine
+    public class EnemyAnimationEngine : INodesEngine, IQueryableNodeEngine
     {
         public Type[] AcceptedNodes()
         {
@@ -21,13 +21,11 @@ namespace EnemyEngines
                 var enemyNode = obj as EnemyNode;
                 var healthEventsComponent = enemyNode.healthComponent;
 
-                healthEventsComponent.isDead.observers += TriggerDeathAnimation;
-                healthEventsComponent.isDamaged.observers += EntityDamaged;
-
-                _enemyNodes[healthEventsComponent] = enemyNode;
+                healthEventsComponent.isDead.subscribers += TriggerDeathAnimation;
+                healthEventsComponent.isDamaged.subscribers += EntityDamaged;
             }
             else
-                (obj as EnemyTargetNode).healthComponent.isDead.observers += OnTargetDead;
+                (obj as EnemyTargetNode).healthComponent.isDead.subscribers += OnTargetDead;
         }
 
         public void Remove(INode obj)
@@ -38,40 +36,37 @@ namespace EnemyEngines
 
                 if (healthEventsComponent != null)
                 {
-                    healthEventsComponent.isDead.observers -= TriggerDeathAnimation;
-                    healthEventsComponent.isDamaged.observers -= EntityDamaged;
+                    healthEventsComponent.isDead.subscribers -= TriggerDeathAnimation;
+                    healthEventsComponent.isDamaged.subscribers -= EntityDamaged;
                 }
-
-                _enemyNodes.Remove(healthEventsComponent);
             }
             else
-                (obj as EnemyTargetNode).healthComponent.isDead.observers -= OnTargetDead;
+                (obj as EnemyTargetNode).healthComponent.isDead.subscribers -= OnTargetDead;
         }
 
-        void EntityDamaged(IHealthComponent sender, DamageInfo damageInfo)
+        void EntityDamaged(int sender, DamageInfo damageInfo)
         {
-            var node = _enemyNodes[sender];
+            var node = nodesDB.QueryNode<EnemyNode>(sender);
 
             node.vfxComponent.hitParticles.transform.position = damageInfo.damagePoint;
-
             node.vfxComponent.hitParticles.Play();
         }
 
-        void OnTargetDead(IHealthComponent arg1, GameObject arg2)
+        void OnTargetDead(int sender, int targetID)
         {
-            var values = _enemyNodes.Values.GetEnumerator();
+            var nodes = nodesDB.QueryNodes<EnemyNode>();
 
-            while (values.MoveNext())
+            for (int i = 0; i < nodes.Count; i++)
             {
-                var node = values.Current;
+                var node = nodes[i];
 
                 node.animationComponent.animation.SetTrigger("PlayerDead");
             }
         }
 
-         void TriggerDeathAnimation(IHealthComponent sender, GameObject target)
+        void TriggerDeathAnimation(int sender, int targetID)
         {
-            var node = _enemyNodes[sender];
+            var node = nodesDB.QueryNode<EnemyNode>(sender);
 
             node.animationComponent.animation.SetTrigger("Dead");
 
@@ -89,11 +84,11 @@ namespace EnemyEngines
                 yield return null;
             }
 
-            GameObject.Destroy(node.ID);
+            node.removeEntityComponent.removeEntity();
         }
 
-        Type[] _acceptedNodes = new Type[2] { typeof(EnemyNode), typeof(EnemyTargetNode) };
+        readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
 
-        Dictionary<IHealthComponent, EnemyNode> _enemyNodes = new Dictionary<IHealthComponent, EnemyNode>();
+        public IEngineNodeDB nodesDB { set; private get; }
     }
 }

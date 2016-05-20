@@ -1,9 +1,9 @@
-using SharedComponents;
+using Components.Damageable;
 using Svelto.ES;
 
-namespace GUIEngines
+namespace Nodes.HUD
 {
-    public class GUIDamageEventNode: INode
+	public class HUDDamageEventNode: NodeWithID
     {
         public IHealthComponent        healthComponent;
     }

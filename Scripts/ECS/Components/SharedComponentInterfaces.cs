@@ -1,33 +1,34 @@
+using Svelto.ES;
 using UnityEngine;
 
-namespace SharedComponents
+namespace Components.Base
 {
-    public interface IAnimationComponent
+    public interface IAnimationComponent: IComponent
     {
         Animator animation { get; }
     }
 
-    public interface IPositionComponent
+    public interface IPositionComponent: IComponent
     {
         Vector3 position { get; }
     }
 
-    public interface ITransformComponent
+    public interface ITransformComponent: IComponent
     {
         Transform transform { get; }
     }
 
-    public interface IRigidBodyComponent
+    public interface IRigidBodyComponent: IComponent
     {
         Rigidbody rigidbody { get; }
     }
 
-    public interface ISpeedComponent
+    public interface ISpeedComponent: IComponent
     {
         float speed { get; }
     }
 
-    public interface IDamageSoundComponent
+    public interface IDamageSoundComponent: IComponent
     {
         AudioSource audioSource { get; }
         AudioClip   death { get;  }

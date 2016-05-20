@@ -1,10 +1,10 @@
-using SharedComponents;
+using Components.Base;
 using UnityEngine;
 
-namespace CompleteProject
+namespace Implementators.Player
 {
     public class PlayerMovement : MonoBehaviour,
-        IRigidBodyComponent, 
+        IRigidBodyComponent,
         IPositionComponent,
         IAnimationComponent,
         ISpeedComponent
@@ -16,11 +16,8 @@ namespace CompleteProject
         Transform playerTransform;
 
         Vector3     IPositionComponent.position { get { return playerTransform.position; } }
-
         Rigidbody   IRigidBodyComponent.rigidbody { get { return playerRigidbody; } }
-        
         float       ISpeedComponent.speed { get { return speed; } }
-
         Animator    IAnimationComponent.animation { get { return anim; } }
 
         void Awake ()

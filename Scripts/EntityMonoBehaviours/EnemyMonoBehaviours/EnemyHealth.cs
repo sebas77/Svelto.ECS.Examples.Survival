@@ -1,9 +1,10 @@
+using Components.Base;
+using Components.Damageable;
+using Components.Enemy;
+using Components.Player;
 using UnityEngine;
-using SharedComponents;
-using EnemyComponents;
-using PlayerComponents;
 
-namespace CompleteProject
+namespace Implementators.Enemies
 {
     public class EnemyHealth : MonoBehaviour, IHealthComponent, IAnimationComponent, IEnemyVFXComponent, IDamageSoundComponent, IDamageEventComponent, ITargetTypeComponent
     {
@@ -12,13 +13,13 @@ namespace CompleteProject
         public AudioClip damageClip;                 // The sound to play when the enemy dies.
         public PlayerTargetType targetType;
 
-        Dispatcher<IDamageEventComponent, DamageInfo>  IDamageEventComponent.damageReceived { get { return _damageReceived; } }
+        Dispatcher<int, DamageInfo>  IDamageEventComponent.damageReceived { get { return _damageReceived; } }
 
         int   IHealthComponent.currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
         bool  IHealthComponent.hasBeenDamaged { get; set; }
 
-        Dispatcher<IHealthComponent, GameObject> IHealthComponent.isDead { get { return _isDead; } }
-        Dispatcher<IHealthComponent, DamageInfo> IHealthComponent.isDamaged { get { return _isDamaged; } }
+        Dispatcher<int, int>           IHealthComponent.isDead { get { return _isDead; } }
+        Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged { get { return _isDamaged; } }
 
         Animator IAnimationComponent.animation { get { return _anim; } }
 
@@ -36,18 +37,18 @@ namespace CompleteProject
             _anim = GetComponent <Animator> ();
             _enemyAudio = GetComponent <AudioSource> ();
             _hitParticles = GetComponentInChildren <ParticleSystem> ();
-            
+
             // Setting the current health when the enemy first spawns.
             _currentHealth = startingHealth;
 
-            _damageReceived = new Dispatcher<IDamageEventComponent, DamageInfo>(this);
-            _isDead = new Dispatcher<IHealthComponent, GameObject>(this);
-            _isDamaged = new Dispatcher<IHealthComponent, DamageInfo>(this);
+            _damageReceived = new Dispatcher<int, DamageInfo>(this.GetInstanceID());
+            _isDead = new Dispatcher<int, int>(this.GetInstanceID());
+            _isDamaged = new Dispatcher<int, DamageInfo>(this.GetInstanceID());
         }
 
-        Dispatcher<IDamageEventComponent, DamageInfo>     _damageReceived;
-        Dispatcher<IHealthComponent, GameObject>          _isDead;
-        Dispatcher<IHealthComponent, DamageInfo>          _isDamaged;
+        Dispatcher<int, DamageInfo>     _damageReceived;
+        Dispatcher<int, int>                 _isDead;
+        Dispatcher<int, DamageInfo>          _isDamaged;
 
         Animator _anim;                       // Reference to the animator.
         AudioSource _enemyAudio;              // Reference to the audio source.

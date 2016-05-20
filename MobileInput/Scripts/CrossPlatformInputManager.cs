@@ -203,7 +203,7 @@ namespace UnitySampleAssets.CrossPlatformInput
             }
         }
 
-        // a controller gameobject (eg. a virtual GUI button) should call the
+        // a controller gameobject (eg. a virtual HUD button) should call the
         // 'pressed' function of this class. Other objects can then read the
         // Get/Down/Up state of this button.
         public class VirtualButton

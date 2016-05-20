@@ -11,9 +11,9 @@ namespace Svelto.Tasks
 	public class SerialTaskCollection: TaskCollection
 	{
 		public event Action		onComplete;
-		
+
 		override public float 	progress { get { return _progress + _subProgress;} }
-		 
+
 		public SerialTaskCollection():base()
 		{
 			_progress = 0.0f;
@@ -29,14 +29,14 @@ namespace Svelto.Tasks
 
 			_token = token;
 		}
-		
+
 		override public IEnumerator GetEnumerator()
 		{
 			isRunning = true;
-			
+
 			int startingCount = registeredEnumerators.Count;
-			
-			while (registeredEnumerators.Count > 0) 
+
+			while (registeredEnumerators.Count > 0)
 			{
 				//create a new stack for each task
 				Stack<IEnumerator> stack = new Stack<IEnumerator>();
@@ -45,24 +45,24 @@ namespace Svelto.Tasks
 				//put in the stack
 				stack.Push(task);
 
-				while (stack.Count > 0) 
+				while (stack.Count > 0)
 				{
 					IEnumerator ce = stack.Peek(); //get the current task to execute
 
 					if (ce is AsyncTask)
 						(ce as AsyncTask).token = _token;
 
-                    if (ce.MoveNext() == false) 
+                    if (ce.MoveNext() == false)
 					{
 						_progress = (float)(startingCount - registeredEnumerators.Count) / (float)startingCount;
 						_subProgress = 0;
 
 						stack.Pop(); //task is done (the iteration is over)
 					}
-					else 
+					else
 					{
 						if (ce.Current != ce && ce.Current != null)  //the task returned a new IEnumerator (or IEnumerable)
-						{	
+						{
 #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_IPHONE || UNITY_ANDROID || UNITY_EDITOR
 							if (ce.Current is WWW || ce.Current is YieldInstruction)
 								yield return ce.Current; //YieldInstructions are special cases and must be handled by Unity. They cannot be wrapped!
@@ -80,7 +80,7 @@ namespace Svelto.Tasks
                                         //push(subprogress);
                                     }
 						}
-						
+
 			//			if (ce is AsyncTask) //asyn
           //                  _subProgress = (ce as AsyncTask).task.progress * (((float)(startingCount - (registeredEnumerators.Count - 1)) / (float)startingCount) - progress);
 		//				else
@@ -95,11 +95,11 @@ namespace Svelto.Tasks
 			}
 
 			isRunning = false;
-			
+
 			if (onComplete != null)
 				onComplete();
 		}
-		
+
 		float 	_progress;
 		float 	_subProgress;
 		object	_token;

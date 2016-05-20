@@ -1,12 +1,12 @@
-using GunComponents;
-using PlayerComponents;
-using SharedComponents;
+using Components.Base;
+using Components.Damageable;
+using Components.Gun;
+using Components.Player;
 using Svelto.ES;
-using UnityEngine;
 
-namespace PlayerEngines
+namespace Nodes.Player
 {
-    public class PlayerNode : INode
+    public class PlayerNode : NodeWithID
     {
         public IHealthComponent        healthComponent;
         public ISpeedComponent         speedComponent;
@@ -15,19 +15,16 @@ namespace PlayerEngines
         public IAnimationComponent     animationComponent;
     }
 
-    public class PlayerGunNode : INode
+    public class PlayerGunNode : NodeWithID
     {
         public IGunComponent gunComponent;
         public IGunFXComponent gunFXComponent;
     }
 
-    public class PlayerTargetNode : INodeWithReferenceID<GameObject>
+    public class PlayerTargetNode : NodeWithID
     {
         public IDamageEventComponent    damageEventComponent;
         public IHealthComponent         healthComponent;
         public ITargetTypeComponent     targetTypeComponent;
-
-        public PlayerTargetNode(GameObject ID) { this.ID = ID; }
-        public GameObject ID { get; private set; }
     }
 }

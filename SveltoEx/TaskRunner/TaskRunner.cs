@@ -6,18 +6,18 @@ using System;
 public class TaskRunner
 {
 	static TaskRunner _instance;
-    
+
     static public TaskRunner Instance
 	{
-		get 
+		get
 		{
 			if (_instance == null)
 				InitInstance();
-			
+
 			return _instance;
 		}
 	}
-		
+
 	public void Run(IEnumerable task)
 	{
 		if (task == null)
@@ -48,8 +48,8 @@ public class TaskRunner
 			return;
 
 		IEnumerator taskToRun = new SingleTask(task);
-		
-		while (taskToRun.MoveNext() == true);
+
+        while (taskToRun.MoveNext() == true) { }
 	}
 
     public void RunSync(IEnumerable task)
@@ -71,7 +71,7 @@ public class TaskRunner
 	public TaskRoutine CreateTask(Func<IEnumerator> taskGenerator)
 	{
 		PausableTask ptask = new PausableTask(_runner);
-		
+
 		return new TaskRoutine(ptask, taskGenerator);
 	}
 
@@ -84,18 +84,18 @@ public class TaskRunner
 	{
 		_runner.paused = true;
 	}
-	
+
 	public void ResumeManaged()
 	{
 		_runner.paused = false;
 	}
-	
+
 	public void Stop()
 	{
 		if (_runner != null)
 			_runner.StopAllCoroutines();
 	}
-	
+
 	static void InitInstance()
 	{
 		_instance 			= new TaskRunner();
@@ -110,8 +110,8 @@ public class TaskRunner
     TaskRoutinePool _taskRoutinePool;
     IRunner         _runner;
 }
-	
 
 
 
- 
+
+

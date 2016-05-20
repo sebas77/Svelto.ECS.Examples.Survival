@@ -1,10 +1,11 @@
 using System;
 using Svelto.ES;
-using ScoreObservers;
+using Nodes.HUD;
+using Observers.HUD;
 
-namespace GUIEngines
+namespace Engines.HUD
 {
-    public class ScoreEngine : INodeEngine
+    public class ScoreEngine : INodesEngine
     {
         public ScoreEngine(ScoreOnEnemyKilledObserver scoreOnEnemyKilledObserver)
         {
@@ -13,10 +14,10 @@ namespace GUIEngines
 
         public Type[] AcceptedNodes() { return _acceptedNodes; }
 
-        public void Add(INode obj) { _guiNode = obj as GUINode; }
+        public void Add(INode obj) { _guiNode = obj as HUDNode; }
         public void Remove(INode obj) { _guiNode = null; }
 
-        private void AddScore(ScoreActions item)
+        private void AddScore(ref ScoreActions item)
         {
             switch (item)
             {
@@ -32,9 +33,9 @@ namespace GUIEngines
             }
         }
 
-        Type[] _acceptedNodes = new Type[1] { typeof(GUINode) };
+        Type[] _acceptedNodes = new Type[1] { typeof(HUDNode) };
 
-        GUINode _guiNode;
+        HUDNode _guiNode;
     }
 }
 

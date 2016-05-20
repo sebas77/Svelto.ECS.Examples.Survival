@@ -1,12 +1,12 @@
+using Components.HUD;
 using UnityEngine;
 using UnityEngine.UI;
-using GUIComponents;
 
-namespace CompleteProject
+namespace Implementators.HUD
 {
     public class ScoreManager : MonoBehaviour, IScoreComponent
     {
-        int IScoreComponent.score { get { return _score; } set { _score = value; _text.text = "score: " + _score.ToString(); } }
+        int IScoreComponent.score { get { return _score; } set { _score = value; _text.text = "score: " + _score; } }
 
         void Awake ()
         {
@@ -18,6 +18,6 @@ namespace CompleteProject
         }
 
         int     _score;
-        Text    _text; 
+        Text    _text;
     }
 }

@@ -9,19 +9,19 @@ namespace Svelto.Tasks
 	public class WWWEnumerator:IEnumerator
 	{
 		WWW _www;
-		
+
 		public WWWEnumerator(WWW www)
 		{
 			_www = www;
 		}
-		
+
 		public object Current	{ get { return _www; }}
-		
+
 		public bool MoveNext ()
 		{
 			return _www.isDone == false;
 		}
-		
+
 		public void Reset ()
 		{
 		}
@@ -32,27 +32,27 @@ namespace Svelto.Tasks
         public event Action		onComplete;
 
         override public float progress { get { return _progress + _subprogress; } }
- 
+
         public ParallelTaskCollection():base()
         {
 			_listOfStacks = new List<Stack<IEnumerator>>();
 		}
-		
+
 		override public IEnumerator GetEnumerator()
 		{
 			isRunning = true;
-			
+
 			_listOfStacks.Clear();
-			
+
 			foreach (IEnumerator enumerator in registeredEnumerators)
             {
 				Stack<IEnumerator> stack = new Stack<IEnumerator>();
-				
+
 				stack.Push(enumerator);
-				
+
 				_listOfStacks.Add(stack);
 			}
-			
+
 			while (_listOfStacks.Count > 0)
 			{
                 _subprogress = 0;
@@ -75,7 +75,7 @@ namespace Svelto.Tasks
 				for (int i = 0; i < _listOfStacks.Count; ++i)
 				{
 					Stack<IEnumerator> stack = _listOfStacks[i];
-					
+
 					if (stack.Count > 0)
 		            {
 		                IEnumerator ce = stack.Peek(); //without popping it.
@@ -116,13 +116,13 @@ namespace Svelto.Tasks
 
                 yield return null;
 			}
-			
+
 			isRunning = false;
-			
+
 			if (onComplete != null)
 				onComplete();
         }
-		
+
 		private float 					 _progress;
 		private List<Stack<IEnumerator>> _listOfStacks;
         private float                    _subprogress;

@@ -2,13 +2,12 @@ using System;
 using Svelto.ES;
 using Svelto.Ticker;
 using UnitySampleAssets.CrossPlatformInput;
-using SharedComponents;
-using Svelto.Context;
-using UnityEngine;
+using Nodes.Player;
+using Components.Damageable;
 
-namespace PlayerEngines
+namespace Engines.Player
 {
-    public class PlayerAnimationEngine : INodeEngine, IPhysicallyTickable
+    public class PlayerAnimationEngine : INodesEngine, IPhysicallyTickable
     {
         public Type[] AcceptedNodes()
         {
@@ -19,19 +18,20 @@ namespace PlayerEngines
         {
             _playerNode = obj as PlayerNode;
 
-            _playerNode.healthComponent.isDead.observers += TriggerDeathAnimation;
+            _playerNode.healthComponent.isDead.subscribers += TriggerDeathAnimation;
         }
 
         public void Remove(INode obj)
         {
             if (_playerNode.healthComponent != null)
-                _playerNode.healthComponent.isDead.observers -= TriggerDeathAnimation;
+                _playerNode.healthComponent.isDead.subscribers -= TriggerDeathAnimation;
 
             _playerNode = null;
         }
 
         public void PhysicsTick(float deltaSec)
         {
+            if (_playerNode == null) return;
             // Store the input axes.
             float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
             float v = CrossPlatformInputManager.GetAxisRaw("Vertical");
@@ -43,12 +43,12 @@ namespace PlayerEngines
             _playerNode.animationComponent.animation.SetBool("IsWalking", walking);
         }
 
-        void TriggerDeathAnimation(IHealthComponent sender, GameObject target)
+        void TriggerDeathAnimation(int sender, int targetID)
         {
             _playerNode.animationComponent.animation.SetTrigger("Die");
         }
 
-        Type[] _acceptedNodes = new Type[1] { typeof(PlayerNode) };
+        readonly Type[] _acceptedNodes = { typeof(PlayerNode) };
 
         PlayerNode _playerNode;
     }

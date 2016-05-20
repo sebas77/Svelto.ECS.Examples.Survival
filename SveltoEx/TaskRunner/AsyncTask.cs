@@ -6,7 +6,7 @@ namespace Svelto.Tasks.Internal
 	{
 		public IAbstractTask 	task { get; private set; }
 		public object			token { set; private get; }
-					
+
 		public AsyncTask(IAbstractTask task)
 		{
 			this.task = task;
@@ -14,7 +14,7 @@ namespace Svelto.Tasks.Internal
 		}
 
 		public object Current 		{ get { return this; } }
-		
+
 		/// <summary>
 		/// Gets the enumerator and execute the task
 		/// The task is meant to be executed once. It can be
@@ -26,7 +26,6 @@ namespace Svelto.Tasks.Internal
 		/// <returns>
 		/// The enumerator.
 		/// </returns>
-
 		public bool MoveNext()
 		{
 			return enumerator.MoveNext();
@@ -35,17 +34,17 @@ namespace Svelto.Tasks.Internal
 		IEnumerator Execute()
 		{
 			if (task is ITask)
-				((ITask)task).Execute(); 
+				((ITask)task).Execute();
 			else
 			if (task is ITaskChain)
-				((ITaskChain)task).Execute(token); 
+				((ITaskChain)task).Execute(token);
 			else
 				throw new System.Exception("not supported task " + task.ToString());
-			
+
 			while (task.isDone == false)
 				yield return task;
 		}
-		
+
 		public void Reset()
 		{
 		}

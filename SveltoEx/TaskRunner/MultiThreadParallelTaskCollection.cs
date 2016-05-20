@@ -11,9 +11,9 @@ namespace Svelto.Tasks
 	public class MultiThreadParallelTaskCollection: TaskCollection
     {
         public event Action		onComplete;
-		
+
 		override public 	float progress { get { return _progress;} }
- 
+
 		public MultiThreadParallelTaskCollection(MultiThreadRunner runner):base()
         {
 			_maxConcurrentTasks = uint.MaxValue;
@@ -25,7 +25,7 @@ namespace Svelto.Tasks
 			_maxConcurrentTasks = maxConcurrentTasks;
 			_runner = runner;
 		}
-		
+
 		override public IEnumerator GetEnumerator()
 		{
 			_totalTasks = _tasksToExecute = (uint)registeredEnumerators.Count;
@@ -34,25 +34,25 @@ namespace Svelto.Tasks
 			if (_tasksToExecute > 0)
 			{
 				isRunning = true;
-				
+
 				RunMultiThreadParallelTasks();
 
 				uint tasksToExecute;
 
-				do 
+				do
                 {
                     DateTime time = DateTime.Now;
 
                     if ((DateTime.Now - time).Milliseconds < 100)
                         yield return null;
-                    
+
 					lock (_locker) tasksToExecute = _tasksToExecute;
-				} 
+				}
                 while (tasksToExecute > 0);
-				
+
 				isRunning = false;
 			}
-						
+
 			if (onComplete != null)
 				onComplete();
         }
@@ -64,11 +64,11 @@ namespace Svelto.Tasks
 
 			lock (_locker) _tasksLaunched++;
 
-			while (stack.Count > 0) 
+			while (stack.Count > 0)
 			{
 				IEnumerator ce = stack.Peek();
 				//without popping it.
-				if (ce.MoveNext () == false) 
+				if (ce.MoveNext () == false)
 				{
 					lock (_locker) _progress = (float)(_totalTasks - _registeredEnumerators.Count) / _totalTasks;
 
@@ -82,7 +82,7 @@ namespace Svelto.Tasks
 				else
 				{
 					//ok the iteration is not over
-					if (ce.Current != null && ce.Current != ce) 
+					if (ce.Current != null && ce.Current != ce)
 					{
 						if (ce.Current is IEnumerable)
 							//what we got from the enumeration is an IEnumerable?
@@ -123,7 +123,7 @@ namespace Svelto.Tasks
 		{
 			_runner.StartCoroutine(ParallelTask(_registeredEnumerators.Dequeue()));
 		}
-		
+
 		volatile float 					_progress;
 		volatile float					_totalTasks;
 

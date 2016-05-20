@@ -13,19 +13,19 @@ namespace Svelto.Tasks
 	public interface IAbstractTask
 	{
 		IAbstractTask	OnComplete(System.Action<bool> action);
-		
+
 		bool			isDone { get; }
 		float			progress { get; }
 	}
 
 	public interface ITask:IAbstractTask
 	{
-		void		Execute();	
+		void		Execute();
 	}
 
 	public interface ITaskChain:IAbstractTask
 	{
-		void		Execute(object token);	
+		void		Execute(object token);
 	}
 }
 

@@ -1,42 +1,38 @@
 using System;
 using Svelto.ES;
 using UnityEngine;
-using GunComponents;
-using Svelto.Context;
 using System.Collections;
 using Svelto.Tasks;
+using Nodes.Player;
 
-namespace PlayerEngines
+namespace Engines.Player
 {
-    public class PlayerShootingFXsEngine : INodeEngine
+    public class PlayerShootingFXsEngine : SingleNodeEngine<PlayerGunNode>, IQueryableNodeEngine
     {
-        public Type[] AcceptedNodes()
-        {
-            return _acceptedNodes;
-        }
+        public IEngineNodeDB nodesDB { set; private get; }
 
         public PlayerShootingFXsEngine()
         {
             _taskRoutine = TaskRunner.Instance.CreateTask(DisableFXAfterTime);
         }
 
-        public void Add(INode obj)
+        override protected void Add(PlayerGunNode playerGunNode)
         {
-            _playerGunNode = obj as PlayerGunNode;
-
-            _playerGunNode.gunComponent.targetHit.observers += Shoot;
+            _playerGunNode = playerGunNode;
+            playerGunNode.gunComponent.targetHit.subscribers += Shoot;
         }
 
-        public void Remove(INode obj)
+        override protected  void Remove(PlayerGunNode playerGunNode)
         {
-             _playerGunNode.gunComponent.targetHit.observers -= Shoot;
-
-             _playerGunNode = null;
+            _playerGunNode = null;
+            playerGunNode.gunComponent.targetHit.subscribers -= Shoot;
         }
 
-        private void Shoot(IGunComponent gunComponent, bool targetHasBeenHit)
+        private void Shoot(int ID, bool targetHasBeenHit)
         {
-            var gunFXComponent = _playerGunNode.gunFXComponent;
+            var playerGunNode = nodesDB.QueryNode<PlayerGunNode>(ID);
+
+            var gunFXComponent = playerGunNode.gunFXComponent;
             // Play the gun shot audioclip.
             gunFXComponent.audio.Play ();
 
@@ -46,6 +42,8 @@ namespace PlayerEngines
             // Stop the particles from playing if they were, then start the particles.
             gunFXComponent.particles.Stop();
             gunFXComponent.particles.Play();
+
+            var gunComponent = playerGunNode.gunComponent;
 
             var shootRay = gunComponent.shootRay;
 
@@ -72,7 +70,7 @@ namespace PlayerEngines
         IEnumerator DisableFXAfterTime()
         {
             yield return new WaitForSeconds(_playerGunNode.gunComponent.timeBetweenBullets * _playerGunNode.gunFXComponent.effectsDisplayTime);
-            
+
             // ... disable the effects.
             DisableEffects();
         }
@@ -85,10 +83,7 @@ namespace PlayerEngines
             fxComponent.light.enabled = false;
         }
 
-        Type[] _acceptedNodes = new Type[1] { typeof(PlayerGunNode) };
-
-        PlayerGunNode _playerGunNode;
-
-        TaskRoutine _taskRoutine;
+        TaskRoutine     _taskRoutine;
+        PlayerGunNode   _playerGunNode;
     }
 }

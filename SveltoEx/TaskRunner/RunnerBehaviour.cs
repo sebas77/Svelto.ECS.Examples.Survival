@@ -4,7 +4,7 @@ using UnityEngine;
 public class RunnerBehaviour: MonoBehaviour
 {
 	static public bool isQuitting = false;
-	
+
 	void OnApplicationQuit()
     {
         isQuitting = true;

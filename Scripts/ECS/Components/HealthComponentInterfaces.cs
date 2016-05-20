@@ -1,26 +1,27 @@
+using Svelto.ES;
 using UnityEngine;
 
-namespace SharedComponents
+namespace Components.Damageable
 {
-    public interface IHealthComponent
+    public interface IHealthComponent: IComponent
     {
         int             currentHealth   { get; set; }
         bool            hasBeenDamaged  { get; set; }
-        
-        Dispatcher<IHealthComponent, GameObject>   isDead          { get; }
-        Dispatcher<IHealthComponent, DamageInfo>   isDamaged       { get; }
+
+        Dispatcher<int, int>        isDead          { get; }
+        Dispatcher<int, DamageInfo> isDamaged       { get; }
     }
 
-    public interface IDamageEventComponent
+    public interface IDamageEventComponent: IComponent
     {
-        Dispatcher<IDamageEventComponent, DamageInfo>    damageReceived  { get; }
+        Dispatcher<int, DamageInfo>    damageReceived  { get; }
     }
 
     public struct DamageInfo
     {
         public readonly int         damagePerShot;
         public readonly Vector3     damagePoint;
-        
+
         public DamageInfo(int damage, Vector3 point) : this()
         {
             damagePerShot = damage;

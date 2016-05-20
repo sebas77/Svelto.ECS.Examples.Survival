@@ -26,7 +26,7 @@ namespace Svelto.Tasks
 		{
             _task.Start(taskGenerator, isSimple);
 		}
-		
+
 		public void Stop()
 		{
 			_task.Stop();
@@ -36,7 +36,7 @@ namespace Svelto.Tasks
 		{
 			_task.Pause();
 		}
-		
+
 		public void Resume()
 		{
 			_task.Resume();

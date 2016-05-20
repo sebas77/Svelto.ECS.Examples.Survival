@@ -3,27 +3,22 @@ using Svelto.ES;
 using Svelto.Ticker;
 using UnitySampleAssets.CrossPlatformInput;
 using UnityEngine;
-using SharedComponents;
+using Nodes.Player;
+using Components.Damageable;
 
-namespace PlayerEngines
+namespace Engines.Player
 {
-    public class PlayerMovementEngine : INodeEngine, IPhysicallyTickable
+    public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable
     {
-        public Type[] AcceptedNodes()
-        {
-            return _acceptedNodes;
-        }
-
-        public void Add(INode obj)
+        override protected void Add(PlayerNode obj)
         {
             _playerNode = obj as PlayerNode;
-
-            _playerNode.healthComponent.isDead.observers += StopMovementOnDeath;
+            _playerNode.healthComponent.isDead.subscribers += StopMovementOnDeath;
         }
 
-        public void Remove(INode obj)
+       override protected  void Remove(PlayerNode obj)
         {
-            _playerNode.healthComponent.isDead.observers -= StopMovementOnDeath;
+            _playerNode.healthComponent.isDead.subscribers -= StopMovementOnDeath;
             _playerNode = null;
         }
 
@@ -77,15 +72,14 @@ namespace PlayerEngines
             }
         }
 
-        void StopMovementOnDeath(IHealthComponent arg1, GameObject arg2)
+        void StopMovementOnDeath(int ID, int value)
         {
             _playerNode.rigidBodyComponent.rigidbody.isKinematic = true;
 
             Remove(_playerNode);
         }
 
-        Type[]              _acceptedNodes = new Type[1] { typeof(PlayerNode) };
-        PlayerNode          _playerNode;
+        PlayerNode      _playerNode;
 
         readonly int floorMask = LayerMask.GetMask("Floor");    // A layer mask so that a ray can be cast just at gameobjects on the floor layer.
         const float camRayLength = 100f;                        // The length of the ray from the camera into the scene.

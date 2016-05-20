@@ -7,7 +7,7 @@ public class Joystick : MonoBehaviour , IPointerUpHandler , IPointerDownHandler 
     public int MovementRange = 100;
 
     public enum AxisOption
-    {                                                    // Options for which axes to use                                                     
+    {                                                    // Options for which axes to use
         Both,                                                                   // Use both
         OnlyHorizontal,                                                         // Only horizontal
         OnlyVertical                                                            // Only vertical
@@ -15,14 +15,14 @@ public class Joystick : MonoBehaviour , IPointerUpHandler , IPointerDownHandler 
 
     public AxisOption axesToUse = AxisOption.Both;   // The options for the axes that the still will use
     public string horizontalAxisName = "Horizontal";// The name given to the horizontal axis for the cross platform input
-    public string verticalAxisName = "Vertical";    // The name given to the vertical axis for the cross platform input 
+    public string verticalAxisName = "Vertical";    // The name given to the vertical axis for the cross platform input
 
     private Vector3 startPos;
     private bool useX;                                                          // Toggle for using the x axis
     private bool useY;                                                          // Toggle for using the Y axis
     private CrossPlatformInputManager.VirtualAxis horizontalVirtualAxis;               // Reference to the joystick in the cross platform input
     private CrossPlatformInputManager.VirtualAxis verticalVirtualAxis;                 // Reference to the joystick in the cross platform input
-      
+
     void OnEnable () {
 
         startPos = transform.position;

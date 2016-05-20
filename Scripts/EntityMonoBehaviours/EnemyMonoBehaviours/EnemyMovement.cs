@@ -1,26 +1,41 @@
-using EnemyComponents;
-using SharedComponents;
+using System;
+using Svelto.ES;
 using UnityEngine;
+using Components.Enemy;
+using Components.Base;
 
-namespace CompleteProject
+namespace Implementators.Enemies
 {
-    public class EnemyMovement : MonoBehaviour, IEnemyMovementComponent, ITransformComponent
+    public class EnemyMovement : MonoBehaviour, IEnemyMovementComponent, ITransformComponent, IRemoveEntityComponent
     {
         public float sinkSpeed = 2.5f;              // The speed at which the enemy sinks through the floor when dead.
 
-        NavMeshAgent nav;                           // Reference to the nav mesh agent.
-        CapsuleCollider capsuleCollider;            // Reference to the capsule collider.
+        NavMeshAgent _nav;                           // Reference to the nav mesh agent.
+        CapsuleCollider _capsuleCollider;            // Reference to the capsule collider.
+        Transform _transform;
+        Action _removeAction;
 
-        CapsuleCollider IEnemyMovementComponent.capsuleCollider { get { return capsuleCollider; } }
-        NavMeshAgent IEnemyMovementComponent.navMesh { get { return nav; } }
+        CapsuleCollider IEnemyMovementComponent.capsuleCollider { get { return _capsuleCollider; } }
+        NavMeshAgent IEnemyMovementComponent.navMesh { get { return _nav; } }
 
         float IEnemyMovementComponent.sinkSpeed { get { return sinkSpeed; } }
-        Transform ITransformComponent.transform { get { return transform; }}
+        Transform ITransformComponent.transform { get { return _transform; }}
+
+        public Action removeEntity { get { return RemoveAction; } set { _removeAction = value;  }
+        }
+
+        void RemoveAction()
+        {
+            _removeAction();
+
+            Destroy(this.gameObject);
+        }
 
         void Awake ()
         {
-            nav = GetComponent <NavMeshAgent> ();
-            capsuleCollider = GetComponent<CapsuleCollider>();
+            _nav = GetComponent <NavMeshAgent> ();
+            _capsuleCollider = GetComponent<CapsuleCollider>();
+            _transform = transform;
         }
     }
 }

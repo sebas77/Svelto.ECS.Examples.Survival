@@ -1,9 +1,10 @@
-using SharedComponents;
+using Components.Base;
+using Components.Damageable;
 using Svelto.ES;
 
-namespace Soundengines
+namespace Nodes.Sound
 {
-    public class DamageSoundNode: INode
+    public class DamageSoundNode: NodeWithID
     {
         public IDamageSoundComponent    audioComponent;
         public IHealthComponent         healthComponent;

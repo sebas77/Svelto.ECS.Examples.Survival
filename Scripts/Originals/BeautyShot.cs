@@ -25,9 +25,9 @@ public class BeautyShot : MonoBehaviour
 	public float duration = 10;
 	public int	frameOffset = 0;
 	private float numFrames;
-	
+
 	public bool captureUsingScreenshot = false;
-	
+
 	public enum Supersample
 	{
 		None = 1,
@@ -37,7 +37,7 @@ public class BeautyShot : MonoBehaviour
 		Sixteen = 16,
 		Wtf = 32
 	};
-	
+
 	public Supersample supersampleScreenshot = Supersample.None;
 
 	void Start()
@@ -84,7 +84,7 @@ public class BeautyShot : MonoBehaviour
 		return _result.EncodeToPNG();
 	}
 #endif
-	
+
 #if	UNITY_EDITOR
 	void OnPostRender()
 	{
@@ -107,7 +107,7 @@ public class BeautyShot : MonoBehaviour
 
 		if( Time.frameCount % frameRate == 0 )
 			Debug.Log( string.Format( "{0} second rendered, {1} total frames.", Time.frameCount / Time.captureFramerate, Time.frameCount ) );
-		
+
 		if( Time.frameCount > numFrames )
 		{
 			Debug.Log( string.Format( "Capture done, {0} second rendered, {1} total frames.", Time.frameCount / Time.captureFramerate, Time.frameCount ) );

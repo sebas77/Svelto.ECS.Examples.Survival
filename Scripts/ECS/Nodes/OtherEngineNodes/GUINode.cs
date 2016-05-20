@@ -1,11 +1,11 @@
-using GUIComponents;
+using Components.HUD;
 using Svelto.ES;
 
-namespace GUIEngines
+namespace Nodes.HUD
 {
-    public class GUINode: INode
+    public class HUDNode: NodeWithID
     {
-        public IAnimatorHUDComponent    HUDAnimator; 
+        public IAnimatorHUDComponent    HUDAnimator;
         public IDamageHUDComponent      damageImageComponent;
         public IHealthSliderComponent   healthSliderComponent;
         public IScoreComponent          scoreComponent;
