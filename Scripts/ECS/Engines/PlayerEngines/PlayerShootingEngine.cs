@@ -31,6 +31,11 @@ namespace Engines.Player
 
                 _playerTargets[targetNode.ID] = targetNode;
             }
+            else
+            if (obj is PlayerNode)
+            {
+                (obj as PlayerNode).healthComponent.isDead.subscribers += OnPlayerDead;
+            }
         }
 
         public void Remove(INode obj)
@@ -46,6 +51,16 @@ namespace Engines.Player
 
                 _playerTargets.Remove(targetNode.ID);
             }
+            else
+            if (obj is PlayerNode)
+            {
+                (obj as PlayerNode).healthComponent.isDead.subscribers -= OnPlayerDead;
+            }
+        }
+
+        private void OnPlayerDead(int ID, int arg2)
+        {
+            _playerGunNode = null;
         }
 
         public void Tick(float deltaSec)
@@ -90,12 +105,12 @@ namespace Engines.Player
         void OnTargetDead(int senderHealth, int targetID)
         {
             var playerTarget = _playerTargets[targetID];
-
             var targetType = playerTarget.targetTypeComponent.targetType;
+
             _enemyKilledObservable.Dispatch(ref targetType);
         }
 
-        readonly Type[] _acceptedNodes = { typeof(PlayerTargetNode), typeof(PlayerGunNode) };
+        readonly Type[] _acceptedNodes = { typeof(PlayerTargetNode), typeof(PlayerGunNode), typeof(PlayerNode) };
 
         PlayerGunNode                                   _playerGunNode;
         Dictionary<int, PlayerTargetNode>               _playerTargets = new Dictionary<int, PlayerTargetNode>();

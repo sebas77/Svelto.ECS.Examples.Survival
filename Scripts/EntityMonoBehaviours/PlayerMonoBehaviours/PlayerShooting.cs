@@ -44,7 +44,7 @@ namespace Implementators.Player
             _gunAudio = GetComponent<AudioSource> ();
             _gunLight = GetComponent<Light> ();
 
-            _targetHit = new DispatcherOnSet<int, bool>(this.GetInstanceID());
+            _targetHit = new DispatcherOnSet<int, bool>(gameObject.GetInstanceID());
         }
 
         Transform       _transform;

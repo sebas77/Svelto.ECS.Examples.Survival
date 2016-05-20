@@ -16,7 +16,7 @@ namespace Engines.Player
             _playerNode.healthComponent.isDead.subscribers += StopMovementOnDeath;
         }
 
-       override protected  void Remove(PlayerNode obj)
+        override protected  void Remove(PlayerNode obj)
         {
             _playerNode.healthComponent.isDead.subscribers -= StopMovementOnDeath;
             _playerNode = null;

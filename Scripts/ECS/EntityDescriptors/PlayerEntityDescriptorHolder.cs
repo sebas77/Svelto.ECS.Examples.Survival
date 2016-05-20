@@ -21,7 +21,6 @@ namespace EntityDescriptors.Player
 				{
 					new NodeBuilder<HUDDamageEventNode>(),
                     new NodeBuilder<PlayerNode>(),
-                    new NodeBuilder<PlayerGunNode>(),
                     new NodeBuilder<EnemyTargetNode>(),
                     new NodeBuilder<DamageNode>(),
                     new NodeBuilder<DamageSoundNode>()

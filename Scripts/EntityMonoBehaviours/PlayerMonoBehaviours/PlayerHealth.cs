@@ -28,9 +28,9 @@ namespace Implementators.Player
             // Set the initial health of the player.
             _currentHealth = startingHealth;
 
-            _isDead = new DispatcherOnChange<int, int>(this.GetInstanceID());
-            _isDamaged = new DispatcherOnChange<int, DamageInfo>(this.GetInstanceID());
-            _damageReceived = new Dispatcher<int, DamageInfo>(this.GetInstanceID());
+            _isDead = new DispatcherOnChange<int, int>(gameObject.GetInstanceID());
+            _isDamaged = new DispatcherOnChange<int, DamageInfo>(gameObject.GetInstanceID());
+            _damageReceived = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
 
         /// <summary>

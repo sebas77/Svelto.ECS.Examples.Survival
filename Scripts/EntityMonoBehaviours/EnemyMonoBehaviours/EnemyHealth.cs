@@ -41,9 +41,9 @@ namespace Implementators.Enemies
             // Setting the current health when the enemy first spawns.
             _currentHealth = startingHealth;
 
-            _damageReceived = new Dispatcher<int, DamageInfo>(this.GetInstanceID());
-            _isDead = new Dispatcher<int, int>(this.GetInstanceID());
-            _isDamaged = new Dispatcher<int, DamageInfo>(this.GetInstanceID());
+            _damageReceived = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
+            _isDead = new Dispatcher<int, int>(gameObject.GetInstanceID());
+            _isDamaged = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
 
         Dispatcher<int, DamageInfo>     _damageReceived;

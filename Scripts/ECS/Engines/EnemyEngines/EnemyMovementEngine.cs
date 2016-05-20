@@ -1,9 +1,7 @@
-using Components.Damageable;
 using Nodes.Enemies;
 using Svelto.ES;
 using Svelto.Ticker;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Engines.Enemies
@@ -51,7 +49,8 @@ namespace Engines.Enemies
             {
                 var component = enemies[i].movementComponent;
 
-                component.navMesh.SetDestination(_targetNode.targetPositionComponent.position);
+                if (component.navMesh.isActiveAndEnabled)
+                    component.navMesh.SetDestination(_targetNode.targetPositionComponent.position);
             }
         }
 
