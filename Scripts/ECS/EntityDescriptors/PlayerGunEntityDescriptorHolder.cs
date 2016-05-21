@@ -1,32 +1,28 @@
 ﻿using Svelto.ES;
-using Nodes.HUD;
 using UnityEngine;
-using Nodes.Player;
-using Nodes.Enemies;
-using Nodes.DamageableEntities;
-using Nodes.Sound;
+using Nodes.Gun;
 
 namespace EntityDescriptors.Player
 {
-	[DisallowMultipleComponent]
-	public class PlayerGunEntityDescriptorHolder:MonoBehaviour, IEntityDescriptorHolder
-	{
-		class PlayerGunEntityDescriptor : Svelto.ES.EntityDescriptor
+    class PlayerGunEntityDescriptor : EntityDescriptor
+    {
+        static private readonly INodeBuilder[] _nodesToBuild;
+
+        static PlayerGunEntityDescriptor()
 		{
-            static private readonly INodeBuilder[] _nodesToBuild;
-
-            static PlayerGunEntityDescriptor()
+			_nodesToBuild = new INodeBuilder[]
 			{
-				_nodesToBuild = new INodeBuilder[]
-				{
-					new NodeBuilder<PlayerGunNode>(),
-				};
-			}
-
-			public PlayerGunEntityDescriptor(IComponent[] componentsImplementor):base(_nodesToBuild, componentsImplementor)
-			{}
+				new NodeBuilder<GunNode>(),
+			};
 		}
 
+		public PlayerGunEntityDescriptor(IComponent[] componentsImplementor):base(_nodesToBuild, componentsImplementor)
+		{}
+	}
+
+    [DisallowMultipleComponent]
+	public class PlayerGunEntityDescriptorHolder:MonoBehaviour, IEntityDescriptorHolder
+	{
 		EntityDescriptor IEntityDescriptorHolder.BuildDescriptorType()
 		{
 			return new PlayerGunEntityDescriptor(GetComponentsInChildren<IComponent>());

@@ -64,12 +64,12 @@ namespace Engines.Enemies
             }
         }
 
-        void CheckTarget(int enemyID, bool inRange)
+        void CheckTarget(int targetID, int enemyID, bool inRange)
         {
             if (_targetNode == null)
                 return;
 
-            if (enemyID == _targetNode.ID)
+            if (targetID == _targetNode.ID)
             {
                 var enemyNode = nodesDB.QueryNode<EnemyNode>(enemyID);
                 var component = enemyNode.targetTriggerComponent;
@@ -83,6 +83,6 @@ namespace Engines.Enemies
 
         readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
 
-        EnemyTargetNode                       _targetNode;
+        EnemyTargetNode _targetNode;
     }
 }

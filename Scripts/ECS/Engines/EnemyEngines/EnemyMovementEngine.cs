@@ -43,6 +43,9 @@ namespace Engines.Enemies
 
         public void Tick(float deltaSec)
         {
+            if (_targetNode == null)
+                return;
+            
             var enemies = nodesDB.QueryNodes<EnemyNode>();
 
             for (var i = 0; i < enemies.Count; i++)

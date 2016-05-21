@@ -4,45 +4,35 @@ using Svelto.ES;
 
 namespace Engines.Health
 {
-    public class HealthEngine : SingleNodeEngine<DamageNode>, IQueryableNodeEngine
+    public class HealthEngine : SingleNodeEngine<HealthNode>, IQueryableNodeEngine
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
-        override protected void Add(DamageNode node)
+        override protected void Add(HealthNode node)
         {
             var healthComponent = node.damageEventComponent;
 
             healthComponent.damageReceived.subscribers += TriggerDamage;
         }
 
-        override protected void Remove(DamageNode node)
+        override protected void Remove(HealthNode node)
         {
             var healthComponent = node.damageEventComponent;
 
-           healthComponent.damageReceived.subscribers -= TriggerDamage;
+            healthComponent.damageReceived.subscribers -= TriggerDamage;
         }
 
         void TriggerDamage(int ID, DamageInfo damage)
         {
-            var node = nodesDB.QueryNode<DamageNode>(ID);
-
+            var node = nodesDB.QueryNode<HealthNode>(ID);
             var healthComponent = node.healthComponent;
 
             healthComponent.currentHealth -= damage.damagePerShot;
 
             if (healthComponent.currentHealth <= 0)
-                Death(node);
+                healthComponent.isDead.Dispatch();
             else
                 healthComponent.isDamaged.Dispatch(ref damage);
-        }
-
-        void Death(DamageNode node)
-        {
-            var healthComponent = node.healthComponent;
-
-            healthComponent.isDead.Dispatch();
-
-            Remove(node);
         }
     }
 }

@@ -77,6 +77,8 @@ namespace Engines.Enemies
 
         IEnumerator Sink(EnemyNode node)
         {
+            node.removeEntityComponent.removeEntity();
+
             DateTime AfterTwoSec = DateTime.UtcNow.AddSeconds(2);
 
             while (DateTime.UtcNow < AfterTwoSec)
@@ -86,7 +88,7 @@ namespace Engines.Enemies
                 yield return null;
             }
 
-            node.removeEntityComponent.removeEntity();
+            GameObject.Destroy(node.transformComponent.transform.gameObject);
         }
 
         readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };

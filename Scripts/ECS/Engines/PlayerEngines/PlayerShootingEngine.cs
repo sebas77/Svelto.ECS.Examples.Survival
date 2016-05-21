@@ -5,14 +5,15 @@ using UnityEngine;
 using Nodes.Player;
 using Components.Damageable;
 using Observables.Enemies;
+using Nodes.Gun;
 
-namespace Engines.Player
+namespace Engines.Player.Gun
 {
-    public class PlayerShootingEngine : INodesEngine, ITickable, IQueryableNodeEngine
+    public class PlayerGunShootingEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
-        public PlayerShootingEngine(EnemyKilledObservable enemyKilledObservable)
+        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable)
         {
             _enemyKilledObservable = enemyKilledObservable;
         }
@@ -21,8 +22,8 @@ namespace Engines.Player
 
         public void Add(INode obj)
         {
-            if (obj is PlayerGunNode)
-                _playerGunNode = obj as PlayerGunNode;
+            if (obj is GunNode)
+                _playerGunNode = obj as GunNode;
             else
             if (obj is PlayerTargetNode)
             {
@@ -39,7 +40,7 @@ namespace Engines.Player
 
         public void Remove(INode obj)
         {
-            if (obj is PlayerGunNode)
+            if (obj is GunNode)
                 _playerGunNode = null;
             else
             if (obj is PlayerTargetNode)
@@ -76,6 +77,7 @@ namespace Engines.Player
         {
             RaycastHit shootHit;
             var playerGunComponent = _playerGunNode.gunComponent;
+            var playerGunHitComponent = _playerGunNode.gunHitTargetComponent;
 
             playerGunComponent.timer = 0;
 
@@ -91,13 +93,13 @@ namespace Engines.Player
                     targetComponent.damageEventComponent.damageReceived.Dispatch(ref damageInfo);
 
                     playerGunComponent.lastTargetPosition = shootHit.point;
-                    playerGunComponent.targetHit.value = true;
+                    playerGunHitComponent.targetHit.value = true;
 
                     return;
                 }
             }
 
-            playerGunComponent.targetHit.value = false;
+            playerGunHitComponent.targetHit.value = false;
         }
 
         void OnTargetDead(int targetID)
@@ -108,9 +110,9 @@ namespace Engines.Player
             _enemyKilledObservable.Dispatch(ref targetType);
         }
 
-        readonly Type[] _acceptedNodes = { typeof(PlayerTargetNode), typeof(PlayerGunNode), typeof(PlayerNode) };
+        readonly Type[] _acceptedNodes = { typeof(PlayerTargetNode), typeof(GunNode), typeof(PlayerNode) };
 
-        PlayerGunNode           _playerGunNode;
+        GunNode                 _playerGunNode;
         EnemyKilledObservable   _enemyKilledObservable;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");

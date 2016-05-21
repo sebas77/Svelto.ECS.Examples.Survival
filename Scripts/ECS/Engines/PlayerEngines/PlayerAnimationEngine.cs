@@ -1,9 +1,7 @@
-using System;
 using Svelto.ES;
 using Svelto.Ticker;
 using UnitySampleAssets.CrossPlatformInput;
 using Nodes.Player;
-using Components.Damageable;
 
 namespace Engines.Player
 {
@@ -41,6 +39,7 @@ namespace Engines.Player
         void TriggerDeathAnimation(int targetID)
         {
             _playerNode.animationComponent.animation.SetTrigger("Die");
+            _playerNode.removeEntityComponent.removeEntity();
         }
 
         PlayerNode _playerNode;

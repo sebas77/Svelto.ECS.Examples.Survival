@@ -73,8 +73,6 @@ namespace Engines.Player
         void StopMovementOnDeath(int ID)
         {
             _playerNode.rigidBodyComponent.rigidbody.isKinematic = true;
-
-            Remove(_playerNode);
         }
 
         PlayerNode      _playerNode;

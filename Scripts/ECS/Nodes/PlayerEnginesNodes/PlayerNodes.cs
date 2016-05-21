@@ -13,12 +13,7 @@ namespace Nodes.Player
         public IRigidBodyComponent     rigidBodyComponent;
         public IPositionComponent      positionComponent;
         public IAnimationComponent     animationComponent;
-    }
-
-    public class PlayerGunNode : NodeWithID
-    {
-        public IGunComponent gunComponent;
-        public IGunFXComponent gunFXComponent;
+        public IRemoveEntityComponent  removeEntityComponent;
     }
 
     public class PlayerTargetNode : NodeWithID
@@ -26,5 +21,15 @@ namespace Nodes.Player
         public IDamageEventComponent    damageEventComponent;
         public IHealthComponent         healthComponent;
         public ITargetTypeComponent     targetTypeComponent;
+    }
+}
+
+namespace Nodes.Gun
+{
+    public class GunNode : NodeWithID
+    {
+        public IGunAttributesComponent   gunComponent;
+        public IGunFXComponent           gunFXComponent;
+        public IGunHitTargetComponent    gunHitTargetComponent;
     }
 }

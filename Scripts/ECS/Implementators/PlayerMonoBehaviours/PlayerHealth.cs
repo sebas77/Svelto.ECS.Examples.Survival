@@ -1,10 +1,12 @@
+using System;
 using Components.Base;
 using Components.Damageable;
+using Svelto.ES;
 using UnityEngine;
 
 namespace Implementators.Player
 {
-    public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IDamageEventComponent
+    public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IDamageEventComponent, IRemoveEntityComponent
     {
         public int startingHealth = 100;                            // The amount of health the player starts the game with.
         public AudioClip deathClip;                                 // The audio clip to play when the player dies.
@@ -20,6 +22,8 @@ namespace Implementators.Player
         AudioSource IDamageSoundComponent.audioSource   { get { return _playerAudio; } }
         AudioClip   IDamageSoundComponent.death         { get { return deathClip; } }
         AudioClip   IDamageSoundComponent.damage        { get { return damageClip; } }
+
+        public Action removeEntity { get; set; }
 
         void Awake()
         {

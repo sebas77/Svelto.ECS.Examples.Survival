@@ -31,7 +31,7 @@ namespace Components.Base
     public interface IDamageSoundComponent: IComponent
     {
         AudioSource audioSource { get; }
-        AudioClip   death { get;  }
-        AudioClip   damage { get;  }
+        AudioClip   death       { get; }
+        AudioClip   damage      { get; }
     }
 }

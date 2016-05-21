@@ -4,19 +4,19 @@ using UnityEngine;
 
 namespace Implementators.Player
 {
-    public class PlayerShooting : MonoBehaviour, IGunComponent, IGunFXComponent
+    public class PlayerShooting : MonoBehaviour, IGunAttributesComponent, IGunFXComponent, IGunHitTargetComponent
     {
         public int damagePerShot = 20;                  // The damage inflicted by each bullet.
         public float timeBetweenBullets = 0.15f;        // The time between each shot.
         public float range = 100f;                      // The distance the gun can fire.
 
-        float IGunComponent.timeBetweenBullets { get { return timeBetweenBullets; } }
-        float IGunComponent.range { get { return range; } }
-        int IGunComponent.damagePerShot { get { return damagePerShot; } }
-        DispatcherOnSet<int, bool> IGunComponent.targetHit { get { return _targetHit; } }
-        Vector3 IGunComponent.lastTargetPosition { set { _lastTargetPosition = value; } get { return _lastTargetPosition; } }
-        float IGunComponent.timer { get; set; }
-        Ray IGunComponent.shootRay
+        float IGunAttributesComponent.timeBetweenBullets { get { return timeBetweenBullets; } }
+        float IGunAttributesComponent.range { get { return range; } }
+        int IGunAttributesComponent.damagePerShot { get { return damagePerShot; } }
+        DispatcherOnSet<int, bool> IGunHitTargetComponent.targetHit { get { return _targetHit; } }
+        Vector3 IGunAttributesComponent.lastTargetPosition { set { _lastTargetPosition = value; } get { return _lastTargetPosition; } }
+        float IGunAttributesComponent.timer { get; set; }
+        Ray IGunAttributesComponent.shootRay
         {
             get
             {

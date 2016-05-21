@@ -8,23 +8,23 @@ namespace Implementators.Enemies
     {
         public GameObject ID { get { return gameObject; } }
 
-        public event Action<int, bool> entityInRange;
+        public event Action<int, int, bool> entityInRange;
 
-        bool IEnemyTriggerComponent.targetInRange { set { _playerInRange = value; } }
-        bool IEnemyAttackComponent.targetInRange { get { return _playerInRange; } }
+        bool IEnemyTriggerComponent.targetInRange { set { _targetInRange = value; } }
+        bool IEnemyAttackComponent.targetInRange { get { return _targetInRange; } }
 
         void OnTriggerEnter(Collider other)
         {
             if (entityInRange != null)
-                entityInRange(other.gameObject.GetInstanceID(), true);
+                entityInRange(other.gameObject.GetInstanceID(), gameObject.GetInstanceID(), true);
         }
 
         void OnTriggerExit(Collider other)
         {
             if (entityInRange != null)
-                entityInRange(other.gameObject.GetInstanceID(), false);
+                entityInRange(other.gameObject.GetInstanceID(), gameObject.GetInstanceID(), false);
         }
 
-        bool    _playerInRange;
+        bool    _targetInRange;
     }
 }

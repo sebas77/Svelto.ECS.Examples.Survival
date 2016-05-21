@@ -3,7 +3,7 @@ using Svelto.ES;
 using Nodes.Sound;
 using Components.Damageable;
 
-namespace Engines.Sound
+namespace Engines.Sound.Damage
 {
     public class DamageSoundEngine : SingleNodeEngine<DamageSoundNode>, IQueryableNodeEngine
     {
@@ -27,18 +27,18 @@ namespace Engines.Sound
 
        void TriggerDeathSound(int targetID)
        {
-            var playerAudioNode =  nodesDB.QueryNode<DamageSoundNode>(targetID);
-            var playerAudio = playerAudioNode.audioComponent;
+            var audioNode =  nodesDB.QueryNode<DamageSoundNode>(targetID);
+            var audioComponent = audioNode.audioComponent;
 
-            playerAudio.audioSource.PlayOneShot(playerAudio.death);
+            audioComponent.audioSource.PlayOneShot(audioComponent.death);
        }
 
        void TriggerDamageAudio(int sender, DamageInfo isDamaged)
        {
-           var playerAudioNode = nodesDB.QueryNode<DamageSoundNode>(sender);
-           var playerAudio = playerAudioNode.audioComponent;
+           var audioNode = nodesDB.QueryNode<DamageSoundNode>(sender);
+           var audioComponent = audioNode.audioComponent;
 
-           playerAudio.audioSource.PlayOneShot(playerAudio.damage);
+           audioComponent.audioSource.PlayOneShot(audioComponent.damage);
        }
     }
 }

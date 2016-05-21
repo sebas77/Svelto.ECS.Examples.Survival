@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Components.Gun
 {
-	public interface IGunComponent: IComponent
+	public interface IGunAttributesComponent: IComponent
     {
         float   timeBetweenBullets { get; }
         Ray     shootRay { get; }
@@ -11,7 +11,10 @@ namespace Components.Gun
         int     damagePerShot { get; }
         float   timer { get; set; }
         Vector3 lastTargetPosition { get; set; }
+    }
 
+    public interface IGunHitTargetComponent : IComponent
+    {
         DispatcherOnSet<int, bool> targetHit { get; }
     }
 

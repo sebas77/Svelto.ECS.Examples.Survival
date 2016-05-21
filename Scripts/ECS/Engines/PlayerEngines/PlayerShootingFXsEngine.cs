@@ -1,36 +1,35 @@
-using System;
 using Svelto.ES;
 using UnityEngine;
 using System.Collections;
 using Svelto.Tasks;
-using Nodes.Player;
+using Nodes.Gun;
 
-namespace Engines.Player
+namespace Engines.Player.Gun
 {
-    public class PlayerShootingFXsEngine : SingleNodeEngine<PlayerGunNode>, IQueryableNodeEngine
+    public class PlayerGunShootingFXsEngine : SingleNodeEngine<GunNode>, IQueryableNodeEngine
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
-        public PlayerShootingFXsEngine()
+        public PlayerGunShootingFXsEngine()
         {
             _taskRoutine = TaskRunner.Instance.CreateTask(DisableFXAfterTime);
         }
 
-        override protected void Add(PlayerGunNode playerGunNode)
+        override protected void Add(GunNode playerGunNode)
         {
             _playerGunNode = playerGunNode;
-            playerGunNode.gunComponent.targetHit.subscribers += Shoot;
+            playerGunNode.gunHitTargetComponent.targetHit.subscribers += Shoot;
         }
 
-        override protected  void Remove(PlayerGunNode playerGunNode)
+        override protected  void Remove(GunNode playerGunNode)
         {
             _playerGunNode = null;
-            playerGunNode.gunComponent.targetHit.subscribers -= Shoot;
+            playerGunNode.gunHitTargetComponent.targetHit.subscribers -= Shoot;
         }
 
         void Shoot(int ID, bool targetHasBeenHit)
         {
-            var playerGunNode = nodesDB.QueryNode<PlayerGunNode>(ID);
+            var playerGunNode = nodesDB.QueryNode<GunNode>(ID);
 
             var gunFXComponent = playerGunNode.gunFXComponent;
 
@@ -84,7 +83,7 @@ namespace Engines.Player
             fxComponent.light.enabled = false;
         }
 
-        TaskRoutine     _taskRoutine;
-        PlayerGunNode   _playerGunNode;
+        TaskRoutine    _taskRoutine;
+        GunNode        _playerGunNode;
     }
 }

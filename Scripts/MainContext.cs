@@ -2,7 +2,8 @@ using Engines.Enemies;
 using Engines.Health;
 using Engines.HUD;
 using Engines.Player;
-using Engines.Sound;
+using Engines.Player.Gun;
+using Engines.Sound.Damage;
 using Observables.Enemies;
 using Observers.HUD;
 using Svelto.Context;
@@ -31,16 +32,18 @@ public class Main : ICompositionRoot
 
 			AddEngine(new PlayerMovementEngine());
             AddEngine(new PlayerAnimationEngine());
-            AddEngine(new PlayerShootingEngine(enemyKilledObservable));
-            AddEngine(new PlayerShootingFXsEngine());
+
+            AddEngine(new PlayerGunShootingEngine(enemyKilledObservable));
+            AddEngine(new PlayerGunShootingFXsEngine());
 
             AddEngine(new EnemySpawnerEngine(factory, _entityFactory));
             AddEngine(new EnemyAttackEngine());
             AddEngine(new EnemyMovementEngine());
             AddEngine(new EnemyAnimationEngine());
 
-            AddEngine(new DamageSoundEngine());
             AddEngine(new HealthEngine());
+            AddEngine(new DamageSoundEngine());
+
             AddEngine(new HUDEngine());
             AddEngine(new ScoreEngine(scoreOnEnemyKilledObserver));
         }

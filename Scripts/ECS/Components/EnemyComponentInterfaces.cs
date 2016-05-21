@@ -31,7 +31,7 @@ namespace Components.Enemy
 
     public interface IEnemyTriggerComponent: IComponent
     {
-        event System.Action<int, bool> entityInRange;
+        event System.Action<int, int, bool> entityInRange;
 
         bool targetInRange { set; }
     }
