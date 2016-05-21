@@ -28,11 +28,12 @@ namespace Engines.Player
             playerGunNode.gunComponent.targetHit.subscribers -= Shoot;
         }
 
-        private void Shoot(int ID, bool targetHasBeenHit)
+        void Shoot(int ID, bool targetHasBeenHit)
         {
             var playerGunNode = nodesDB.QueryNode<PlayerGunNode>(ID);
 
             var gunFXComponent = playerGunNode.gunFXComponent;
+
             // Play the gun shot audioclip.
             gunFXComponent.audio.Play ();
 

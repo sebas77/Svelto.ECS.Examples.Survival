@@ -1,10 +1,8 @@
-using System;
 using Svelto.ES;
 using Svelto.Ticker;
 using UnitySampleAssets.CrossPlatformInput;
 using UnityEngine;
 using Nodes.Player;
-using Components.Damageable;
 
 namespace Engines.Player
 {
@@ -16,7 +14,7 @@ namespace Engines.Player
             _playerNode.healthComponent.isDead.subscribers += StopMovementOnDeath;
         }
 
-        override protected  void Remove(PlayerNode obj)
+        override protected void Remove(PlayerNode obj)
         {
             _playerNode.healthComponent.isDead.subscribers -= StopMovementOnDeath;
             _playerNode = null;
@@ -30,7 +28,7 @@ namespace Engines.Player
             Turning();
         }
 
-        private void Movement()
+        void Movement()
         {
             // Store the input axes.
             float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
@@ -47,7 +45,7 @@ namespace Engines.Player
             _playerNode.rigidBodyComponent.rigidbody.MovePosition(_playerNode.positionComponent.position + movement);
         }
 
-        private void Turning()
+        void Turning()
         {
             // Create a ray from the mouse cursor on screen in the direction of the camera.
             Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -72,7 +70,7 @@ namespace Engines.Player
             }
         }
 
-        void StopMovementOnDeath(int ID, int value)
+        void StopMovementOnDeath(int ID)
         {
             _playerNode.rigidBodyComponent.rigidbody.isKinematic = true;
 

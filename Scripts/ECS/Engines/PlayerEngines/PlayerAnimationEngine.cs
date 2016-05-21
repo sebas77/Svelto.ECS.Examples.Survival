@@ -7,24 +7,19 @@ using Components.Damageable;
 
 namespace Engines.Player
 {
-    public class PlayerAnimationEngine : INodesEngine, IPhysicallyTickable
+    public class PlayerAnimationEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable
     {
-        public Type[] AcceptedNodes()
+        protected override void Add(PlayerNode playerNode)
         {
-            return _acceptedNodes;
-        }
-
-        public void Add(INode obj)
-        {
-            _playerNode = obj as PlayerNode;
+            _playerNode = playerNode;
 
             _playerNode.healthComponent.isDead.subscribers += TriggerDeathAnimation;
         }
 
-        public void Remove(INode obj)
+        protected override void Remove(PlayerNode playerNode)
         {
-            if (_playerNode.healthComponent != null)
-                _playerNode.healthComponent.isDead.subscribers -= TriggerDeathAnimation;
+            if (playerNode.healthComponent != null)
+                playerNode.healthComponent.isDead.subscribers -= TriggerDeathAnimation;
 
             _playerNode = null;
         }
@@ -43,12 +38,10 @@ namespace Engines.Player
             _playerNode.animationComponent.animation.SetBool("IsWalking", walking);
         }
 
-        void TriggerDeathAnimation(int sender, int targetID)
+        void TriggerDeathAnimation(int targetID)
         {
             _playerNode.animationComponent.animation.SetTrigger("Die");
         }
-
-        readonly Type[] _acceptedNodes = { typeof(PlayerNode) };
 
         PlayerNode _playerNode;
     }

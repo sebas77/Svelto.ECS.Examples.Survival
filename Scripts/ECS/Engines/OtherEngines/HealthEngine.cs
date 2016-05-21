@@ -22,7 +22,7 @@ namespace Engines.Health
            healthComponent.damageReceived.subscribers -= TriggerDamage;
         }
 
-        private void TriggerDamage(int ID, DamageInfo damage)
+        void TriggerDamage(int ID, DamageInfo damage)
         {
             var node = nodesDB.QueryNode<DamageNode>(ID);
 
@@ -39,9 +39,8 @@ namespace Engines.Health
         void Death(DamageNode node)
         {
             var healthComponent = node.healthComponent;
-            var ID = node.ID;
 
-            healthComponent.isDead.Dispatch(ref ID);
+            healthComponent.isDead.Dispatch();
 
             Remove(node);
         }

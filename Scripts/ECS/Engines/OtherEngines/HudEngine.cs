@@ -42,7 +42,17 @@ namespace Engines.HUD
             }
         }
 
-        private void OnDamageEvent(int sender, DamageInfo damaged)
+        public void Tick(float deltaSec)
+        {
+            if (_guiNode == null) return;
+
+            var damageComponent = _guiNode.damageImageComponent;
+            var damageImage = damageComponent.damageImage;
+
+            damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * deltaSec);
+        }
+
+        void OnDamageEvent(int sender, DamageInfo damaged)
         {
             var damageComponent = _guiNode.damageImageComponent;
             var damageImage = damageComponent.damageImage;
@@ -52,19 +62,9 @@ namespace Engines.HUD
             _guiNode.healthSliderComponent.healthSlider.value = nodesDB.QueryNode<HUDDamageEventNode>(sender).healthComponent.currentHealth;
         }
 
-        private void OnDeadEvent(int healthSender, int targetID)
+        void OnDeadEvent(int targetID)
         {
             _guiNode.HUDAnimator.hudAnimator.SetTrigger("GameOver");
-        }
-
-        public void Tick(float deltaSec)
-        {
-            if (_guiNode == null) return;
-
-            var damageComponent = _guiNode.damageImageComponent;
-            var damageImage = damageComponent.damageImage;
-
-            damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * deltaSec);
         }
 
         readonly Type[] _acceptedNodes = { typeof(HUDNode), typeof(HUDDamageEventNode) };

@@ -8,7 +8,7 @@ namespace Components.Damageable
         int             currentHealth   { get; set; }
         bool            hasBeenDamaged  { get; set; }
 
-        Dispatcher<int, int>        isDead          { get; }
+        Dispatcher<int>             isDead          { get; }
         Dispatcher<int, DamageInfo> isDamaged       { get; }
     }
 

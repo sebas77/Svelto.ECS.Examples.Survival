@@ -18,7 +18,7 @@ namespace Implementators.Enemies
         int   IHealthComponent.currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
         bool  IHealthComponent.hasBeenDamaged { get; set; }
 
-        Dispatcher<int, int>           IHealthComponent.isDead { get { return _isDead; } }
+        Dispatcher<int>                IHealthComponent.isDead { get { return _isDead; } }
         Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged { get { return _isDamaged; } }
 
         Animator IAnimationComponent.animation { get { return _anim; } }
@@ -42,13 +42,13 @@ namespace Implementators.Enemies
             _currentHealth = startingHealth;
 
             _damageReceived = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
-            _isDead = new Dispatcher<int, int>(gameObject.GetInstanceID());
+            _isDead = new Dispatcher<int>(gameObject.GetInstanceID());
             _isDamaged = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
 
         Dispatcher<int, DamageInfo>     _damageReceived;
-        Dispatcher<int, int>                 _isDead;
-        Dispatcher<int, DamageInfo>          _isDamaged;
+        Dispatcher<int>                 _isDead;
+        Dispatcher<int, DamageInfo>     _isDamaged;
 
         Animator _anim;                       // Reference to the animator.
         AudioSource _enemyAudio;              // Reference to the audio source.

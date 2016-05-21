@@ -1,21 +1,16 @@
 using Components.Damageable;
-using Components.Enemy;
 using Nodes.Enemies;
-using Svelto.DataStructures;
 using Svelto.ES;
 using Svelto.Ticker;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Engines.Enemies
 {
-    public class EnemyAttackEngine : INodesEngine, ITickable
+    public class EnemyAttackEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {
-        public Type[] AcceptedNodes()
-        {
-            return _acceptedNodes;
-        }
+        public IEngineNodeDB nodesDB { set; private get; }
+        public Type[] AcceptedNodes() { return _acceptedNodes; }
 
         public void Add(INode obj)
         {
@@ -23,13 +18,7 @@ namespace Engines.Enemies
             {
                 EnemyNode enemyNode = (obj as EnemyNode);
 
-                Action<int, bool> callback = delegate (int ID, bool inRange) { CheckTarget(enemyNode.targetTriggerComponent, ID, inRange); };
-
-                _handlers[enemyNode.ID] = callback;
-
-                enemyNode.targetTriggerComponent.entityInRange += callback;
-
-                _enemiesAttackList.Add(enemyNode);
+                enemyNode.targetTriggerComponent.entityInRange += CheckTarget;
             }
             else
                 _targetNode = obj as EnemyTargetNode;
@@ -41,11 +30,7 @@ namespace Engines.Enemies
             {
                 EnemyNode enemyNode = (obj as EnemyNode);
 
-                _enemiesAttackList.Remove(enemyNode);
-
-                enemyNode.targetTriggerComponent.entityInRange -= _handlers[enemyNode.ID];
-
-                _handlers.Remove(enemyNode.ID);
+                enemyNode.targetTriggerComponent.entityInRange -= CheckTarget;
             }
             else
                 _targetNode = null;
@@ -53,9 +38,11 @@ namespace Engines.Enemies
 
         public void Tick(float deltaSec)
         {
-            for (int enemyIndex = _enemiesAttackList.Count - 1; enemyIndex >= 0 ; --enemyIndex)
+            var enemiesAttackList = nodesDB.QueryNodes<EnemyNode>();
+
+            for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0 ; --enemyIndex)
             {
-                var enemyAttackNode = _enemiesAttackList[enemyIndex];
+                var enemyAttackNode = enemiesAttackList[enemyIndex];
 
                 if (enemyAttackNode.attackComponent.targetInRange == true)
                 {
@@ -77,13 +64,16 @@ namespace Engines.Enemies
             }
         }
 
-        void CheckTarget(IEnemyTriggerComponent component, int enemyID, bool inRange)
+        void CheckTarget(int enemyID, bool inRange)
         {
             if (_targetNode == null)
                 return;
 
             if (enemyID == _targetNode.ID)
             {
+                var enemyNode = nodesDB.QueryNode<EnemyNode>(enemyID);
+                var component = enemyNode.targetTriggerComponent;
+
                 if (inRange)
                     component.targetInRange = true;
                 else
@@ -94,8 +84,5 @@ namespace Engines.Enemies
         readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
 
         EnemyTargetNode                       _targetNode;
-
-        FasterList<EnemyNode>                 _enemiesAttackList = new FasterList<EnemyNode>();
-        Dictionary<int, Action<int, bool>>    _handlers = new Dictionary<int, Action<int, bool>>();
     }
 }

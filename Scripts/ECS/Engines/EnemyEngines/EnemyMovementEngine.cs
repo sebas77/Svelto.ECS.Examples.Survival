@@ -54,9 +54,9 @@ namespace Engines.Enemies
             }
         }
 
-        void StopEnemyOnDeath(int sender, int targetID)
+        void StopEnemyOnDeath(int targetID)
         {
-            EnemyNode node = nodesDB.QueryNode<EnemyNode>(sender);
+            EnemyNode node = nodesDB.QueryNode<EnemyNode>(targetID);
 
             node.movementComponent.navMesh.enabled = false;
             var capsuleCollider = node.movementComponent.capsuleCollider;

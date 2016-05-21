@@ -14,12 +14,12 @@ namespace Implementators.Player
         bool IHealthComponent.hasBeenDamaged  { get; set; }
 
         Dispatcher<int, DamageInfo>    IDamageEventComponent.damageReceived { get { return _damageReceived; } }
-        Dispatcher<int, int>           IHealthComponent.isDead         { get { return _isDead; } }
-        Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged { get { return _isDamaged; } }
+        Dispatcher<int>                IHealthComponent.isDead              { get { return _isDead; } }
+        Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged           { get { return _isDamaged; } }
 
-        AudioSource IDamageSoundComponent.audioSource { get { return _playerAudio; } }
-        AudioClip   IDamageSoundComponent.death       { get { return deathClip; } }
-        AudioClip   IDamageSoundComponent.damage { get { return damageClip; } }
+        AudioSource IDamageSoundComponent.audioSource   { get { return _playerAudio; } }
+        AudioClip   IDamageSoundComponent.death         { get { return deathClip; } }
+        AudioClip   IDamageSoundComponent.damage        { get { return damageClip; } }
 
         void Awake()
         {
@@ -28,7 +28,7 @@ namespace Implementators.Player
             // Set the initial health of the player.
             _currentHealth = startingHealth;
 
-            _isDead = new DispatcherOnChange<int, int>(gameObject.GetInstanceID());
+            _isDead = new Dispatcher<int>(gameObject.GetInstanceID());
             _isDamaged = new DispatcherOnChange<int, DamageInfo>(gameObject.GetInstanceID());
             _damageReceived = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
@@ -44,7 +44,7 @@ namespace Implementators.Player
         int                 _currentHealth;
         AudioSource         _playerAudio;                                    // Reference to the AudioSource component.
 
-        Dispatcher<int, int>         _isDead;
+        Dispatcher<int>              _isDead;
         Dispatcher<int, DamageInfo>  _isDamaged;
         Dispatcher<int, DamageInfo>  _damageReceived;
     }

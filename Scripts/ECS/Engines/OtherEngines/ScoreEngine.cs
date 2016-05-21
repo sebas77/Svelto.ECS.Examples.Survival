@@ -33,7 +33,7 @@ namespace Engines.HUD
             }
         }
 
-        Type[] _acceptedNodes = new Type[1] { typeof(HUDNode) };
+        readonly Type[] _acceptedNodes = { typeof(HUDNode) };
 
         HUDNode _guiNode;
     }

@@ -7,6 +7,8 @@ namespace Engines.Sound
 {
     public class DamageSoundEngine : SingleNodeEngine<DamageSoundNode>, IQueryableNodeEngine
     {
+        public IEngineNodeDB nodesDB { set; private get; }
+
         override protected void Add(DamageSoundNode node)
         {
             var healthComponent = (node as DamageSoundNode).healthComponent;
@@ -23,9 +25,9 @@ namespace Engines.Sound
             healthComponent.isDamaged.subscribers -= TriggerDamageAudio;
         }
 
-       void TriggerDeathSound(int sender, int targetID)
+       void TriggerDeathSound(int targetID)
        {
-            var playerAudioNode =  nodesDB.QueryNode<DamageSoundNode>(sender);
+            var playerAudioNode =  nodesDB.QueryNode<DamageSoundNode>(targetID);
             var playerAudio = playerAudioNode.audioComponent;
 
             playerAudio.audioSource.PlayOneShot(playerAudio.death);
@@ -38,7 +40,5 @@ namespace Engines.Sound
 
            playerAudio.audioSource.PlayOneShot(playerAudio.damage);
        }
-
-       public IEngineNodeDB nodesDB { set; private get; }
     }
 }

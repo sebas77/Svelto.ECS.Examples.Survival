@@ -9,6 +9,8 @@ namespace Engines.Enemies
 {
     public class EnemyAnimationEngine : INodesEngine, IQueryableNodeEngine
     {
+        public IEngineNodeDB nodesDB { set; private get; }
+
         public Type[] AcceptedNodes()
         {
             return _acceptedNodes;
@@ -52,7 +54,7 @@ namespace Engines.Enemies
             node.vfxComponent.hitParticles.Play();
         }
 
-        void OnTargetDead(int sender, int targetID)
+        void OnTargetDead(int targetID)
         {
             var nodes = nodesDB.QueryNodes<EnemyNode>();
 
@@ -64,9 +66,9 @@ namespace Engines.Enemies
             }
         }
 
-        void TriggerDeathAnimation(int sender, int targetID)
+        void TriggerDeathAnimation(int targetID)
         {
-            var node = nodesDB.QueryNode<EnemyNode>(sender);
+            var node = nodesDB.QueryNode<EnemyNode>(targetID);
 
             node.animationComponent.animation.SetTrigger("Dead");
 
@@ -88,7 +90,5 @@ namespace Engines.Enemies
         }
 
         readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
-
-        public IEngineNodeDB nodesDB { set; private get; }
     }
 }

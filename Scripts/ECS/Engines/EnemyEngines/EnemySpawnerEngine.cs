@@ -78,9 +78,9 @@ namespace Engines.Enemies
             }
         }
 
-        readonly Type[] _acceptedNodes = { typeof(EnemySpawningNode) };
+        readonly Type[]                     _acceptedNodes = { typeof(EnemySpawningNode) };
         FasterList<EnemySpawnerData>        _enemiestoSpawn = new FasterList<EnemySpawnerData>();
         Svelto.Factories.IGameObjectFactory _factory;
-        IEntityFactory _entityFactory;
+        IEntityFactory                      _entityFactory;
     }
 }
