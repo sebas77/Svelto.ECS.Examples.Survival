@@ -7,4 +7,4 @@ Most of the source code has been rewritten to work with the ECS framework. You s
 
 The Survival Demo is compatible only with Unity 5.3
 
-*Note: In this demo I extensively use explicit interface implementation. While I like them because the make the code clearer to read, I later found out that explicit implemented methods are marked as virtual. This could potentially impact the performance of the application, so it's better avoid it. It would be too much work to change the example code, so you have been warned.*
+*Note: In this demo I extensively use explicit interface implementations. While I like them because they make the code clearer to read, I later found out that explicit implemented methods are marked as virtual. This could potentially impact the performance of the application, so it's better avoid it. It would be too much work to change the example code, so you have been warned.*
