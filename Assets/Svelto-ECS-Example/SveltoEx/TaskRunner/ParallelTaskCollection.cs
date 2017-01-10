@@ -1,60 +1,56 @@
 #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_IPHONE || UNITY_ANDROID || UNITY_EDITOR
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using UnityEngine;
+using System.Collections.Generic;
+using Svelto.Tasks.Internal;
 
 namespace Svelto.Tasks
 {
-	public class WWWEnumerator:IEnumerator
-	{
-		WWW _www;
-
-		public WWWEnumerator(WWW www)
-		{
-			_www = www;
-		}
-
-		public object Current	{ get { return _www; }}
-
-		public bool MoveNext ()
-		{
-			return _www.isDone == false;
-		}
-
-		public void Reset ()
-		{
-		}
-	}
-
-	public class ParallelTaskCollection: TaskCollection
+    public class ParallelTaskCollection: TaskCollection, IEnumerator
     {
         public event Action		onComplete;
-
+#if TO_IMPLEMENT_PROPERLY
         override public float progress { get { return _progress + _subprogress; } }
+#endif 
+        public ParallelTaskCollection()
+        {}
 
-        public ParallelTaskCollection():base()
+        public ParallelTaskCollection(int initialSize):base(initialSize)
+        { }
+
+        public ParallelTaskCollection(IEnumerator[] ptasks)
         {
-			_listOfStacks = new List<Stack<IEnumerator>>();
-		}
+            for (int i = 0; i < ptasks.Length; i++)
+                Add(ptasks[i]);
+        }
 
-		override public IEnumerator GetEnumerator()
-		{
-			isRunning = true;
+        new public void Reset()
+        {
+            base.Reset();
+            _index = 0;
+        }
 
-			_listOfStacks.Clear();
+        public bool MoveNext()
+        {
+            isRunning = true;
+            
+            if (RunTasks()) return true;
+            
+            isRunning = false;
+            
+            if (onComplete != null)
+                onComplete();
 
-			foreach (IEnumerator enumerator in registeredEnumerators)
+            Reset();
+
+            return false;
+        }
+
+        bool RunTasks()
+        {
+            while (_listOfStacks.Count > 0)
             {
-				Stack<IEnumerator> stack = new Stack<IEnumerator>();
-
-				stack.Push(enumerator);
-
-				_listOfStacks.Add(stack);
-			}
-
-			while (_listOfStacks.Count > 0)
-			{
+#if TO_IMPLEMENT_PROPERLY   
                 _subprogress = 0;
 
                 for (int i = 0; i < _listOfStacks.Count; ++i)
@@ -70,62 +66,86 @@ namespace Svelto.Tasks
                     }
                 }
 
-                _subprogress /= (float)registeredEnumerators.Count;
+                _subprogress /= registeredEnumerators.Count;
+#endif
+                for (int index = _index; index < _listOfStacks.Count; ++index)
+                {
+                    Stack<IEnumerator> stack = _listOfStacks[index];
 
-				for (int i = 0; i < _listOfStacks.Count; ++i)
-				{
-					Stack<IEnumerator> stack = _listOfStacks[i];
-
-					if (stack.Count > 0)
-		            {
-		                IEnumerator ce = stack.Peek(); //without popping it.
+                    if (stack.Count > 0)
+                    {
+                        IEnumerator ce = stack.Peek(); //without popping it.
 
                         if (ce.MoveNext() == false)
-                        {
                             stack.Pop(); //now it can be popped
-                        }
                         else //ok the iteration is not over
                         {
-                            if (ce.Current != null && ce.Current != ce)
+                            _current = ce.Current;
+
+                            if (_current == ce)
+                                throw new Exception("An enumerator returning itself is not supported");
+
+                            if (_current != null && _current != Break.It)
                             {
-                                if (ce.Current is IEnumerable)	//what we got from the enumeration is an IEnumerable?
-                                    stack.Push(((IEnumerable)ce.Current).GetEnumerator());
-                                else
-                                if (ce.Current is IEnumerator)	//what we got from the enumeration is an IEnumerator?
-                                    stack.Push(ce.Current as IEnumerator);
-                                else
-                                if (ce.Current is WWW)
-                                    stack.Push(new WWWEnumerator(ce.Current as WWW));
-                                else
-                             	if (ce.Current is YieldInstruction)
-                                    yield return ce.Current; //YieldInstructions are special cases and must be handled by Unity. They cannot be wrapped and pushed into a stack and it will pause a parallel execution
+                                IEnumerator result = StandardEnumeratorCheck(_current);
+                                if (result != null)
+                                {
+                                    stack.Push(result);
+
+                                    continue;
+                                }
+                                    
+                                //in all the cases above, the task collection is not meant to yield
                             }
+                            else 
+                            if (_current == Break.It)
+                                return false;
+                            else
+                            //an Enumerator that must be handled by Unity
+                            //(www, asyncOp) inherits from ParalleEnumerator
+                            //to instruct the runners that it doesn't have
+                            //to wait for unity to finish does instructions.
+                            //It makes sense only for runners that support
+                            //unity operations, otherwise it will be ignored
+                            if (ce is IParallelEnumerator)
+                            {
+                                _markUP.Current = _current;
+                                _current = _markUP;
+                            }
+
+                            _index = index + 1;
+
+                            return true;
                         }
-		            }
-					else
-					{
-						_listOfStacks[i] = _listOfStacks[_listOfStacks.Count - 1];
-						_listOfStacks.RemoveAt(_listOfStacks.Count - 1);
-
-                        _progress = (float)(registeredEnumerators.Count - _listOfStacks.Count) / (float)registeredEnumerators.Count;
+                    }
+                    else
+                    {
+                        _listOfStacks.UnorderredRemoveAt(index--);
+#if TO_IMPLEMENT_PROPERLY
+                        _progress = (registeredEnumerators.Count - _listOfStacks.Count) / (float)registeredEnumerators.Count;
                         _subprogress = 0.0f;
+#endif
+                    }
+                }
 
-						i--;
-					}
-				}
-
-                yield return null;
-			}
-
-			isRunning = false;
-
-			if (onComplete != null)
-				onComplete();
+                _index = 0;
+            }
+            return false;
         }
 
-		private float 					 _progress;
-		private List<Stack<IEnumerator>> _listOfStacks;
-        private float                    _subprogress;
+        public object Current
+        {
+            get { return _current; }
+        }
+
+        ParallelYield   _markUP = new ParallelYield(); 
+
+        object          _current;
+        int             _index; 
+#if TO_IMPLEMENT_PROPERLY
+        float 			_progress;
+        float           _subprogress;
+#endif
     }
 }
 #endif

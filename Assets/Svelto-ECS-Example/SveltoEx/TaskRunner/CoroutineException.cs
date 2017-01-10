@@ -1,20 +1,22 @@
 using System;
-using System.Text;
 
-class CoroutineException : Exception
+namespace Svelto.Tasks
 {
-    public CoroutineException(string message, Exception innerException):base(message, innerException) {}
-
-    public override string StackTrace
+    public class CoroutineException : Exception
     {
-        get
+        public CoroutineException(string message, Exception innerException) : base(message, innerException) { }
+
+        public override string StackTrace
         {
-            return "Stack trace" + Environment.NewLine + Environment.NewLine + base.StackTrace;
+            get
+            {
+                return InnerException.StackTrace;
+            }
         }
-    }
 
-    public override string ToString()
-    {
-        return Message + Environment.NewLine + Environment.NewLine + StackTrace;
+        public override string ToString()
+        {
+            return Message + InnerException.Message;
+        }
     }
 }

@@ -1,108 +1,117 @@
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using Svelto.Tasks.Internal;
-#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_IPHONE || UNITY_ANDROID || UNITY_EDITOR
-using UnityEngine;
-#endif
 
 namespace Svelto.Tasks
 {
-	public class SerialTaskCollection: TaskCollection
-	{
-		public event Action		onComplete;
+    public class SerialTaskCollection: TaskCollection, IEnumerator
+    {
+        public event Action		onComplete;
 
-		override public float 	progress { get { return _progress + _subProgress;} }
+        public SerialTaskCollection(int size):base(size)
+        {}
 
-		public SerialTaskCollection():base()
-		{
-			_progress = 0.0f;
-			_subProgress = 0.0f;
+        public SerialTaskCollection()        
+        {}
+#if TO_IMPLEMENT_PROPERLY
+        override public float 	progress { get { return _progress + _subProgress;} }
+#endif
+#if TO_IMPLEMENT_PROPERLY     
+        public SerialTaskCollection()        
+        {
+            _progress = 0.0f;
+            _subProgress = 0.0f;
+        }
+#endif
+        new public void Reset()
+        {
+            base.Reset();
+            _index = 0;
+        }
 
-			_token = null;
-		}
+        public bool MoveNext()
+        {
+            isRunning = true;
+#if TO_IMPLEMENT_PROPERLY            
+            int startingCount = registeredEnumerators.Count;
+#endif
+            if (RunTasks()) return true;
 
-		public SerialTaskCollection(object token):base()
-		{
-			_progress = 0.0f;
-			_subProgress = 0.0f;
+            if (onComplete != null)
+                onComplete();
 
-			_token = token;
-		}
+            isRunning = false;
+            Reset();
 
-		override public IEnumerator GetEnumerator()
-		{
-			isRunning = true;
+            return false;
+        }
 
-			int startingCount = registeredEnumerators.Count;
+        bool RunTasks()
+        {
+            while (_index < _listOfStacks.Count)
+            {
+                var stack = _listOfStacks[_index];
 
-			while (registeredEnumerators.Count > 0)
-			{
-				//create a new stack for each task
-				Stack<IEnumerator> stack = new Stack<IEnumerator>();
-				//let`s get the first available task
-				IEnumerator task = registeredEnumerators.Dequeue();
-				//put in the stack
-				stack.Push(task);
-
-				while (stack.Count > 0)
-				{
-					IEnumerator ce = stack.Peek(); //get the current task to execute
-
-					if (ce is AsyncTask)
-						(ce as AsyncTask).token = _token;
+                while (stack.Count > 0)
+                {
+                    var ce = stack.Peek(); //get the current task to execute
 
                     if (ce.MoveNext() == false)
-					{
-						_progress = (float)(startingCount - registeredEnumerators.Count) / (float)startingCount;
-						_subProgress = 0;
-
-						stack.Pop(); //task is done (the iteration is over)
-					}
-					else
-					{
-						if (ce.Current != ce && ce.Current != null)  //the task returned a new IEnumerator (or IEnumerable)
-						{
-#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_IPHONE || UNITY_ANDROID || UNITY_EDITOR
-							if (ce.Current is WWW || ce.Current is YieldInstruction)
-								yield return ce.Current; //YieldInstructions are special cases and must be handled by Unity. They cannot be wrapped!
-							else
+                    {
+#if TO_IMPLEMENT_PROPERLY
+                        _progress = (float)(startingCount - registeredEnumerators.Count) / (float)startingCount;
+                        _subProgress = 0;
 #endif
-                                if (ce.Current is IEnumerable)
-                                {
-                                    stack.Push(((IEnumerable)ce.Current).GetEnumerator()); //it's pushed because it can yield another IEnumerator on its own
-                                    //push(subprogress);
-                                }
-                                else
-                                    if (ce.Current is IEnumerator)
-                                    {
-                                        stack.Push(ce.Current as IEnumerator); //it's pushed because it can yield another IEnumerator on its own
-                                        //push(subprogress);
-                                    }
-						}
+                        stack.Pop(); //task is done (the iteration is over)
+                    }
+                    else
+                    {
+                        _current = ce.Current;
 
-			//			if (ce is AsyncTask) //asyn
-          //                  _subProgress = (ce as AsyncTask).task.progress * (((float)(startingCount - (registeredEnumerators.Count - 1)) / (float)startingCount) - progress);
-		//				else
-						if (ce is EnumeratorWithProgress) //asyn
-							_subProgress = (ce as EnumeratorWithProgress).progress / (float)registeredEnumerators.Count;
+                        if (_current == ce)
+                            throw new Exception("An enumerator returning itself is not supported");
 
-                        //all the pushed sum subprogress / number of pushed stacked
-					}
+                        if (_current != null && _current != Break.It)
+                        {
+                           IEnumerator result = StandardEnumeratorCheck(_current);
+                           if (result != null)
+                           {
+                               stack.Push(result);
+                               continue;
+                           }
+                           //in all the cases above, the task collection is not meant to yield
+                        }
+                        else 
+                        if (_current == Break.It)
+                             return false;
+                        
+                        return true;
+#if TO_IMPLEMENT_PROPERLY
+                        if (ce is AsyncTask) //asyn
+                            _subProgress = (ce as AsyncTask).task.progress * (((float)(startingCount - (registeredEnumerators.Count - 1)) / (float)startingCount) - progress);
+                        else
+                        if (ce is EnumeratorWithProgress) //asyn
+                            _subProgress = (ce as EnumeratorWithProgress).progress / (float)registeredEnumerators.Count;
+#endif
+                    }
+                }
 
-                    yield return null; //the tasks are not done yet
-				}
-			}
+                _index++;
+            }
+            return false;
+        }
 
-			isRunning = false;
+        int _index;
 
-			if (onComplete != null)
-				onComplete();
-		}
+#if TO_IMPLEMENT_PROPERLY
+        float 	_progress;
+        float 	_subProgress;
+#endif
+        public object Current
+        {
+            get { return _current; }
+        }
 
-		float 	_progress;
-		float 	_subProgress;
-		object	_token;
-	}
+        object _current;
+    }
 }
 

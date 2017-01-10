@@ -1,13 +1,26 @@
 #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_IPHONE || UNITY_ANDROID || UNITY_EDITOR
+using System.Collections;
 using UnityEngine;
 
-public class RunnerBehaviour: MonoBehaviour
+namespace Svelto.Tasks.Internal
 {
-	static public bool isQuitting = false;
+    class RunnerBehaviour : MonoBehaviour
+    {}
 
-	void OnApplicationQuit()
+    class RunnerBehaviourPhysic : MonoBehaviour
     {
-        isQuitting = true;
+        void FixedUpdate()
+        {
+            if (_mainRoutine != null)
+                _mainRoutine.MoveNext();
+        }
+
+        public void StartCoroutinePhysic(IEnumerator enumerator)
+        {
+            _mainRoutine = enumerator;
+        }
+
+        IEnumerator _mainRoutine;
     }
 }
 #endif

@@ -1,15 +1,15 @@
-using System.Collections;
 
 namespace Svelto.Tasks
 {
-	public interface IRunner
+    public interface IRunner
     {
-		void	StartCoroutine(IEnumerator task);
+        bool    paused { get; set; }
+        bool    stopped { get; }
 
+        void	StartCoroutine(PausableTask task);
+        void    StartCoroutineThreadSafe(PausableTask task);
         void 	StopAllCoroutines();
-        void    StopManagedCoroutines();
 
-		bool    paused { get; set; }
-		bool    stopped { get; }
+        int numberOfRunningTasks { get; }
     }
 }

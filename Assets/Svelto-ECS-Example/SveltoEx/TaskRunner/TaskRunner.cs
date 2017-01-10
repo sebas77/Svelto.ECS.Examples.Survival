@@ -1,117 +1,125 @@
+using System;
 using System.Collections;
 using Svelto.Tasks;
 using Svelto.Tasks.Internal;
-using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class TaskRunner
 {
-	static TaskRunner _instance;
+    static TaskRunner _instance;
 
-    static public TaskRunner Instance
-	{
-		get
-		{
-			if (_instance == null)
-				InitInstance();
+    public static TaskRunner Instance
+    {
+        get
+        {
+            if (_instance == null)
+                InitInstance();
 
-			return _instance;
-		}
-	}
+            return _instance;
+        }
+    }
 
-	public void Run(IEnumerable task)
-	{
-		if (task == null)
-			return;
+    /// <summary>
+/// Use this function only to preallocate TaskRoutine that can be reused. this minimize run-time allocations
+/// </summary>
+/// <returns>
+/// New reusable TaskRoutine
+/// </returns>
+    public ITaskRoutine AllocateNewTaskRoutine()
+    {
+        return new PausableTask().SetScheduler(_runner);
+    }
 
-        Run(task.GetEnumerator());
-	}
+    public void PauseAllTasks()
+    {
+        _runner.paused = true;
+    }
 
-    public void Run(TaskCollection task)
-	{
-		if (task == null)
-			return;
+    public void ResumeAllTasks()
+    {
+        _runner.paused = false;
+    }
 
-		_runner.StartCoroutine(task.GetEnumerator());
-	}
+    public IEnumerator Run(Func<IEnumerator> taskGenerator)
+    {
+        return RunOnSchedule(_runner, taskGenerator);
+    }
 
-    public void Run(IEnumerator task)
-	{
-		if (task == null)
-			return;
+    public IEnumerator Run(IEnumerator task)
+    {
+        return RunOnSchedule(_runner, task);
+    }
 
-         _runner.StartCoroutine(new SingleTask(task));
-	}
+    public IEnumerator RunOnSchedule(IRunner runner, Func<IEnumerator> taskGenerator)
+    {
+        return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumeratorProvider(taskGenerator).Start();
+    }
 
-	public void RunSync(IEnumerator task)
-	{
-		if (task == null)
-			return;
+    public IEnumerator RunOnSchedule(IRunner runner, IEnumerator task)
+    {
+        return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumerator(task).Start();
+    }
 
-		IEnumerator taskToRun = new SingleTask(task);
+    public IEnumerator ThreadSafeRun(Func<IEnumerator> taskGenerator)
+    {
+        return ThreadSafeRunOnSchedule(_runner, taskGenerator);
+    }
 
-        while (taskToRun.MoveNext() == true) { }
-	}
+    public IEnumerator ThreadSafeRun(IEnumerator task)
+    {
+        return ThreadSafeRunOnSchedule(_runner, task);
+    }
 
-    public void RunSync(IEnumerable task)
-	{
-		if (task == null)
-			return;
+    public IEnumerator ThreadSafeRunOnSchedule(IRunner runner, Func<IEnumerator> taskGenerator)
+    {
+        return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumeratorProvider(taskGenerator).ThreadSafeStart();
+    }
 
-		RunSync(task);
-	}
+    public IEnumerator ThreadSafeRunOnSchedule(IRunner runner, IEnumerator task)
+    {
+        return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumerator(task).ThreadSafeStart();
+    }
 
-	public TaskRoutine CreateTask(IEnumerable task)
-	{
-		if (task == null)
-			return null;
 
-		return CreateTask(task.GetEnumerator);
-	}
+    public void StopDefaultSchedulerTasks()
+    {
+        StandardSchedulers.StopSchedulers();
+    }
 
-	public TaskRoutine CreateTask(Func<IEnumerator> taskGenerator)
-	{
-		PausableTask ptask = new PausableTask(_runner);
+    public void StopAndCleanupAllDefaultSchedulerTasks()
+    {
+        StopDefaultSchedulerTasks();
 
-		return new TaskRoutine(ptask, taskGenerator);
-	}
+        _taskPool = null;
+        _runner = null;
+        _instance = null;
+    }
 
-    public TaskRoutine CreateEmptyTask()
-	{
-        return _taskRoutinePool.RetrieveTask();
-	}
+//TaskRunner is supposed to be used in the mainthread only
+//this should be enforced in future. 
+//Runners should be used directly on other threads 
+//than the main one
 
-	public void PauseManaged()
-	{
-		_runner.paused = true;
-	}
-
-	public void ResumeManaged()
-	{
-		_runner.paused = false;
-	}
-
-	public void Stop()
-	{
-		if (_runner != null)
-			_runner.StopAllCoroutines();
-	}
-
-	static void InitInstance()
-	{
-		_instance 			= new TaskRunner();
-#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_IPHONE || UNITY_ANDROID || UNITY_EDITOR
-		_instance._runner 	= new MonoRunner();
+    static void InitInstance()
+    {
+        _instance = new TaskRunner();
+#if UNITY_4 || UNITY_5 || UNITY_5_3_OR_NEWER
+        _instance._runner = StandardSchedulers.mainThreadScheduler;
 #else
         _instance._runner = new MultiThreadRunner();
 #endif
-        _instance._taskRoutinePool = new TaskRoutinePool(_instance._runner);
-	}
+        _instance._taskPool = new PausableTaskPool();
 
-    TaskRoutinePool _taskRoutinePool;
-    IRunner         _runner;
+#if TASKS_PROFILER_ENABLED && UNITY_EDITOR
+        var debugTasksObject = new GameObject("Tasks Debugger");
+
+        debugTasksObject.gameObject.AddComponent<Svelto.Tasks.Profiler.TasksProfilerBehaviour>();
+
+        Object.DontDestroyOnLoad(debugTasksObject);
+#endif
+    }
+
+    IRunner             _runner;
+    PausableTaskPool    _taskPool;
 }
-
-
-
-
-
