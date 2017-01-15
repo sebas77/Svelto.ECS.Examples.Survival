@@ -1,3 +1,4 @@
+using Svelto.ECS.Example.Components.Damageable;
 using Svelto.ECS.Example.Nodes.Enemies;
 using Svelto.Ticker.Legacy;
 using System;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Engines.Enemies
 {
-    public class EnemyMovementEngine : INodesEngine, ITickable, IQueryableNodeEngine
+    public class EnemyMovementEngine : INodesEngine, ITickable, IQueryableNodeEngine, IStep<DamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
@@ -16,27 +17,13 @@ namespace Svelto.ECS.Example.Engines.Enemies
 
         public void Add(INode obj)
         {
-            if (obj is EnemyNode)
-            {
-                var enemyNode = obj as EnemyNode;
-                var healthEventsComponent = enemyNode.healthComponent;
-
-                healthEventsComponent.isDead.NotifyOnDataChange(StopEnemyOnDeath);
-            }
-            else
+            if (obj is EnemyTargetNode == true)
                 _targetNode = obj as EnemyTargetNode;
         }
 
         public void Remove(INode obj)
         {
-            if (obj is EnemyNode)
-            {
-                var enemyNode = obj as EnemyNode;
-                var healthEventsComponent = enemyNode.healthComponent;
-
-                healthEventsComponent.isDead.StopNotifyOnDataChange(StopEnemyOnDeath);
-            }
-            else
+            if (obj is EnemyTargetNode == true)
                 _targetNode = null;
         }
 
@@ -56,7 +43,7 @@ namespace Svelto.ECS.Example.Engines.Enemies
             }
         }
 
-        void StopEnemyOnDeath(int targetID, bool isDead)
+        void StopEnemyOnDeath(int targetID)
         {
             EnemyNode node = nodesDB.QueryNode<EnemyNode>(targetID);
 
@@ -66,7 +53,12 @@ namespace Svelto.ECS.Example.Engines.Enemies
             capsuleCollider.GetComponent<Rigidbody>().isKinematic = true;
         }
 
-        readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
+        public void Step(ref DamageInfo token, Enum condition)
+        {
+            StopEnemyOnDeath(token.entityDamaged);
+        }
+
+        readonly Type[] _acceptedNodes = { typeof(EnemyTargetNode) };
 
         EnemyTargetNode   _targetNode;
     }

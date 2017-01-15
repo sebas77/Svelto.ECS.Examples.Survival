@@ -24,7 +24,6 @@ namespace Svelto.ECS.Example.Nodes.Enemies
 
     public class EnemyTargetNode: NodeWithID
     {
-        public IDamageEventComponent    damageEventComponent;
         public IPositionComponent       targetPositionComponent;
         public IHealthComponent         healthComponent;
     }

@@ -2,15 +2,16 @@ using UnityEngine;
 using Svelto.ECS.Example.Nodes.Player;
 using Svelto.Ticker.Legacy;
 using UnityStandardAssets.CrossPlatformInput;
+using System;
+using Svelto.ECS.Example.Components.Damageable;
 
 namespace Svelto.ECS.Example.Engines.Player
 {
-    public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable
+    public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable, IStep<PlayerDamageInfo>
     {
         override protected void Add(PlayerNode obj)
         {
             _playerNode = obj as PlayerNode;
-            _playerNode.healthComponent.isDead.NotifyOnDataChange(StopMovementOnDeath);
         }
 
         override protected void Remove(PlayerNode obj)
@@ -68,9 +69,14 @@ namespace Svelto.ECS.Example.Engines.Player
             }
         }
 
-        void StopMovementOnDeath(int ID, bool isDead)
+        void StopMovementOnDeath(int ID)
         {
             _playerNode.rigidBodyComponent.rigidbody.isKinematic = true;
+        }
+
+        public void Step(ref PlayerDamageInfo token, Enum condition)
+        {
+            StopMovementOnDeath(token.entityDamaged);
         }
 
         PlayerNode      _playerNode;

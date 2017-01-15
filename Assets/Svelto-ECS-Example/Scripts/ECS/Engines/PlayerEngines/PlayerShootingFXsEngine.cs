@@ -17,13 +17,12 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
         override protected void Add(GunNode playerGunNode)
         {
             _playerGunNode = playerGunNode;
-            playerGunNode.gunHitTargetComponent.targetHit.NotifyOnDataChange(Shoot);
+            playerGunNode.gunHitTargetComponent.targetHit.NotifyOnValueSet(Shoot);
         }
 
         override protected  void Remove(GunNode playerGunNode)
         {
             _playerGunNode = null;
-            playerGunNode.gunHitTargetComponent.targetHit.StopNotifyOnDataChange(Shoot);
         }
 
         void Shoot(int ID, bool targetHasBeenHit)

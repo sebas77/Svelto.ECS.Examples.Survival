@@ -9,6 +9,8 @@ using Svelto.ECS.Example.Observers.HUD;
 using Svelto.Context;
 using Svelto.Ticker.Legacy;
 using UnityEngine;
+using Steps = System.Collections.Generic.Dictionary<Svelto.ECS.IEngine, System.Collections.Generic.Dictionary<System.Enum, Svelto.ECS.IStep[]>>;
+using System.Collections.Generic;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where the framework can be initialised.
@@ -27,25 +29,80 @@ namespace Svelto.ECS.Example
             _entityFactory = _enginesRoot = new EnginesRoot();
 
             GameObjectFactory factory = new GameObjectFactory();
-
+    
             var enemyKilledObservable = new EnemyKilledObservable();
-            var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver((EnemyKilledObservable)enemyKilledObservable);
+            var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver(enemyKilledObservable);
 
-            AddEngine(new PlayerMovementEngine());
-            AddEngine(new PlayerAnimationEngine());
+            Sequencer playerDamageSequence = new Sequencer();
+            Sequencer enemyDamageSequence = new Sequencer();
 
-            AddEngine(new PlayerGunShootingEngine(enemyKilledObservable));
+            var enemyAnimationEngine = new EnemyAnimationEngine();
+            var playerHealthEngine = new HealthEngine(playerDamageSequence);
+            var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
+            var hudEngine = new HUDEngine();
+            var damageSoundEngine = new DamageSoundEngine();
+            var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence);
+            var playerMovementEngine = new PlayerMovementEngine();
+            var playerAnimationEngine = new PlayerAnimationEngine();
+            var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence);
+            var enemyMovementEngine = new EnemyMovementEngine();
+
+            playerDamageSequence.SetSequence(
+                new Steps()
+                { 
+                    { 
+                        enemyAttackEngine, 
+                        new Dictionary<System.Enum, IStep[]>()
+                        { 
+                            {  Condition.always, new [] { playerHealthEngine }  },
+                        }  
+                    },
+                    { 
+                        playerHealthEngine, 
+                        new Dictionary<System.Enum, IStep[]>()
+                        { 
+                            {  DamageCondition.damage, new IStep[] { hudEngine, damageSoundEngine }  },
+                            {  DamageCondition.dead, new IStep[] { hudEngine, damageSoundEngine, playerMovementEngine, playerAnimationEngine, enemyAnimationEngine }  },
+                        }  
+                    }  
+                }
+            );
+
+            enemyDamageSequence.SetSequence(
+                new Steps()
+                { 
+                    { 
+                        playerShootingEngine, 
+                        new Dictionary<System.Enum, IStep[]>()
+                        { 
+                            {  Condition.always, new [] { enemyHealthEngine }  },
+                        }  
+                    },
+                    { 
+                        enemyHealthEngine, 
+                        new Dictionary<System.Enum, IStep[]>()
+                        { 
+                            {  DamageCondition.damage, new IStep[] { enemyAnimationEngine }  },
+                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, enemyAnimationEngine, playerShootingEngine }  },
+                        }  
+                    }  
+                }
+            );
+
+            AddEngine(playerMovementEngine);
+            AddEngine(playerAnimationEngine);
+            AddEngine(playerShootingEngine);
+            AddEngine(playerHealthEngine);
             AddEngine(new PlayerGunShootingFXsEngine());
 
             AddEngine(new EnemySpawnerEngine(factory, _entityFactory));
-            AddEngine(new EnemyAttackEngine());
-            AddEngine(new EnemyMovementEngine());
-            AddEngine(new EnemyAnimationEngine());
+            AddEngine(enemyAttackEngine);
+            AddEngine(enemyMovementEngine);
+            AddEngine(enemyAnimationEngine);
+            AddEngine(enemyHealthEngine);
 
-            AddEngine(new HealthEngine());
-            AddEngine(new DamageSoundEngine());
-
-            AddEngine(new HUDEngine());
+            AddEngine(damageSoundEngine);
+            AddEngine(hudEngine);
             AddEngine(new ScoreEngine(scoreOnEnemyKilledObserver));
         }
 

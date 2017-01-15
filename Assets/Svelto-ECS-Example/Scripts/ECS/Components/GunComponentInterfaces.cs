@@ -14,7 +14,7 @@ namespace Svelto.ECS.Example.Components.Gun
 
     public interface IGunHitTargetComponent : IComponent
     {
-        DispatcherOnSet<bool> targetHit { get; }
+        DispatchOnSet<bool> targetHit { get; }
     }
 
     public interface IGunFXComponent: IComponent

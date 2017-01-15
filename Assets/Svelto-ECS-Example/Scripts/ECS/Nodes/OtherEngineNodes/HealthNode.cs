@@ -4,7 +4,6 @@ namespace Svelto.ECS.Example.Nodes.DamageableEntities
 {
     public class HealthNode: NodeWithID
     {
-        public IDamageEventComponent    damageEventComponent;
         public IHealthComponent         healthComponent;
 
         public IRemoveEntityComponent   removeEntityComponent;

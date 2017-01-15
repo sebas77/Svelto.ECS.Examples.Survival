@@ -7,20 +7,14 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Implementators.Enemies
 {
-    public class EnemyHealth : MonoBehaviour, IHealthComponent, IAnimationComponent, IEnemyVFXComponent, IDamageSoundComponent, IDamageEventComponent, ITargetTypeComponent, IRemoveEntityComponent
+    public class EnemyHealth : MonoBehaviour, IHealthComponent, IAnimationComponent, IEnemyVFXComponent, IDamageSoundComponent, ITargetTypeComponent, IRemoveEntityComponent
     {
         public int startingHealth = 100;            // The amount of health the enemy starts the game with.
         public AudioClip deathClip;                 // The sound to play when the enemy dies.
         public AudioClip damageClip;                 // The sound to play when the enemy dies.
         public PlayerTargetType targetType;
 
-        Legacy.Dispatcher<int, DamageInfo>  IDamageEventComponent.damageReceived { get { return _damageReceived; } }
-
         int   IHealthComponent.currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
-        //bool  IHealthComponent.hasBeenDamaged { get; set; }
-
-        DispatcherOnChange<bool>              IHealthComponent.isDead { get { return _isDead; } }
-        Legacy.Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged { get { return _isDamaged; } }
 
         Animator IAnimationComponent.animation { get { return _anim; } }
 
@@ -43,15 +37,7 @@ namespace Svelto.ECS.Example.Implementators.Enemies
 
             // Setting the current health when the enemy first spawns.
             _currentHealth = startingHealth;
-
-            _damageReceived = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
-            _isDead = new DispatcherOnChange<bool>(gameObject.GetInstanceID());
-            _isDamaged = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
-
-        Legacy.Dispatcher<int, DamageInfo>     _damageReceived;
-        DispatcherOnChange<bool>               _isDead;
-        Legacy.Dispatcher<int, DamageInfo>     _isDamaged;
 
         Animator        _anim;                 // Reference to the animator.
         AudioSource     _enemyAudio;           // Reference to the audio source.

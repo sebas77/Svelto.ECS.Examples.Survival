@@ -12,7 +12,7 @@ namespace Svelto.ECS.Example.Implementators.Player
         float IGunAttributesComponent.timeBetweenBullets { get { return timeBetweenBullets; } }
         float IGunAttributesComponent.range { get { return range; } }
         int IGunAttributesComponent.damagePerShot { get { return damagePerShot; } }
-        DispatcherOnSet<bool> IGunHitTargetComponent.targetHit { get { return _targetHit; } }
+        DispatchOnSet<bool> IGunHitTargetComponent.targetHit { get { return _targetHit; } }
         Vector3 IGunAttributesComponent.lastTargetPosition { set { _lastTargetPosition = value; } get { return _lastTargetPosition; } }
         float IGunAttributesComponent.timer { get; set; }
         Ray IGunAttributesComponent.shootRay
@@ -43,7 +43,7 @@ namespace Svelto.ECS.Example.Implementators.Player
             _gunAudio = GetComponent<AudioSource> ();
             _gunLight = GetComponent<Light> ();
 
-            _targetHit = new DispatcherOnSet<bool>(gameObject.GetInstanceID());
+            _targetHit = new DispatchOnSet<bool>(gameObject.GetInstanceID());
         }
 
         Transform       _transform;
@@ -55,6 +55,6 @@ namespace Svelto.ECS.Example.Implementators.Player
         Ray             _shootRay;
         Vector3         _lastTargetPosition;
 
-        DispatcherOnSet<bool> _targetHit;
+        DispatchOnSet<bool> _targetHit;
     }
 }

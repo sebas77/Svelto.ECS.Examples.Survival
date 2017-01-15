@@ -11,6 +11,11 @@ namespace Svelto.ECS.Example.Engines.Enemies
         public IEngineNodeDB nodesDB { set; private get; }
         public Type[] AcceptedNodes() { return _acceptedNodes; }
 
+        public EnemyAttackEngine(Sequencer enemyrDamageSequence)
+        {
+            _targetDamageSequence = enemyrDamageSequence;
+        }
+
         public void Add(INode obj)
         {
             if (obj is EnemyNode)
@@ -37,6 +42,8 @@ namespace Svelto.ECS.Example.Engines.Enemies
 
         public void Tick(float deltaSec)
         {
+            if (_targetNode == null) return;
+
             var enemiesAttackList = nodesDB.QueryNodes<EnemyNode>();
 
             for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0 ; --enemyIndex)
@@ -52,12 +59,10 @@ namespace Svelto.ECS.Example.Engines.Enemies
                     {
                         attackDamageComponent.timer = 0.0f;
 
-                        if (_targetNode != null)
-                        {
-                            var damageInfo = new DamageInfo(attackDamageComponent.damage, Vector3.zero);
+                        var damageInfo = new PlayerDamageInfo(attackDamageComponent.damage, Vector3.zero, _targetNode.ID);
 
-                            _targetNode.damageEventComponent.damageReceived.Dispatch(ref damageInfo);
-                        }
+                        //when I will add the sequencer, this will be made with a sequencer.
+                        _targetDamageSequence.Next(this, ref damageInfo);
                     }
                 }
             }
@@ -83,5 +88,6 @@ namespace Svelto.ECS.Example.Engines.Enemies
         readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
 
         EnemyTargetNode _targetNode;
+        Sequencer _targetDamageSequence;
     }
 }

@@ -1,40 +1,44 @@
 using Svelto.ECS.Example.Components.Damageable;
 using Svelto.ECS.Example.Nodes.DamageableEntities;
+using System;
 
 namespace Svelto.ECS.Example.Engines.Health
 {
-    public class HealthEngine : SingleNodeEngine<HealthNode>, IQueryableNodeEngine
+    public class HealthEngine : IEngine, IQueryableNodeEngine, IStep<DamageInfo>, IStep<PlayerDamageInfo>
     {
+        private Sequencer _damageSequence;
+
+        public HealthEngine(Sequencer playerDamageSequence)
+        {
+            _damageSequence = playerDamageSequence;
+        }
+
         public IEngineNodeDB nodesDB { set; private get; }
 
-        override protected void Add(HealthNode node)
+        public void Step(ref PlayerDamageInfo token, Enum condition)
         {
-            var healthComponent = node.damageEventComponent;
-
-            healthComponent.damageReceived.subscribers += TriggerDamage;
+            TriggerDamage(ref token);
         }
 
-        override protected void Remove(HealthNode node)
+        public void Step(ref DamageInfo token, Enum condition)
         {
-            var healthComponent = node.damageEventComponent;
-
-            healthComponent.damageReceived.subscribers -= TriggerDamage;
+            TriggerDamage(ref token);
         }
 
-        void TriggerDamage(int ID, DamageInfo damage)
+        void TriggerDamage<T>(ref T damage) where T:IDamageInfo
         {
-            var node = nodesDB.QueryNode<HealthNode>(ID);
+            var node = nodesDB.QueryNode<HealthNode>(damage.entityDamaged);
             var healthComponent = node.healthComponent;
 
             healthComponent.currentHealth -= damage.damagePerShot;
 
             if (healthComponent.currentHealth <= 0)
             {
-                healthComponent.isDead.value = true;
+                _damageSequence.Next(this, ref damage, DamageCondition.dead);
                 node.removeEntityComponent.removeEntity();
             }
             else
-                healthComponent.isDamaged.Dispatch(ref damage);
+                _damageSequence.Next(this, ref damage, DamageCondition.damage);
         }
     }
 }

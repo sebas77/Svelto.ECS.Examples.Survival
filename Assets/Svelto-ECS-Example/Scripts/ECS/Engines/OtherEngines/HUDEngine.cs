@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Engines.HUD
 {
-    public class HUDEngine : INodesEngine, ITickable, IQueryableNodeEngine
+    public class HUDEngine : INodesEngine, ITickable, IQueryableNodeEngine, IStep<PlayerDamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
@@ -19,25 +19,12 @@ namespace Svelto.ECS.Example.Engines.HUD
         {
             if (obj is HUDNode)
                 _guiNode = obj as HUDNode;
-            else
-            {
-                var damageEventNode = obj as HUDDamageEventNode;
-
-				damageEventNode.healthComponent.isDamaged.subscribers += OnDamageEvent;
-                damageEventNode.healthComponent.isDead.NotifyOnDataChange(OnDeadEvent);
-            }
         }
 
         public void Remove(INode obj)
         {
             if (obj is HUDNode)
                 _guiNode = null;
-            else
-            {
-                var damageEventNode = obj as HUDDamageEventNode;
-
-				damageEventNode.healthComponent.isDamaged.subscribers -= OnDamageEvent;
-            }
         }
 
         public void Tick(float deltaSec)
@@ -50,22 +37,32 @@ namespace Svelto.ECS.Example.Engines.HUD
             damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * deltaSec);
         }
 
-        void OnDamageEvent(int sender, DamageInfo damaged)
+        void OnDamageEvent(ref PlayerDamageInfo damaged)
         {
             var damageComponent = _guiNode.damageImageComponent;
             var damageImage = damageComponent.damageImage;
 
             damageImage.color = damageComponent.flashColor;
 
-            _guiNode.healthSliderComponent.healthSlider.value = nodesDB.QueryNode<HUDDamageEventNode>(sender).healthComponent.currentHealth;
+            _guiNode.healthSliderComponent.healthSlider.value = nodesDB.QueryNode<HUDDamageEventNode>(damaged.entityDamaged).healthComponent.currentHealth;
         }
 
-        void OnDeadEvent(int targetID, bool isDead)
+        void OnDeadEvent()
         {
             _guiNode.HUDAnimator.hudAnimator.SetTrigger("GameOver");
         }
 
-        readonly Type[] _acceptedNodes = { typeof(HUDNode), typeof(HUDDamageEventNode) };
+        public void Step(ref PlayerDamageInfo token, Enum condition)
+        {
+            if ((DamageCondition)condition == DamageCondition.damage)
+                OnDamageEvent(ref token);
+            else
+            if ((DamageCondition)condition == DamageCondition.dead)
+                OnDeadEvent();
+                
+        }
+
+        readonly Type[] _acceptedNodes = { typeof(HUDNode) };
 
         HUDNode         _guiNode;
     }

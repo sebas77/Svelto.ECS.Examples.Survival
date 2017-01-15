@@ -6,69 +6,29 @@ using Svelto.ECS.Example.Components.Damageable;
 
 namespace Svelto.ECS.Example.Engines.Enemies
 {
-    public class EnemyAnimationEngine : INodesEngine, IQueryableNodeEngine
+    public class EnemyAnimationEngine : IEngine, IQueryableNodeEngine, IStep<DamageInfo>, IStep<PlayerDamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
-        public Type[] AcceptedNodes()
+        void EntityDamaged(DamageInfo damageInfo)
         {
-            return _acceptedNodes;
-        }
-
-        public void Add(INode obj)
-        {
-            if (obj is EnemyNode)
-            {
-                var enemyNode = obj as EnemyNode;
-                var healthEventsComponent = enemyNode.healthComponent;
-
-                healthEventsComponent.isDead.NotifyOnDataChange(TriggerDeathAnimation);
-                healthEventsComponent.isDamaged.subscribers += EntityDamaged;
-            }
-            else
-                (obj as EnemyTargetNode).healthComponent.isDead.NotifyOnDataChange(OnTargetDead);
-        }
-
-        public void Remove(INode obj)
-        {
-            if (obj is EnemyNode)
-            {
-                var healthEventsComponent = (obj as EnemyNode).healthComponent;
-
-                if (healthEventsComponent != null)
-                {
-                    healthEventsComponent.isDead.StopNotifyOnDataChange(TriggerDeathAnimation);
-                    healthEventsComponent.isDamaged.subscribers -= EntityDamaged;
-                }
-            }
-            else
-                (obj as EnemyTargetNode).healthComponent.isDead.StopNotifyOnDataChange(OnTargetDead);
-        }
-
-        void EntityDamaged(int sender, DamageInfo damageInfo)
-        {
-            var node = nodesDB.QueryNode<EnemyNode>(sender);
+            var node = nodesDB.QueryNode<EnemyNode>(damageInfo.entityDamaged);
 
             node.vfxComponent.hitParticles.transform.position = damageInfo.damagePoint;
             node.vfxComponent.hitParticles.Play();
         }
 
-        void OnTargetDead(int targetID, bool isDead)
+        void OnTargetDead(int targetID)
         {
             var nodes = nodesDB.QueryNodes<EnemyNode>();
 
             for (int i = 0; i < nodes.Count; i++)
-            {
-                var node = nodes[i];
-
-                node.animationComponent.animation.SetTrigger("PlayerDead");
-            }
+                nodes[i].animationComponent.animation.SetTrigger("PlayerDead");
         }
 
-        void TriggerDeathAnimation(int targetID, bool isDead)
+        void TriggerDeathAnimation(int targetID)
         {
             var node = nodesDB.QueryNode<EnemyNode>(targetID);
-
             node.animationComponent.animation.SetTrigger("Dead");
 
             TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Sink(node.transformComponent.transform, node.movementComponent.sinkSpeed)).Start();
@@ -88,6 +48,18 @@ namespace Svelto.ECS.Example.Engines.Enemies
             UnityEngine.Object.Destroy(transform.gameObject);
         }
 
-        readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
+        public void Step(ref DamageInfo token, Enum condition)
+        {
+            if ((DamageCondition)condition == DamageCondition.dead)
+                TriggerDeathAnimation(token.entityDamaged);
+            else
+                EntityDamaged(token);
+        }
+
+        public void Step(ref PlayerDamageInfo token, Enum condition)
+        {
+            if ((DamageCondition)condition == DamageCondition.dead)
+                OnTargetDead(token.entityDamaged);
+        }
     }
 }

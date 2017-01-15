@@ -16,7 +16,6 @@ namespace Svelto.ECS.Example.Nodes.Player
 
     public class PlayerTargetNode : NodeWithID
     {
-        public IDamageEventComponent    damageEventComponent;
         public IHealthComponent         healthComponent;
         public ITargetTypeComponent     targetTypeComponent;
     }

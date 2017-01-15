@@ -5,18 +5,13 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Implementators.Player
 {
-    public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IDamageEventComponent, IRemoveEntityComponent
+    public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IRemoveEntityComponent
     {
         public int startingHealth = 100;                            // The amount of health the player starts the game with.
         public AudioClip deathClip;                                 // The audio clip to play when the player dies.
         public AudioClip damageClip;                                 // The audio clip to play when the player dies.
 
         int  IHealthComponent.currentHealth   { get { return _currentHealth; } set { _currentHealth = value; } }
-        //bool IHealthComponent.hasBeenDamaged  { get; set; }
-
-        Legacy.Dispatcher<int, DamageInfo>    IDamageEventComponent.damageReceived { get { return _damageReceived; } }
-        DispatcherOnChange<bool>              IHealthComponent.isDead { get { return _isDead; } }
-        Legacy.Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged           { get { return _isDamaged; } }
 
         AudioSource IDamageSoundComponent.audioSource   { get { return _playerAudio; } }
         AudioClip   IDamageSoundComponent.death         { get { return deathClip; } }
@@ -30,10 +25,6 @@ namespace Svelto.ECS.Example.Implementators.Player
 
             // Set the initial health of the player.
             _currentHealth = startingHealth;
-
-            _damageReceived = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
-            _isDead = new DispatcherOnChange<bool>(gameObject.GetInstanceID());
-            _isDamaged = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
 
         /// <summary>
@@ -46,9 +37,5 @@ namespace Svelto.ECS.Example.Implementators.Player
 
         int                 _currentHealth;
         AudioSource         _playerAudio;                                    // Reference to the AudioSource component.
-
-        Legacy.Dispatcher<int, DamageInfo>     _damageReceived;
-        DispatcherOnChange<bool>               _isDead;
-        Legacy.Dispatcher<int, DamageInfo>     _isDamaged;
     }
 }

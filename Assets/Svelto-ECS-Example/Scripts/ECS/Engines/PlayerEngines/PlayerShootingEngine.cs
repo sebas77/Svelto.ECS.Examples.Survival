@@ -8,13 +8,14 @@ using Svelto.ECS.Example.Nodes.Gun;
 
 namespace Svelto.ECS.Example.Engines.Player.Gun
 {
-    public class PlayerGunShootingEngine : INodesEngine, ITickable, IQueryableNodeEngine
+    public class PlayerGunShootingEngine : INodesEngine, ITickable, IQueryableNodeEngine, IStep<DamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
-        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable)
+        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence)
         {
             _enemyKilledObservable = enemyKilledObservable;
+            _enemyDamageSequence = damageSequence;
         }
 
         public Type[] AcceptedNodes() { return _acceptedNodes; }
@@ -23,23 +24,11 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
         {
             if (obj is GunNode)
                 _playerGunNode = obj as GunNode;
-            else
-            if (obj is PlayerTargetNode)
-            {
-                var targetNode = obj as PlayerTargetNode;
-
-                targetNode.healthComponent.isDead.NotifyOnDataChange(OnTargetDead);
-            }
-            else
-            if (obj is PlayerNode)
-            {
-                (obj as PlayerNode).healthComponent.isDead.NotifyOnDataChange(OnPlayerDead);
-            }
         }
 
         public void Remove(INode obj)
         {
-            if (obj is GunNode)
+            if (obj is PlayerNode) //the gun is never removed (because the level reloads on death), so remove on playerdeath
                 _playerGunNode = null;
         }
 
@@ -73,11 +62,11 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
                 var hitGO = shootHit.collider.gameObject;
 
                 PlayerTargetNode targetComponent = null;
-                
+                //note how the GameObject GetInstanceID is used to identify the entity as well
                 if (hitGO.layer == ENEMY_LAYER && nodesDB.QueryNode(hitGO.GetInstanceID(), out targetComponent))
                 {
-                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, shootHit.point);
-                    targetComponent.damageEventComponent.damageReceived.Dispatch(ref damageInfo);
+                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, shootHit.point, hitGO.GetInstanceID());
+                    _enemyDamageSequence.Next(this, ref damageInfo);
 
                     playerGunComponent.lastTargetPosition = shootHit.point;
                     playerGunHitComponent.targetHit.value = true;
@@ -89,7 +78,7 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
             playerGunHitComponent.targetHit.value = false;
         }
 
-        void OnTargetDead(int targetID, bool isDead)
+        void OnTargetDead(int targetID)
         {
             var playerTarget = nodesDB.QueryNode<PlayerTargetNode>(targetID);
             var targetType = playerTarget.targetTypeComponent.targetType;
@@ -97,13 +86,20 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
             _enemyKilledObservable.Dispatch(ref targetType);
         }
 
-        readonly Type[] _acceptedNodes = { typeof(PlayerTargetNode), typeof(GunNode), typeof(PlayerNode) };
+        public void Step(ref DamageInfo token, Enum condition)
+        {
+            OnTargetDead(token.entityDamaged);
+        }
+
+        readonly Type[] _acceptedNodes = { typeof(GunNode), typeof(PlayerNode) };
 
         GunNode                 _playerGunNode;
         EnemyKilledObservable   _enemyKilledObservable;
+        Sequencer              _enemyDamageSequence;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
         static readonly int ENEMY_MASK = LayerMask.GetMask("Enemies");
         static readonly int ENEMY_LAYER = LayerMask.NameToLayer("Enemies");
+        
     }
 }
