@@ -1,10 +1,9 @@
-﻿using Svelto.ES;
-using UnityEngine;
-using Nodes.Enemies;
-using Nodes.DamageableEntities;
-using Nodes.Player;
+﻿using UnityEngine;
+using Svelto.ECS.Example.Nodes.Enemies;
+using Svelto.ECS.Example.Nodes.DamageableEntities;
+using Svelto.ECS.Example.Nodes.Player;
 
-namespace EntityDescriptors.Enemies
+namespace Svelto.ECS.Example.EntityDescriptors.Enemies
 {
     class EnemyEntityDescriptor : EntityDescriptor
     {
@@ -27,9 +26,9 @@ namespace EntityDescriptors.Enemies
 	[DisallowMultipleComponent]
 	public class EnemyEntityDescriptorHolder:MonoBehaviour, IEntityDescriptorHolder
 	{
-		EntityDescriptor IEntityDescriptorHolder.BuildDescriptorType()
-		{
-			return new EnemyEntityDescriptor(GetComponentsInChildren<IComponent>());
-		}
+        public EntityDescriptor BuildDescriptorType(object[] extraImplentors = null)
+        {
+            return new EnemyEntityDescriptor(GetComponentsInChildren<IComponent>());
+        }
 	}
 }

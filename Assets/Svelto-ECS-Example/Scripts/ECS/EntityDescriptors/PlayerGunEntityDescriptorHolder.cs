@@ -1,8 +1,7 @@
-﻿using Svelto.ES;
-using UnityEngine;
-using Nodes.Gun;
+﻿using UnityEngine;
+using Svelto.ECS.Example.Nodes.Gun;
 
-namespace EntityDescriptors.Player
+namespace Svelto.ECS.Example.EntityDescriptors.Player
 {
     class PlayerGunEntityDescriptor : EntityDescriptor
     {
@@ -23,7 +22,7 @@ namespace EntityDescriptors.Player
     [DisallowMultipleComponent]
 	public class PlayerGunEntityDescriptorHolder:MonoBehaviour, IEntityDescriptorHolder
 	{
-		EntityDescriptor IEntityDescriptorHolder.BuildDescriptorType()
+		public EntityDescriptor BuildDescriptorType(object[] extraImplentors = null)
 		{
 			return new PlayerGunEntityDescriptor(GetComponentsInChildren<IComponent>());
 		}

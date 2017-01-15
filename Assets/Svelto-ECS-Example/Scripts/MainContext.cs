@@ -1,19 +1,20 @@
-using Engines.Enemies;
-using Engines.Health;
-using Engines.HUD;
-using Engines.Player;
-using Engines.Player.Gun;
-using Engines.Sound.Damage;
-using Observables.Enemies;
-using Observers.HUD;
+using Svelto.ECS.Example.Engines.Enemies;
+using Svelto.ECS.Example.Engines.Health;
+using Svelto.ECS.Example.Engines.HUD;
+using Svelto.ECS.Example.Engines.Player;
+using Svelto.ECS.Example.Engines.Player.Gun;
+using Svelto.ECS.Example.Engines.Sound.Damage;
+using Svelto.ECS.Example.Observables.Enemies;
+using Svelto.ECS.Example.Observers.HUD;
 using Svelto.Context;
-using Svelto.ES;
-using Svelto.Ticker;
+using Svelto.Ticker.Legacy;
 using UnityEngine;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where the framework can be initialised.
-public class Main : ICompositionRoot
+namespace Svelto.ECS.Example
+{
+    public class Main : ICompositionRoot
     {
         public Main()
         {
@@ -22,15 +23,15 @@ public class Main : ICompositionRoot
 
         void SetupEnginesAndComponents()
         {
-			_tickEngine = new UnityTicker();
-            _entityFactory = _enginesRoot = new EnginesRoot(_tickEngine);
-            
-			GameObjectFactory factory = new GameObjectFactory();
+            _tickEngine = new UnityTicker();
+            _entityFactory = _enginesRoot = new EnginesRoot();
+
+            GameObjectFactory factory = new GameObjectFactory();
 
             var enemyKilledObservable = new EnemyKilledObservable();
             var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver((EnemyKilledObservable)enemyKilledObservable);
 
-			AddEngine(new PlayerMovementEngine());
+            AddEngine(new PlayerMovementEngine());
             AddEngine(new PlayerAnimationEngine());
 
             AddEngine(new PlayerGunShootingEngine(enemyKilledObservable));
@@ -58,21 +59,21 @@ public class Main : ICompositionRoot
 
         void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
-			IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
+            IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
 
-			for (int i = 0; i < entities.Length; i++)
-				_entityFactory.BuildEntity((entities[i] as MonoBehaviour).gameObject.GetInstanceID(), entities[i].BuildDescriptorType());
+            for (int i = 0; i < entities.Length; i++)
+                _entityFactory.BuildEntity((entities[i] as MonoBehaviour).gameObject.GetInstanceID(), entities[i].BuildDescriptorType());
         }
 
         void ICompositionRoot.OnContextInitialized()
-        {}
+        { }
 
         void ICompositionRoot.OnContextDestroyed()
-        {}
+        { }
 
-		EnginesRoot     _enginesRoot;
-		IEntityFactory  _entityFactory;
-        UnityTicker 	_tickEngine;
+        EnginesRoot _enginesRoot;
+        IEntityFactory _entityFactory;
+        UnityTicker _tickEngine;
     }
 
     //A GameObject containing UnityContext must be present in the scene
@@ -80,5 +81,6 @@ public class Main : ICompositionRoot
     //to notify the Context, must belong to GameObjects children of UnityContext.
 
     public class MainContext : UnityContext<Main>
-    {}
+    { }
 
+}

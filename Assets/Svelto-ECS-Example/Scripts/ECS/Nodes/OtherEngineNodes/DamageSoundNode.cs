@@ -1,8 +1,7 @@
-using Components.Base;
-using Components.Damageable;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.Base;
+using Svelto.ECS.Example.Components.Damageable;
 
-namespace Nodes.Sound
+namespace Svelto.ECS.Example.Nodes.Sound
 {
     public class DamageSoundNode: NodeWithID
     {

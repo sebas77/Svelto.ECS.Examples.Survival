@@ -1,9 +1,7 @@
-using System;
-using Svelto.ES;
-using Nodes.Sound;
-using Components.Damageable;
+using Svelto.ECS.Example.Nodes.Sound;
+using Svelto.ECS.Example.Components.Damageable;
 
-namespace Engines.Sound.Damage
+namespace Svelto.ECS.Example.Engines.Sound.Damage
 {
     public class DamageSoundEngine : SingleNodeEngine<DamageSoundNode>, IQueryableNodeEngine
     {
@@ -13,7 +11,7 @@ namespace Engines.Sound.Damage
         {
             var healthComponent = (node as DamageSoundNode).healthComponent;
 
-            healthComponent.isDead.subscribers += TriggerDeathSound;
+            healthComponent.isDead.NotifyOnDataChange(TriggerDeathSound);
             healthComponent.isDamaged.subscribers += TriggerDamageAudio;
         }
 
@@ -21,11 +19,11 @@ namespace Engines.Sound.Damage
         {
             var healthComponent = (node as DamageSoundNode).healthComponent;
 
-            healthComponent.isDead.subscribers -= TriggerDeathSound;
+            healthComponent.isDead.StopNotifyOnDataChange(TriggerDeathSound);
             healthComponent.isDamaged.subscribers -= TriggerDamageAudio;
         }
 
-       void TriggerDeathSound(int targetID)
+       void TriggerDeathSound(int targetID, bool isDead)
        {
             var audioNode =  nodesDB.QueryNode<DamageSoundNode>(targetID);
             var audioComponent = audioNode.audioComponent;

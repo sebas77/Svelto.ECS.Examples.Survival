@@ -1,7 +1,7 @@
-using Components.Player;
+using Svelto.ECS.Example.Components.Player;
 using Svelto.Observer;
 
-namespace Observables.Enemies
+namespace Svelto.ECS.Example.Observables.Enemies
 {
     public class EnemyKilledObservable : Observable<PlayerTargetType>
     { }

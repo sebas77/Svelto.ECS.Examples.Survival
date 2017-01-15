@@ -1,7 +1,6 @@
-using Components.HUD;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.HUD;
 
-namespace Nodes.HUD
+namespace Svelto.ECS.Example.Nodes.HUD
 {
     public class HUDNode: NodeWithID
     {

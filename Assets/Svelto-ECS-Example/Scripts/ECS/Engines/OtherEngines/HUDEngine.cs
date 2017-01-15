@@ -1,11 +1,10 @@
-using Components.Damageable;
-using Nodes.HUD;
-using Svelto.ES;
-using Svelto.Ticker;
+using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Nodes.HUD;
+using Svelto.Ticker.Legacy;
 using System;
 using UnityEngine;
 
-namespace Engines.HUD
+namespace Svelto.ECS.Example.Engines.HUD
 {
     public class HUDEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {
@@ -25,7 +24,7 @@ namespace Engines.HUD
                 var damageEventNode = obj as HUDDamageEventNode;
 
 				damageEventNode.healthComponent.isDamaged.subscribers += OnDamageEvent;
-                damageEventNode.healthComponent.isDead.subscribers += OnDeadEvent;
+                damageEventNode.healthComponent.isDead.NotifyOnDataChange(OnDeadEvent);
             }
         }
 
@@ -38,7 +37,6 @@ namespace Engines.HUD
                 var damageEventNode = obj as HUDDamageEventNode;
 
 				damageEventNode.healthComponent.isDamaged.subscribers -= OnDamageEvent;
-				damageEventNode.healthComponent.isDead.subscribers -= OnDeadEvent;
             }
         }
 
@@ -62,14 +60,14 @@ namespace Engines.HUD
             _guiNode.healthSliderComponent.healthSlider.value = nodesDB.QueryNode<HUDDamageEventNode>(sender).healthComponent.currentHealth;
         }
 
-        void OnDeadEvent(int targetID)
+        void OnDeadEvent(int targetID, bool isDead)
         {
             _guiNode.HUDAnimator.hudAnimator.SetTrigger("GameOver");
         }
 
         readonly Type[] _acceptedNodes = { typeof(HUDNode), typeof(HUDDamageEventNode) };
 
-        HUDNode             _guiNode;
+        HUDNode         _guiNode;
     }
 }
 

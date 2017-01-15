@@ -1,8 +1,7 @@
-using Svelto.ES;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Components.HUD
+namespace Svelto.ECS.Example.Components.HUD
 {
     public interface IAnimatorHUDComponent: IComponent
     {

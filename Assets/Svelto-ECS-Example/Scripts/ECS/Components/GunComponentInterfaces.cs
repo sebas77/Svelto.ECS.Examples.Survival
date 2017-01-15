@@ -1,7 +1,6 @@
-using Svelto.ES;
 using UnityEngine;
 
-namespace Components.Gun
+namespace Svelto.ECS.Example.Components.Gun
 {
 	public interface IGunAttributesComponent: IComponent
     {
@@ -15,7 +14,7 @@ namespace Components.Gun
 
     public interface IGunHitTargetComponent : IComponent
     {
-        DispatcherOnSet<int, bool> targetHit { get; }
+        DispatcherOnSet<bool> targetHit { get; }
     }
 
     public interface IGunFXComponent: IComponent

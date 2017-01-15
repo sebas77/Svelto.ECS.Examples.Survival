@@ -1,11 +1,12 @@
-using Components.Damageable;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.Damageable;
 
-namespace Nodes.DamageableEntities
+namespace Svelto.ECS.Example.Nodes.DamageableEntities
 {
     public class HealthNode: NodeWithID
     {
         public IDamageEventComponent    damageEventComponent;
         public IHealthComponent         healthComponent;
+
+        public IRemoveEntityComponent   removeEntityComponent;
     }
 }

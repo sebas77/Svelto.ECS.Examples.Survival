@@ -1,7 +1,6 @@
-using Svelto.ES;
 using UnityEngine;
 
-namespace Components.Base
+namespace Svelto.ECS.Example.Components.Base
 {
     public interface IAnimationComponent: IComponent
     {

@@ -1,13 +1,12 @@
 using System;
-using Svelto.ES;
-using Svelto.Ticker;
+using Svelto.Ticker.Legacy;
 using UnityEngine;
-using Nodes.Player;
-using Components.Damageable;
-using Observables.Enemies;
-using Nodes.Gun;
+using Svelto.ECS.Example.Nodes.Player;
+using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Observables.Enemies;
+using Svelto.ECS.Example.Nodes.Gun;
 
-namespace Engines.Player.Gun
+namespace Svelto.ECS.Example.Engines.Player.Gun
 {
     public class PlayerGunShootingEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {
@@ -29,12 +28,12 @@ namespace Engines.Player.Gun
             {
                 var targetNode = obj as PlayerTargetNode;
 
-                targetNode.healthComponent.isDead.subscribers += OnTargetDead;
+                targetNode.healthComponent.isDead.NotifyOnDataChange(OnTargetDead);
             }
             else
             if (obj is PlayerNode)
             {
-                (obj as PlayerNode).healthComponent.isDead.subscribers += OnPlayerDead;
+                (obj as PlayerNode).healthComponent.isDead.NotifyOnDataChange(OnPlayerDead);
             }
         }
 
@@ -42,21 +41,9 @@ namespace Engines.Player.Gun
         {
             if (obj is GunNode)
                 _playerGunNode = null;
-            else
-            if (obj is PlayerTargetNode)
-            {
-                var targetNode = obj as PlayerTargetNode;
-
-                targetNode.healthComponent.isDead.subscribers -= OnTargetDead;
-            }
-            else
-            if (obj is PlayerNode)
-            {
-                (obj as PlayerNode).healthComponent.isDead.subscribers -= OnPlayerDead;
-            }
         }
 
-        private void OnPlayerDead(int ID)
+        private void OnPlayerDead(int ID, bool isDead)
         {
             _playerGunNode = null;
         }
@@ -87,7 +74,7 @@ namespace Engines.Player.Gun
 
                 PlayerTargetNode targetComponent = null;
                 
-                if (hitGO.layer == ENEMY_LAYER && nodesDB.QueryNode<PlayerTargetNode>(hitGO.GetInstanceID(), out targetComponent))
+                if (hitGO.layer == ENEMY_LAYER && nodesDB.QueryNode(hitGO.GetInstanceID(), out targetComponent))
                 {
                     var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, shootHit.point);
                     targetComponent.damageEventComponent.damageReceived.Dispatch(ref damageInfo);
@@ -102,7 +89,7 @@ namespace Engines.Player.Gun
             playerGunHitComponent.targetHit.value = false;
         }
 
-        void OnTargetDead(int targetID)
+        void OnTargetDead(int targetID, bool isDead)
         {
             var playerTarget = nodesDB.QueryNode<PlayerTargetNode>(targetID);
             var targetType = playerTarget.targetTypeComponent.targetType;

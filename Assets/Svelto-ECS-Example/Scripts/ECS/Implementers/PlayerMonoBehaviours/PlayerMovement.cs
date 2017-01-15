@@ -1,7 +1,7 @@
-using Components.Base;
+using Svelto.ECS.Example.Components.Base;
 using UnityEngine;
 
-namespace Implementators.Player
+namespace Svelto.ECS.Example.Implementators.Player
 {
     public class PlayerMovement : MonoBehaviour,
         IRigidBodyComponent,

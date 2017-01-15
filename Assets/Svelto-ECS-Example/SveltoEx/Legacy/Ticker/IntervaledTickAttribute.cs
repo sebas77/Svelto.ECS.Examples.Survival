@@ -1,6 +1,6 @@
 using System;
 
-namespace Svelto.Ticker
+namespace Svelto.Ticker.Legacy
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class IntervaledTickAttribute : Attribute

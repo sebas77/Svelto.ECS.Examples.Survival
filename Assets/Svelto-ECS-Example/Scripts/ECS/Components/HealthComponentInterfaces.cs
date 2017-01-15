@@ -1,20 +1,19 @@
-using Svelto.ES;
 using UnityEngine;
 
-namespace Components.Damageable
+namespace Svelto.ECS.Example.Components.Damageable
 {
     public interface IHealthComponent: IComponent
     {
         int             currentHealth   { get; set; }
-        bool            hasBeenDamaged  { get; set; }
+        //bool            hasBeenDamaged  { get; set; }
 
-        Dispatcher<int>             isDead          { get; }
-        Dispatcher<int, DamageInfo> isDamaged       { get; }
+        DispatcherOnChange<bool>           isDead         { get; }
+        Legacy.Dispatcher<int, DamageInfo> isDamaged      { get; }
     }
 
     public interface IDamageEventComponent: IComponent
     {
-        Dispatcher<int, DamageInfo>    damageReceived  { get; }
+        Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>    damageReceived  { get; }
     }
 
     public struct DamageInfo

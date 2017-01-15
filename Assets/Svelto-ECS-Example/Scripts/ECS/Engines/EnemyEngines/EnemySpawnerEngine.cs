@@ -1,12 +1,11 @@
-using Components.Enemy;
-using Nodes.Enemies;
+using Svelto.ECS.Example.Components.Enemy;
+using Svelto.ECS.Example.Nodes.Enemies;
 using Svelto.DataStructures;
-using Svelto.ES;
-using Svelto.Ticker;
+using Svelto.Ticker.Legacy;
 using System;
 using UnityEngine;
 
-namespace Engines.Enemies
+namespace Svelto.ECS.Example.Engines.Enemies
 {
     public class EnemySpawnerEngine : INodesEngine, IIntervaledTickable
     {

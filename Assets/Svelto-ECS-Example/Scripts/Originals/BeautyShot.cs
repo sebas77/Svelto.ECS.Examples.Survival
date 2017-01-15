@@ -3,8 +3,6 @@ using UnityEditor;
 #endif
 
 using UnityEngine;
-using System.IO;
-using System.Collections;
 
 public class BeautyShot : MonoBehaviour
 {

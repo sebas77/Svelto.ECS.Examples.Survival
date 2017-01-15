@@ -1,8 +1,7 @@
-using Components.Gun;
-using System;
+using Svelto.ECS.Example.Components.Gun;
 using UnityEngine;
 
-namespace Implementators.Player
+namespace Svelto.ECS.Example.Implementators.Player
 {
     public class PlayerShooting : MonoBehaviour, IGunAttributesComponent, IGunFXComponent, IGunHitTargetComponent
     {
@@ -13,7 +12,7 @@ namespace Implementators.Player
         float IGunAttributesComponent.timeBetweenBullets { get { return timeBetweenBullets; } }
         float IGunAttributesComponent.range { get { return range; } }
         int IGunAttributesComponent.damagePerShot { get { return damagePerShot; } }
-        DispatcherOnSet<int, bool> IGunHitTargetComponent.targetHit { get { return _targetHit; } }
+        DispatcherOnSet<bool> IGunHitTargetComponent.targetHit { get { return _targetHit; } }
         Vector3 IGunAttributesComponent.lastTargetPosition { set { _lastTargetPosition = value; } get { return _lastTargetPosition; } }
         float IGunAttributesComponent.timer { get; set; }
         Ray IGunAttributesComponent.shootRay
@@ -44,18 +43,18 @@ namespace Implementators.Player
             _gunAudio = GetComponent<AudioSource> ();
             _gunLight = GetComponent<Light> ();
 
-            _targetHit = new DispatcherOnSet<int, bool>(gameObject.GetInstanceID());
+            _targetHit = new DispatcherOnSet<bool>(gameObject.GetInstanceID());
         }
 
         Transform       _transform;
-        ParticleSystem  _gunParticles;                    // Reference to the particle system.
+        ParticleSystem  _gunParticles;                      // Reference to the particle system.
         LineRenderer    _gunLine;                           // Reference to the line renderer.
-        AudioSource     _gunAudio;                           // Reference to the audio source.
-        Light           _gunLight;                                 // Reference to the light component.
-        float           _effectsDisplayTime = 0.2f;                // The proportion of the timeBetweenBullets that the effects will display for.
+        AudioSource     _gunAudio;                          // Reference to the audio source.
+        Light           _gunLight;                          // Reference to the light component.
+        float           _effectsDisplayTime = 0.2f;         // The proportion of the timeBetweenBullets that the effects will display for.
         Ray             _shootRay;
         Vector3         _lastTargetPosition;
 
-        DispatcherOnSet<int, bool> _targetHit;
+        DispatcherOnSet<bool> _targetHit;
     }
 }

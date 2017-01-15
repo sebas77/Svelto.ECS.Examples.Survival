@@ -1,6 +1,4 @@
-using Svelto.ES;
-
-namespace Components.Player
+namespace Svelto.ECS.Example.Components.Player
 {
     public interface ITargetTypeComponent: IComponent
     {

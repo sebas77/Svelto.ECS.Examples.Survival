@@ -1,7 +1,7 @@
-using Components.HUD;
+using Svelto.ECS.Example.Components.HUD;
 using UnityEngine;
 
-namespace Implementators.HUD
+namespace Svelto.ECS.Example.Implementators.HUD
 {
     public class AnimatorHUD: MonoBehaviour, IAnimatorHUDComponent
     {

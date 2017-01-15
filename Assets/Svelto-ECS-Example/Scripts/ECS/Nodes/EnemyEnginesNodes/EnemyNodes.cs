@@ -1,9 +1,8 @@
-using Components.Base;
-using Components.Damageable;
-using Components.Enemy;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.Base;
+using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Components.Enemy;
 
-namespace Nodes.Enemies
+namespace Svelto.ECS.Example.Nodes.Enemies
 {
     public class EnemyNode: NodeWithID
     {
@@ -16,8 +15,6 @@ namespace Nodes.Enemies
         public IHealthComponent           healthComponent;
         public IAnimationComponent        animationComponent;
         public ITransformComponent        transformComponent;
-
-        public IRemoveEntityComponent     removeEntityComponent;
     }
 
     public class EnemySpawningNode : NodeWithID

@@ -1,8 +1,7 @@
-using Components.Damageable;
-using Nodes.DamageableEntities;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Nodes.DamageableEntities;
 
-namespace Engines.Health
+namespace Svelto.ECS.Example.Engines.Health
 {
     public class HealthEngine : SingleNodeEngine<HealthNode>, IQueryableNodeEngine
     {
@@ -30,7 +29,10 @@ namespace Engines.Health
             healthComponent.currentHealth -= damage.damagePerShot;
 
             if (healthComponent.currentHealth <= 0)
-                healthComponent.isDead.Dispatch();
+            {
+                healthComponent.isDead.value = true;
+                node.removeEntityComponent.removeEntity();
+            }
             else
                 healthComponent.isDamaged.Dispatch(ref damage);
         }

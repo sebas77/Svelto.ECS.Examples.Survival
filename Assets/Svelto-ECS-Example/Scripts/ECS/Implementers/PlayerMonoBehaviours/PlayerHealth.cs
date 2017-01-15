@@ -1,10 +1,9 @@
 using System;
-using Components.Base;
-using Components.Damageable;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.Base;
+using Svelto.ECS.Example.Components.Damageable;
 using UnityEngine;
 
-namespace Implementators.Player
+namespace Svelto.ECS.Example.Implementators.Player
 {
     public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IDamageEventComponent, IRemoveEntityComponent
     {
@@ -13,11 +12,11 @@ namespace Implementators.Player
         public AudioClip damageClip;                                 // The audio clip to play when the player dies.
 
         int  IHealthComponent.currentHealth   { get { return _currentHealth; } set { _currentHealth = value; } }
-        bool IHealthComponent.hasBeenDamaged  { get; set; }
+        //bool IHealthComponent.hasBeenDamaged  { get; set; }
 
-        Dispatcher<int, DamageInfo>    IDamageEventComponent.damageReceived { get { return _damageReceived; } }
-        Dispatcher<int>                IHealthComponent.isDead              { get { return _isDead; } }
-        Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged           { get { return _isDamaged; } }
+        Legacy.Dispatcher<int, DamageInfo>    IDamageEventComponent.damageReceived { get { return _damageReceived; } }
+        DispatcherOnChange<bool>              IHealthComponent.isDead { get { return _isDead; } }
+        Legacy.Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged           { get { return _isDamaged; } }
 
         AudioSource IDamageSoundComponent.audioSource   { get { return _playerAudio; } }
         AudioClip   IDamageSoundComponent.death         { get { return deathClip; } }
@@ -32,9 +31,9 @@ namespace Implementators.Player
             // Set the initial health of the player.
             _currentHealth = startingHealth;
 
-            _isDead = new Dispatcher<int>(gameObject.GetInstanceID());
-            _isDamaged = new DispatcherOnChange<int, DamageInfo>(gameObject.GetInstanceID());
-            _damageReceived = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
+            _damageReceived = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
+            _isDead = new DispatcherOnChange<bool>(gameObject.GetInstanceID());
+            _isDamaged = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
 
         /// <summary>
@@ -48,8 +47,8 @@ namespace Implementators.Player
         int                 _currentHealth;
         AudioSource         _playerAudio;                                    // Reference to the AudioSource component.
 
-        Dispatcher<int>              _isDead;
-        Dispatcher<int, DamageInfo>  _isDamaged;
-        Dispatcher<int, DamageInfo>  _damageReceived;
+        Legacy.Dispatcher<int, DamageInfo>     _damageReceived;
+        DispatcherOnChange<bool>               _isDead;
+        Legacy.Dispatcher<int, DamageInfo>     _isDamaged;
     }
 }

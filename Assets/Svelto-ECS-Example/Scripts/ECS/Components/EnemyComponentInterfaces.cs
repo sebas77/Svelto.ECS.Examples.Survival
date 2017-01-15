@@ -1,7 +1,6 @@
-using Svelto.ES;
 using UnityEngine;
 
-namespace Components.Enemy
+namespace Svelto.ECS.Example.Components.Enemy
 {
     public interface IEnemyAttackComponent: IComponent
     {
@@ -17,7 +16,7 @@ namespace Components.Enemy
 
     public interface IEnemyMovementComponent: IComponent
     {
-        NavMeshAgent navMesh            { get; }
+        UnityEngine.AI.NavMeshAgent navMesh            { get; }
         float sinkSpeed                 { get; }
         CapsuleCollider capsuleCollider { get; }
     }

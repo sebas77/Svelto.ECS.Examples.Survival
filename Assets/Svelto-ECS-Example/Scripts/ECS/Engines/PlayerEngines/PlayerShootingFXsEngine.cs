@@ -1,10 +1,9 @@
-using Svelto.ES;
 using UnityEngine;
 using System.Collections;
 using Svelto.Tasks;
-using Nodes.Gun;
+using Svelto.ECS.Example.Nodes.Gun;
 
-namespace Engines.Player.Gun
+namespace Svelto.ECS.Example.Engines.Player.Gun
 {
     public class PlayerGunShootingFXsEngine : SingleNodeEngine<GunNode>, IQueryableNodeEngine
     {
@@ -12,19 +11,19 @@ namespace Engines.Player.Gun
 
         public PlayerGunShootingFXsEngine()
         {
-            _taskRoutine = TaskRunner.Instance.CreateTask(DisableFXAfterTime);
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumeratorProvider(DisableFXAfterTime);
         }
 
         override protected void Add(GunNode playerGunNode)
         {
             _playerGunNode = playerGunNode;
-            playerGunNode.gunHitTargetComponent.targetHit.subscribers += Shoot;
+            playerGunNode.gunHitTargetComponent.targetHit.NotifyOnDataChange(Shoot);
         }
 
         override protected  void Remove(GunNode playerGunNode)
         {
             _playerGunNode = null;
-            playerGunNode.gunHitTargetComponent.targetHit.subscribers -= Shoot;
+            playerGunNode.gunHitTargetComponent.targetHit.StopNotifyOnDataChange(Shoot);
         }
 
         void Shoot(int ID, bool targetHasBeenHit)
@@ -64,7 +63,7 @@ namespace Engines.Player.Gun
                  gunFXComponent.line.SetPosition(1, shootRay.origin + shootRay.direction * gunComponent.range);
             }
 
-            _taskRoutine.Start(true);
+            _taskRoutine.Start();
         }
 
         IEnumerator DisableFXAfterTime()
@@ -83,7 +82,7 @@ namespace Engines.Player.Gun
             fxComponent.light.enabled = false;
         }
 
-        TaskRoutine    _taskRoutine;
+        ITaskRoutine   _taskRoutine;
         GunNode        _playerGunNode;
     }
 }

@@ -1,9 +1,8 @@
-using Svelto.ES;
-using Svelto.Ticker;
-using UnitySampleAssets.CrossPlatformInput;
-using Nodes.Player;
+using Svelto.Ticker.Legacy;
+using Svelto.ECS.Example.Nodes.Player;
+using UnityStandardAssets.CrossPlatformInput;
 
-namespace Engines.Player
+namespace Svelto.ECS.Example.Engines.Player
 {
     public class PlayerAnimationEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable
     {
@@ -11,14 +10,11 @@ namespace Engines.Player
         {
             _playerNode = playerNode;
 
-            _playerNode.healthComponent.isDead.subscribers += TriggerDeathAnimation;
+            _playerNode.healthComponent.isDead.NotifyOnDataChange(TriggerDeathAnimation);
         }
 
         protected override void Remove(PlayerNode playerNode)
         {
-            if (playerNode.healthComponent != null)
-                playerNode.healthComponent.isDead.subscribers -= TriggerDeathAnimation;
-
             _playerNode = null;
         }
 
@@ -36,10 +32,9 @@ namespace Engines.Player
             _playerNode.animationComponent.animation.SetBool("IsWalking", walking);
         }
 
-        void TriggerDeathAnimation(int targetID)
+        void TriggerDeathAnimation(int targetID, bool isDead)
         {
             _playerNode.animationComponent.animation.SetTrigger("Die");
-            _playerNode.removeEntityComponent.removeEntity();
         }
 
         PlayerNode _playerNode;

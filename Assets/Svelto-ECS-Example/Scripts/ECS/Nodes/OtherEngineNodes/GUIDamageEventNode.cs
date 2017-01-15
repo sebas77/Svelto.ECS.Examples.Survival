@@ -1,7 +1,6 @@
-using Components.Damageable;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.Damageable;
 
-namespace Nodes.HUD
+namespace Svelto.ECS.Example.Nodes.HUD
 {
 	public class HUDDamageEventNode: NodeWithID
     {

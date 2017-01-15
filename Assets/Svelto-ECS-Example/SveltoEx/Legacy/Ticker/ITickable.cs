@@ -1,4 +1,4 @@
-namespace Svelto.Ticker
+namespace Svelto.Ticker.Legacy
 {
     public interface ILateTickable : ITickableBase
     {

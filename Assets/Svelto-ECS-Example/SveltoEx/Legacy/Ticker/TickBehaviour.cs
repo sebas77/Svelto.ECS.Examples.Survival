@@ -6,7 +6,7 @@ using Svelto.ECS.Profiler;
 #endif
 using UnityEngine;
 
-namespace Svelto.Ticker
+namespace Svelto.Ticker.Legacy
 {
     public class TickBehaviour : MonoBehaviour
     {
@@ -31,7 +31,7 @@ namespace Svelto.Ticker
                     }
                     catch (Exception e)
                     {
-                        Utility.Console.LogException(e);
+                        Debug.LogException(e);
                     }
                 }
             }
@@ -92,7 +92,7 @@ namespace Svelto.Ticker
                 }
                 catch (Exception e)
                 {
-                    Utility.Console.LogException(e);
+                    Debug.LogException(e);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace Svelto.Ticker
                 }
                 catch (Exception e)
                 {
-                    Utility.Console.LogException(e);
+                    Debug.LogException(e);
                 }
             }
         }
@@ -132,7 +132,7 @@ namespace Svelto.Ticker
                 }
                 catch (Exception e)
                 {
-                    Utility.Console.LogException(e);
+                    Debug.LogException(e);
                 }
             }
         }

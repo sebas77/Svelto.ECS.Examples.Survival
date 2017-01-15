@@ -1,11 +1,10 @@
-﻿using Svelto.ES;
-using UnityEngine;
-using Nodes.Enemies;
+﻿using UnityEngine;
+using Svelto.ECS.Example.Nodes.Enemies;
 using Svelto.DataStructures;
 using System;
-using Components.Enemy;
+using Svelto.ECS.Example.Components.Enemy;
 
-namespace EntityDescriptors.EnemySpawner
+namespace Svelto.ECS.Example.EntityDescriptors.EnemySpawner
 {
     class EnemySpawnerEntityDescriptor : EntityDescriptor
      {
@@ -32,7 +31,7 @@ namespace EntityDescriptors.EnemySpawner
 	[DisallowMultipleComponent]
 	public class EnemySpawnerEntityDescriptorHolder:MonoBehaviour, IEntityDescriptorHolder
 	{
-		EntityDescriptor IEntityDescriptorHolder.BuildDescriptorType()
+		public EntityDescriptor BuildDescriptorType(object[] extraImplentors = null)
 		{
 			return new EnemySpawnerEntityDescriptor(GetComponents<IEnemySpawnerComponent>());
 		}

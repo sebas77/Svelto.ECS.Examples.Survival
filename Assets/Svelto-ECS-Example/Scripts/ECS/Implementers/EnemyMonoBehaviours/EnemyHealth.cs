@@ -1,25 +1,26 @@
-using Components.Base;
-using Components.Damageable;
-using Components.Enemy;
-using Components.Player;
+using System;
+using Svelto.ECS.Example.Components.Base;
+using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Components.Enemy;
+using Svelto.ECS.Example.Components.Player;
 using UnityEngine;
 
-namespace Implementators.Enemies
+namespace Svelto.ECS.Example.Implementators.Enemies
 {
-    public class EnemyHealth : MonoBehaviour, IHealthComponent, IAnimationComponent, IEnemyVFXComponent, IDamageSoundComponent, IDamageEventComponent, ITargetTypeComponent
+    public class EnemyHealth : MonoBehaviour, IHealthComponent, IAnimationComponent, IEnemyVFXComponent, IDamageSoundComponent, IDamageEventComponent, ITargetTypeComponent, IRemoveEntityComponent
     {
         public int startingHealth = 100;            // The amount of health the enemy starts the game with.
         public AudioClip deathClip;                 // The sound to play when the enemy dies.
         public AudioClip damageClip;                 // The sound to play when the enemy dies.
         public PlayerTargetType targetType;
 
-        Dispatcher<int, DamageInfo>  IDamageEventComponent.damageReceived { get { return _damageReceived; } }
+        Legacy.Dispatcher<int, DamageInfo>  IDamageEventComponent.damageReceived { get { return _damageReceived; } }
 
         int   IHealthComponent.currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
-        bool  IHealthComponent.hasBeenDamaged { get; set; }
+        //bool  IHealthComponent.hasBeenDamaged { get; set; }
 
-        Dispatcher<int>                IHealthComponent.isDead { get { return _isDead; } }
-        Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged { get { return _isDamaged; } }
+        DispatcherOnChange<bool>              IHealthComponent.isDead { get { return _isDead; } }
+        Legacy.Dispatcher<int, DamageInfo>    IHealthComponent.isDamaged { get { return _isDamaged; } }
 
         Animator IAnimationComponent.animation { get { return _anim; } }
 
@@ -31,6 +32,8 @@ namespace Implementators.Enemies
 
         PlayerTargetType ITargetTypeComponent.targetType { get { return targetType; } }
 
+        public Action removeEntity { get; set; }
+
         void Awake ()
         {
             // Setting up the references.
@@ -41,18 +44,18 @@ namespace Implementators.Enemies
             // Setting the current health when the enemy first spawns.
             _currentHealth = startingHealth;
 
-            _damageReceived = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
-            _isDead = new Dispatcher<int>(gameObject.GetInstanceID());
-            _isDamaged = new Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
+            _damageReceived = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
+            _isDead = new DispatcherOnChange<bool>(gameObject.GetInstanceID());
+            _isDamaged = new Svelto.ECS.Legacy.Dispatcher<int, DamageInfo>(gameObject.GetInstanceID());
         }
 
-        Dispatcher<int, DamageInfo>     _damageReceived;
-        Dispatcher<int>                 _isDead;
-        Dispatcher<int, DamageInfo>     _isDamaged;
+        Legacy.Dispatcher<int, DamageInfo>     _damageReceived;
+        DispatcherOnChange<bool>               _isDead;
+        Legacy.Dispatcher<int, DamageInfo>     _isDamaged;
 
-        Animator _anim;                       // Reference to the animator.
-        AudioSource _enemyAudio;              // Reference to the audio source.
-        ParticleSystem _hitParticles;         // Reference to the particle system that plays when the enemy is damaged.
-        int _currentHealth;                   // The current health the enemy has.
+        Animator        _anim;                 // Reference to the animator.
+        AudioSource     _enemyAudio;           // Reference to the audio source.
+        ParticleSystem  _hitParticles;         // Reference to the particle system that plays when the enemy is damaged.
+        int             _currentHealth;        // The current health the enemy has.
     }
 }

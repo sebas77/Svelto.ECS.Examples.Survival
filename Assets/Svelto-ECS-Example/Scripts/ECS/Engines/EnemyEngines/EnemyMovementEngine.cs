@@ -1,10 +1,9 @@
-using Nodes.Enemies;
-using Svelto.ES;
-using Svelto.Ticker;
+using Svelto.ECS.Example.Nodes.Enemies;
+using Svelto.Ticker.Legacy;
 using System;
 using UnityEngine;
 
-namespace Engines.Enemies
+namespace Svelto.ECS.Example.Engines.Enemies
 {
     public class EnemyMovementEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {
@@ -22,7 +21,7 @@ namespace Engines.Enemies
                 var enemyNode = obj as EnemyNode;
                 var healthEventsComponent = enemyNode.healthComponent;
 
-                healthEventsComponent.isDead.subscribers += StopEnemyOnDeath;
+                healthEventsComponent.isDead.NotifyOnDataChange(StopEnemyOnDeath);
             }
             else
                 _targetNode = obj as EnemyTargetNode;
@@ -35,7 +34,7 @@ namespace Engines.Enemies
                 var enemyNode = obj as EnemyNode;
                 var healthEventsComponent = enemyNode.healthComponent;
 
-                healthEventsComponent.isDead.subscribers -= StopEnemyOnDeath;
+                healthEventsComponent.isDead.StopNotifyOnDataChange(StopEnemyOnDeath);
             }
             else
                 _targetNode = null;
@@ -57,7 +56,7 @@ namespace Engines.Enemies
             }
         }
 
-        void StopEnemyOnDeath(int targetID)
+        void StopEnemyOnDeath(int targetID, bool isDead)
         {
             EnemyNode node = nodesDB.QueryNode<EnemyNode>(targetID);
 
@@ -69,6 +68,6 @@ namespace Engines.Enemies
 
         readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
 
-        EnemyTargetNode              _targetNode;
+        EnemyTargetNode   _targetNode;
     }
 }

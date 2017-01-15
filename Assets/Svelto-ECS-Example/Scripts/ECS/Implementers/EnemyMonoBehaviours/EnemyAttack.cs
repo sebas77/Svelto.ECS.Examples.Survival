@@ -1,7 +1,7 @@
-using Components.Enemy;
+using Svelto.ECS.Example.Components.Enemy;
 using UnityEngine;
 
-namespace Implementators.Enemies
+namespace Svelto.ECS.Example.Implementators.Enemies
 {
     public class EnemyAttack : MonoBehaviour, IEnemyAttackDataComponent
     {

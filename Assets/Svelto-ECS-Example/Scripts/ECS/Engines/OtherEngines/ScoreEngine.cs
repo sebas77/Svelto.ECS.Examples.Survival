@@ -1,9 +1,8 @@
 using System;
-using Svelto.ES;
-using Nodes.HUD;
-using Observers.HUD;
+using Svelto.ECS.Example.Nodes.HUD;
+using Svelto.ECS.Example.Observers.HUD;
 
-namespace Engines.HUD
+namespace Svelto.ECS.Example.Engines.HUD
 {
     public class ScoreEngine : INodesEngine
     {

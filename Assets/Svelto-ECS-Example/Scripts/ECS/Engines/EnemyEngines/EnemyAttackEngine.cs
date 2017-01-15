@@ -1,11 +1,10 @@
-using Components.Damageable;
-using Nodes.Enemies;
-using Svelto.ES;
-using Svelto.Ticker;
+using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Nodes.Enemies;
+using Svelto.Ticker.Legacy;
 using System;
 using UnityEngine;
 
-namespace Engines.Enemies
+namespace Svelto.ECS.Example.Engines.Enemies
 {
     public class EnemyAttackEngine : INodesEngine, ITickable, IQueryableNodeEngine
     {

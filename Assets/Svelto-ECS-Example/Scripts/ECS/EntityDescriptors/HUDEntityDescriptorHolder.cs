@@ -1,9 +1,7 @@
-﻿using System;
-using Svelto.ES;
-using Nodes.HUD;
+﻿using Svelto.ECS.Example.Nodes.HUD;
 using UnityEngine;
 
-namespace EntityDescriptors.HUD
+namespace Svelto.ECS.Example.EntityDescriptors.HUD
 {
     class HUDEntityDescriptor : EntityDescriptor
     {
@@ -24,7 +22,7 @@ namespace EntityDescriptors.HUD
 	[DisallowMultipleComponent]
 	public class HUDEntityDescriptorHolder:MonoBehaviour, IEntityDescriptorHolder
 	{
-		EntityDescriptor IEntityDescriptorHolder.BuildDescriptorType()
+		public EntityDescriptor BuildDescriptorType(object[] extraImplentors = null)
 		{
 			return new HUDEntityDescriptor(GetComponentsInChildren<IComponent>());
 		}

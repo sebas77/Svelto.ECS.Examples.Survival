@@ -1,10 +1,9 @@
-using Components.Base;
-using Components.Damageable;
-using Components.Gun;
-using Components.Player;
-using Svelto.ES;
+using Svelto.ECS.Example.Components.Base;
+using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Components.Gun;
+using Svelto.ECS.Example.Components.Player;
 
-namespace Nodes.Player
+namespace Svelto.ECS.Example.Nodes.Player
 {
     public class PlayerNode : NodeWithID
     {
@@ -13,7 +12,6 @@ namespace Nodes.Player
         public IRigidBodyComponent     rigidBodyComponent;
         public IPositionComponent      positionComponent;
         public IAnimationComponent     animationComponent;
-        public IRemoveEntityComponent  removeEntityComponent;
     }
 
     public class PlayerTargetNode : NodeWithID
@@ -24,7 +22,7 @@ namespace Nodes.Player
     }
 }
 
-namespace Nodes.Gun
+namespace Svelto.ECS.Example.Nodes.Gun
 {
     public class GunNode : NodeWithID
     {

@@ -1,22 +1,20 @@
-using Svelto.ES;
-using Svelto.Ticker;
-using UnitySampleAssets.CrossPlatformInput;
 using UnityEngine;
-using Nodes.Player;
+using Svelto.ECS.Example.Nodes.Player;
+using Svelto.Ticker.Legacy;
+using UnityStandardAssets.CrossPlatformInput;
 
-namespace Engines.Player
+namespace Svelto.ECS.Example.Engines.Player
 {
     public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable
     {
         override protected void Add(PlayerNode obj)
         {
             _playerNode = obj as PlayerNode;
-            _playerNode.healthComponent.isDead.subscribers += StopMovementOnDeath;
+            _playerNode.healthComponent.isDead.NotifyOnDataChange(StopMovementOnDeath);
         }
 
         override protected void Remove(PlayerNode obj)
         {
-            _playerNode.healthComponent.isDead.subscribers -= StopMovementOnDeath;
             _playerNode = null;
         }
 
@@ -70,7 +68,7 @@ namespace Engines.Player
             }
         }
 
-        void StopMovementOnDeath(int ID)
+        void StopMovementOnDeath(int ID, bool isDead)
         {
             _playerNode.rigidBodyComponent.rigidbody.isKinematic = true;
         }
