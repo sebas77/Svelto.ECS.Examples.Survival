@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Svelto.ECS.Example.Components.Enemy;
 
-namespace Svelto.ECS.Example.Implementators.Enemies
+namespace Svelto.ECS.Example.Implementers.Enemies
 {
     public class EnemyTrigger : MonoBehaviour, IEnemyTriggerComponent, IEnemyAttackComponent
     {

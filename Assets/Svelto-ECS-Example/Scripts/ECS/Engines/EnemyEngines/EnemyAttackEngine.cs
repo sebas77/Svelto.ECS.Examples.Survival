@@ -61,7 +61,6 @@ namespace Svelto.ECS.Example.Engines.Enemies
 
                         var damageInfo = new PlayerDamageInfo(attackDamageComponent.damage, Vector3.zero, _targetNode.ID);
 
-                        //when I will add the sequencer, this will be made with a sequencer.
                         _targetDamageSequence.Next(this, ref damageInfo);
                     }
                 }

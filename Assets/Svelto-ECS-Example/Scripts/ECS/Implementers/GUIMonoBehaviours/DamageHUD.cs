@@ -2,7 +2,7 @@ using Svelto.ECS.Example.Components.HUD;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Svelto.ECS.Example.Implementators.HUD
+namespace Svelto.ECS.Example.Implementers.HUD
 {
     public class DamageHUD: MonoBehaviour, IDamageHUDComponent
     {

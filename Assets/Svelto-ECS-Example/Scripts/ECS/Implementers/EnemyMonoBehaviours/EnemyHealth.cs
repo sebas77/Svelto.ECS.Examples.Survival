@@ -5,7 +5,7 @@ using Svelto.ECS.Example.Components.Enemy;
 using Svelto.ECS.Example.Components.Player;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Implementators.Enemies
+namespace Svelto.ECS.Example.Implementers.Enemies
 {
     public class EnemyHealth : MonoBehaviour, IHealthComponent, IAnimationComponent, IEnemyVFXComponent, IDamageSoundComponent, ITargetTypeComponent, IRemoveEntityComponent
     {

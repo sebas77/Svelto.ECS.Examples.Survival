@@ -3,7 +3,7 @@ using Svelto.ECS.Example.Components.Base;
 using Svelto.ECS.Example.Components.Damageable;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Implementators.Player
+namespace Svelto.ECS.Example.Implementers.Player
 {
     public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IRemoveEntityComponent
     {

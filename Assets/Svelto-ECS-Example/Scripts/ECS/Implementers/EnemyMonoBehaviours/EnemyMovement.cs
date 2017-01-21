@@ -3,7 +3,7 @@ using UnityEngine;
 using Svelto.ECS.Example.Components.Enemy;
 using Svelto.ECS.Example.Components.Base;
 
-namespace Svelto.ECS.Example.Implementators.Enemies
+namespace Svelto.ECS.Example.Implementers.Enemies
 {
     public class EnemyMovement : MonoBehaviour, IEnemyMovementComponent, ITransformComponent
     {

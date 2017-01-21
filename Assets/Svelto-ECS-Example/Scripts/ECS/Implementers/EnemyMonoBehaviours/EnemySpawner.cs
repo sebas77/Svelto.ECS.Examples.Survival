@@ -1,7 +1,7 @@
 using Svelto.ECS.Example.Components.Enemy;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Implementators.Enemies
+namespace Svelto.ECS.Example.Implementers.Enemies
 {
     public class EnemySpawner : MonoBehaviour, IEnemySpawnerComponent
     {
