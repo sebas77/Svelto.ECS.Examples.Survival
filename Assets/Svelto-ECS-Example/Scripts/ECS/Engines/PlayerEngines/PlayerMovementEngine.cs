@@ -1,14 +1,18 @@
 using UnityEngine;
 using Svelto.ECS.Example.Nodes.Player;
-using Svelto.Ticker.Legacy;
 using UnityStandardAssets.CrossPlatformInput;
 using System;
 using Svelto.ECS.Example.Components.Damageable;
 
 namespace Svelto.ECS.Example.Engines.Player
 {
-    public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable, IStep<PlayerDamageInfo>
+    public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IStep<PlayerDamageInfo>
     {
+        public PlayerMovementEngine()
+        { 
+            TaskRunner.Instance.RunOnSchedule(Tasks.StandardSchedulers.physicScheduler, new Tasks.TimedLoopActionEnumerator(PhysicsTick));
+        }
+
         override protected void Add(PlayerNode obj)
         {
             _playerNode = obj as PlayerNode;
@@ -19,7 +23,7 @@ namespace Svelto.ECS.Example.Engines.Player
             _playerNode = null;
         }
 
-        public void PhysicsTick(float deltaSec)
+        void PhysicsTick(float deltaSec)
         {
             if (_playerNode == null) return;
 

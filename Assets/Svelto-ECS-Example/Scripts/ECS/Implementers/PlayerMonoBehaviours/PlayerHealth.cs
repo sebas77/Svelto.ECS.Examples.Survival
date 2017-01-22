@@ -32,6 +32,8 @@ namespace Svelto.ECS.Example.Implementers.Player
         /// </summary>
         public void RestartLevel()
         {
+            TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks(); //Tasks like not ending loops must be cleared manually with this function
+
             Application.LoadLevel (Application.loadedLevel);
         }
 

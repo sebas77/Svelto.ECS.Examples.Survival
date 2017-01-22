@@ -7,7 +7,6 @@ using Svelto.ECS.Example.Engines.Sound.Damage;
 using Svelto.ECS.Example.Observables.Enemies;
 using Svelto.ECS.Example.Observers.HUD;
 using Svelto.Context;
-using Svelto.Ticker.Legacy;
 using UnityEngine;
 using Steps = System.Collections.Generic.Dictionary<Svelto.ECS.IEngine, System.Collections.Generic.Dictionary<System.Enum, Svelto.ECS.IStep[]>>;
 using System.Collections.Generic;
@@ -25,7 +24,6 @@ namespace Svelto.ECS.Example
 
         void SetupEnginesAndComponents()
         {
-            _tickEngine = new UnityTicker();
             _entityFactory = _enginesRoot = new EnginesRoot();
 
             GameObjectFactory factory = new GameObjectFactory();
@@ -48,21 +46,21 @@ namespace Svelto.ECS.Example
             var enemyMovementEngine = new EnemyMovementEngine();
 
             playerDamageSequence.SetSequence(
-                new Steps()
+                new Steps() //sequence of steps
                 { 
-                    { 
-                        enemyAttackEngine, 
-                        new Dictionary<System.Enum, IStep[]>()
+                    { //first step
+                        enemyAttackEngine, //this step can be triggered only by this engine through the Next function
+                        new Dictionary<System.Enum, IStep[]>() //this step can lead only to one branch
                         { 
-                            {  Condition.always, new [] { playerHealthEngine }  },
+                            {  Condition.always, new [] { playerHealthEngine }  }, //these engines will be called when the Next function is called with the Condition.always set
                         }  
                     },
-                    { 
-                        playerHealthEngine, 
-                        new Dictionary<System.Enum, IStep[]>()
+                    { //second step
+                        playerHealthEngine, //this step can be triggered only by this engine through the Next function
+                        new Dictionary<System.Enum, IStep[]>() //this step can branch in two paths
                         { 
-                            {  DamageCondition.damage, new IStep[] { hudEngine, damageSoundEngine }  },
-                            {  DamageCondition.dead, new IStep[] { hudEngine, damageSoundEngine, playerMovementEngine, playerAnimationEngine, enemyAnimationEngine }  },
+                            {  DamageCondition.damage, new IStep[] { hudEngine, damageSoundEngine }  }, //these engines will be called when the Next function is called with the DamageCondition.damage set
+                            {  DamageCondition.dead, new IStep[] { hudEngine, damageSoundEngine, playerMovementEngine, playerAnimationEngine, enemyAnimationEngine }  }, //these engines will be called when the Next function is called with the DamageCondition.dead set
                         }  
                     }  
                 }
@@ -108,9 +106,6 @@ namespace Svelto.ECS.Example
 
         void AddEngine(IEngine engine)
         {
-            if (engine is ITickableBase)
-                _tickEngine.Add(engine as ITickableBase);
-
             _enginesRoot.AddEngine(engine);
         }
 
@@ -130,7 +125,7 @@ namespace Svelto.ECS.Example
 
         EnginesRoot _enginesRoot;
         IEntityFactory _entityFactory;
-        UnityTicker _tickEngine;
+
     }
 
     //A GameObject containing UnityContext must be present in the scene

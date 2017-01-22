@@ -1,12 +1,12 @@
 using Svelto.ECS.Example.Components.Damageable;
 using Svelto.ECS.Example.Nodes.Enemies;
-using Svelto.Ticker.Legacy;
+using Svelto.Tasks;
 using System;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Engines.Enemies
 {
-    public class EnemyAttackEngine : INodesEngine, ITickable, IQueryableNodeEngine
+    public class EnemyAttackEngine : INodesEngine, IQueryableNodeEngine
     {
         public IEngineNodeDB nodesDB { set; private get; }
         public Type[] AcceptedNodes() { return _acceptedNodes; }
@@ -14,6 +14,8 @@ namespace Svelto.ECS.Example.Engines.Enemies
         public EnemyAttackEngine(Sequencer enemyrDamageSequence)
         {
             _targetDamageSequence = enemyrDamageSequence;
+
+            TaskRunner.Instance.Run(new TimedLoopActionEnumerator(Tick));
         }
 
         public void Add(INode obj)
@@ -40,7 +42,7 @@ namespace Svelto.ECS.Example.Engines.Enemies
                 _targetNode = null;
         }
 
-        public void Tick(float deltaSec)
+        void Tick(float deltaSec)
         {
             if (_targetNode == null) return;
 

@@ -1,4 +1,3 @@
-using Svelto.Ticker.Legacy;
 using Svelto.ECS.Example.Nodes.Player;
 using UnityStandardAssets.CrossPlatformInput;
 using System;
@@ -6,8 +5,13 @@ using Svelto.ECS.Example.Components.Damageable;
 
 namespace Svelto.ECS.Example.Engines.Player
 {
-    public class PlayerAnimationEngine : SingleNodeEngine<PlayerNode>, IPhysicallyTickable, IStep<PlayerDamageInfo>
+    public class PlayerAnimationEngine : SingleNodeEngine<PlayerNode>, IStep<PlayerDamageInfo>
     {
+        public PlayerAnimationEngine()
+        {
+            TaskRunner.Instance.RunOnSchedule(Tasks.StandardSchedulers.physicScheduler, new Tasks.TimedLoopActionEnumerator(PhysicsTick));
+        }
+
         protected override void Add(PlayerNode playerNode)
         {
             _playerNode = playerNode;

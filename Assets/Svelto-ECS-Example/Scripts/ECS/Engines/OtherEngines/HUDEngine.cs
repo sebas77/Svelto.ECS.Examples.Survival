@@ -1,18 +1,22 @@
 using Svelto.ECS.Example.Components.Damageable;
 using Svelto.ECS.Example.Nodes.HUD;
-using Svelto.Ticker.Legacy;
 using System;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Engines.HUD
 {
-    public class HUDEngine : INodesEngine, ITickable, IQueryableNodeEngine, IStep<PlayerDamageInfo>
+    public class HUDEngine : INodesEngine, IQueryableNodeEngine, IStep<PlayerDamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
         public Type[] AcceptedNodes()
         {
             return _acceptedNodes;
+        }
+
+        public HUDEngine()
+        {
+            TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
         public void Add(INode obj)
@@ -27,7 +31,7 @@ namespace Svelto.ECS.Example.Engines.HUD
                 _guiNode = null;
         }
 
-        public void Tick(float deltaSec)
+        void Tick(float deltaSec)
         {
             if (_guiNode == null) return;
 

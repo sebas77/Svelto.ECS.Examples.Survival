@@ -1,13 +1,13 @@
 using Svelto.ECS.Example.Components.Enemy;
 using Svelto.ECS.Example.Nodes.Enemies;
 using Svelto.DataStructures;
-using Svelto.Ticker.Legacy;
 using System;
 using UnityEngine;
+using System.Collections;
 
 namespace Svelto.ECS.Example.Engines.Enemies
 {
-    public class EnemySpawnerEngine : INodesEngine, IIntervaledTickable
+    public class EnemySpawnerEngine : INodesEngine
     {
         internal class EnemySpawnerData
         {
@@ -25,10 +25,11 @@ namespace Svelto.ECS.Example.Engines.Enemies
             }
         }
 
-        public EnemySpawnerEngine(Svelto.Factories.IGameObjectFactory factory, IEntityFactory entityFactory)
+        public EnemySpawnerEngine(Factories.IGameObjectFactory factory, IEntityFactory entityFactory)
         {
             _factory = factory;
             _entityFactory = entityFactory;
+            TaskRunner.Instance.Run(IntervaledTick);
         }
 
         public Type[] AcceptedNodes()
@@ -49,31 +50,35 @@ namespace Svelto.ECS.Example.Engines.Enemies
             //remove is called on context destroyed, in this case the entire engine will be destroyed
         }
 
-        [IntervaledTick(1.0f)] //no need to check every frame
-        public void IntervaledTick()
+        IEnumerator IntervaledTick()
         {
-            for (int i = _enemiestoSpawn.Count - 1; i >= 0; --i)
+            while (true)
             {
-                var spawnData = _enemiestoSpawn[i];
+                yield return _waitForSecondsEnumerator;
 
-                if (spawnData.timeLeft <= 0.0f)
+                for (int i = _enemiestoSpawn.Count - 1; i >= 0; --i)
                 {
-                    // Find a random index between zero and one less than the number of spawn points.
-                    int spawnPointIndex = UnityEngine.Random.Range(0, spawnData.spawnPoints.Length);
+                    var spawnData = _enemiestoSpawn[i];
 
-                    // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
-                    var go = _factory.Build(spawnData.enemy);
-                    _entityFactory.BuildEntity(go.GetInstanceID(), go.GetComponent<IEntityDescriptorHolder>().BuildDescriptorType());
-                    var transform = go.transform;
-                    var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
+                    if (spawnData.timeLeft <= 0.0f)
+                    {
+                        // Find a random index between zero and one less than the number of spawn points.
+                        int spawnPointIndex = UnityEngine.Random.Range(0, spawnData.spawnPoints.Length);
 
-                    transform.position = spawnInfo.position;
-                    transform.rotation = spawnInfo.rotation;
+                        // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
+                        var go = _factory.Build(spawnData.enemy);
+                        _entityFactory.BuildEntity(go.GetInstanceID(), go.GetComponent<IEntityDescriptorHolder>().BuildDescriptorType());
+                        var transform = go.transform;
+                        var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
 
-                    spawnData.timeLeft = spawnData.spawnTime;
+                        transform.position = spawnInfo.position;
+                        transform.rotation = spawnInfo.rotation;
+
+                        spawnData.timeLeft = spawnData.spawnTime;
+                    }
+
+                    spawnData.timeLeft -= 1.0f;
                 }
-
-                spawnData.timeLeft -= 1.0f;
             }
         }
 
@@ -81,5 +86,6 @@ namespace Svelto.ECS.Example.Engines.Enemies
         FasterList<EnemySpawnerData>        _enemiestoSpawn = new FasterList<EnemySpawnerData>();
         Svelto.Factories.IGameObjectFactory _factory;
         IEntityFactory                      _entityFactory;
+        Tasks.WaitForSecondsEnumerator      _waitForSecondsEnumerator = new Tasks.WaitForSecondsEnumerator(1);
     }
 }

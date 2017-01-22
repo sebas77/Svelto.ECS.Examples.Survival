@@ -1,5 +1,4 @@
 using System;
-using Svelto.Ticker.Legacy;
 using UnityEngine;
 using Svelto.ECS.Example.Nodes.Player;
 using Svelto.ECS.Example.Components.Damageable;
@@ -8,7 +7,7 @@ using Svelto.ECS.Example.Nodes.Gun;
 
 namespace Svelto.ECS.Example.Engines.Player.Gun
 {
-    public class PlayerGunShootingEngine : INodesEngine, ITickable, IQueryableNodeEngine, IStep<DamageInfo>
+    public class PlayerGunShootingEngine : INodesEngine, IQueryableNodeEngine, IStep<DamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
@@ -16,6 +15,8 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
         {
             _enemyKilledObservable = enemyKilledObservable;
             _enemyDamageSequence = damageSequence;
+
+            TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
         public Type[] AcceptedNodes() { return _acceptedNodes; }
@@ -37,7 +38,7 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
             _playerGunNode = null;
         }
 
-        public void Tick(float deltaSec)
+        void Tick(float deltaSec)
         {
             if (_playerGunNode == null) return;
 
