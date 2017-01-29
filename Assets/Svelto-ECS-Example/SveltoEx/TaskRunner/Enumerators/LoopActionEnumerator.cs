@@ -31,13 +31,14 @@ namespace Svelto.Tasks
         {
             throw new NotImplementedException();
         }
-
+#if UNITY_EDITOR
         public override string ToString()
         {
             var method = _action.Method;
 
             return method.ReflectedType.Name + "." + method.Name;
         }
+#endif
 
         Action<T> _action;
         T _parameter;
@@ -65,13 +66,14 @@ namespace Svelto.Tasks
         {
             throw new NotImplementedException();
         }
-
+#if UNITY_EDITOR
         public override string ToString()
         {
             var method = _action.Method;
 
             return method.ReflectedType.Name + "." + method.Name;
         }
+#endif
 
         Action _action;
     }
@@ -95,13 +97,14 @@ namespace Svelto.Tasks
             _then = DateTime.UtcNow;
             return true;
         }
-
+#if UNITY_EDITOR
         public override string ToString()
         {
             var method = _action.Method;
 
             return method.ReflectedType.Name + "." + method.Name;
         }
+#endif
 
         public void Reset()
         {
