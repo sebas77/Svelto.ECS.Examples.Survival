@@ -21,8 +21,6 @@ namespace Svelto.Tasks.Profiler
         }
 
         static bool _showTickTasks;
-        static bool _showAddTasks;
-        static bool _showRemoveTasks;
 
         static string _systemNameSearchTerm = string.Empty;
 

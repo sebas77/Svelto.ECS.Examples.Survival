@@ -1,3 +1,4 @@
+#if UNITY_5
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -147,4 +148,4 @@ namespace Svelto.Tasks
 #endif
     }
 }
-
+#endif
