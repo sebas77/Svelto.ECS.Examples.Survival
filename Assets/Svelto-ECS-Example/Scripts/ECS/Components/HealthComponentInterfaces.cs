@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Components.Damageable
+namespace Svelto.ECS.Example.Survive.Components.Damageable
 {
     public interface IHealthComponent : IComponent
     {

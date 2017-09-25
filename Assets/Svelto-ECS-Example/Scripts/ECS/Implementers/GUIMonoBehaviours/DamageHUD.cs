@@ -1,8 +1,8 @@
-using Svelto.ECS.Example.Components.HUD;
+using Svelto.ECS.Example.Survive.Components.HUD;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Svelto.ECS.Example.Implementers.HUD
+namespace Svelto.ECS.Example.Survive.Implementers.HUD
 {
     public class DamageHUD: MonoBehaviour, IDamageHUDComponent
     {

@@ -1,9 +1,9 @@
-using Svelto.ECS.Example.Components.Damageable;
-using Svelto.ECS.Example.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.ECS.Example.Survive.Nodes.Enemies;
 using System;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
     public class EnemyMovementEngine : INodesEngine, IQueryableNodeEngine, IStep<DamageInfo>
     {

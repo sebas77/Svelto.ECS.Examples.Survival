@@ -1,9 +1,9 @@
-using Svelto.ECS.Example.Components.Damageable;
-using Svelto.ECS.Example.Nodes.HUD;
+using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.ECS.Example.Survive.Nodes.HUD;
 using System;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Engines.HUD
+namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
     public class HUDEngine : INodesEngine, IQueryableNodeEngine, IStep<PlayerDamageInfo>
     {

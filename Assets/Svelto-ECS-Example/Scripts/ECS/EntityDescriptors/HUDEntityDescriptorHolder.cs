@@ -1,13 +1,13 @@
-﻿using Svelto.ECS.Example.Nodes.HUD;
+﻿using Svelto.ECS.Example.Survive.Nodes.HUD;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.EntityDescriptors.HUD
+namespace Svelto.ECS.Example.Survive.EntityDescriptors.HUD
 {
     class HUDEntityDescriptor : EntityDescriptor
     {
-		static private INodeBuilder[] _nodesToBuild;
+        static INodeBuilder[] _nodesToBuild;
 
-		static HUDEntityDescriptor()
+        static HUDEntityDescriptor()
 		{
 			_nodesToBuild = new INodeBuilder[]
 			{

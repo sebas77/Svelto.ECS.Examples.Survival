@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Components.Enemy
+namespace Svelto.ECS.Example.Survive.Components.Enemy
 {
     public interface IEnemyAttackComponent: IComponent
     {

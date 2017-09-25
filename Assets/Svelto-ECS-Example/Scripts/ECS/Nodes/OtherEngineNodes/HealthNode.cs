@@ -1,6 +1,6 @@
-using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Survive.Components.Damageable;
 
-namespace Svelto.ECS.Example.Nodes.DamageableEntities
+namespace Svelto.ECS.Example.Survive.Nodes.DamageableEntities
 {
     public class HealthNode: NodeWithID
     {

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using Svelto.ECS.Example.Nodes.Enemies;
-using Svelto.ECS.Example.Nodes.DamageableEntities;
-using Svelto.ECS.Example.Nodes.Player;
+using Svelto.ECS.Example.Survive.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.Nodes.DamageableEntities;
+using Svelto.ECS.Example.Survive.Nodes.Player;
 
-namespace Svelto.ECS.Example.EntityDescriptors.Enemies
+namespace Svelto.ECS.Example.Survive.EntityDescriptors.Enemies
 {
     class EnemyEntityDescriptor : EntityDescriptor
     {

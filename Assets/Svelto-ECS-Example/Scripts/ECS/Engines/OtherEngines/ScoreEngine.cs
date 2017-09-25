@@ -1,8 +1,8 @@
 using System;
-using Svelto.ECS.Example.Nodes.HUD;
-using Svelto.ECS.Example.Observers.HUD;
+using Svelto.ECS.Example.Survive.Nodes.HUD;
+using Svelto.ECS.Example.Survive.Observers.HUD;
 
-namespace Svelto.ECS.Example.Engines.HUD
+namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
     public class ScoreEngine : INodesEngine
     {
@@ -16,7 +16,7 @@ namespace Svelto.ECS.Example.Engines.HUD
         public void Add(INode obj) { _guiNode = obj as HUDNode; }
         public void Remove(INode obj) { _guiNode = null; }
 
-        private void AddScore(ref ScoreActions item)
+        void AddScore(ref ScoreActions item)
         {
             switch (item)
             {

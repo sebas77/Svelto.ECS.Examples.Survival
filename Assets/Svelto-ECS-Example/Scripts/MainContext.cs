@@ -1,19 +1,20 @@
-using Svelto.ECS.Example.Engines.Enemies;
-using Svelto.ECS.Example.Engines.Health;
-using Svelto.ECS.Example.Engines.HUD;
-using Svelto.ECS.Example.Engines.Player;
-using Svelto.ECS.Example.Engines.Player.Gun;
-using Svelto.ECS.Example.Engines.Sound.Damage;
-using Svelto.ECS.Example.Observables.Enemies;
-using Svelto.ECS.Example.Observers.HUD;
+using Svelto.ECS.Example.Survive.Engines.Enemies;
+using Svelto.ECS.Example.Survive.Engines.Health;
+using Svelto.ECS.Example.Survive.Engines.HUD;
+using Svelto.ECS.Example.Survive.Engines.Player;
+using Svelto.ECS.Example.Survive.Engines.Player.Gun;
+using Svelto.ECS.Example.Survive.Engines.Sound.Damage;
+using Svelto.ECS.Example.Survive.Observables.Enemies;
+using Svelto.ECS.Example.Survive.Observers.HUD;
 using Svelto.Context;
 using UnityEngine;
 using Steps = System.Collections.Generic.Dictionary<Svelto.ECS.IEngine, System.Collections.Generic.Dictionary<System.Enum, Svelto.ECS.IStep[]>>;
 using System.Collections.Generic;
+using Svelto.ECS.NodeSchedulers;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where the framework can be initialised.
-namespace Svelto.ECS.Example
+namespace Svelto.ECS.Example.Survive
 {
     public class Main : ICompositionRoot
     {
@@ -24,7 +25,7 @@ namespace Svelto.ECS.Example
 
         void SetupEnginesAndComponents()
         {
-            _entityFactory = _enginesRoot = new EnginesRoot();
+            _entityFactory = _enginesRoot = new EnginesRoot(new UnitySumbmissionNodeScheduler());
 
             GameObjectFactory factory = new GameObjectFactory();
     

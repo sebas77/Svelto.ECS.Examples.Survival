@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
-using Svelto.ECS.Example.Nodes.Player;
-using Svelto.ECS.Example.Components.Damageable;
-using Svelto.ECS.Example.Observables.Enemies;
-using Svelto.ECS.Example.Nodes.Gun;
+using Svelto.ECS.Example.Survive.Nodes.Player;
+using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.ECS.Example.Survive.Observables.Enemies;
+using Svelto.ECS.Example.Survive.Nodes.Gun;
 
-namespace Svelto.ECS.Example.Engines.Player.Gun
+namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
     public class PlayerGunShootingEngine : INodesEngine, IQueryableNodeEngine, IStep<DamageInfo>
     {
@@ -33,7 +33,7 @@ namespace Svelto.ECS.Example.Engines.Player.Gun
                 _playerGunNode = null;
         }
 
-        private void OnPlayerDead(int ID, bool isDead)
+        void OnPlayerDead(int ID, bool isDead)
         {
             _playerGunNode = null;
         }

@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using Svelto.ECS.Example.Nodes.Enemies;
-using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Survive.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.Components.Damageable;
 
-namespace Svelto.ECS.Example.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
     public class EnemyAnimationEngine : IEngine, IQueryableNodeEngine, IStep<DamageInfo>, IStep<PlayerDamageInfo>
     {

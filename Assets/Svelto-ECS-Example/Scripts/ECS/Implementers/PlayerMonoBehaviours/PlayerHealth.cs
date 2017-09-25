@@ -1,9 +1,9 @@
 using System;
-using Svelto.ECS.Example.Components.Base;
-using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Survive.Components.Base;
+using Svelto.ECS.Example.Survive.Components.Damageable;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Implementers.Player
+namespace Svelto.ECS.Example.Survive.Implementers.Player
 {
     public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IRemoveEntityComponent
     {

@@ -1,8 +1,8 @@
-using Svelto.ECS.Example.Components.Base;
-using Svelto.ECS.Example.Components.Damageable;
-using Svelto.ECS.Example.Components.Enemy;
+using Svelto.ECS.Example.Survive.Components.Base;
+using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.ECS.Example.Survive.Components.Enemy;
 
-namespace Svelto.ECS.Example.Nodes.Enemies
+namespace Svelto.ECS.Example.Survive.Nodes.Enemies
 {
     public class EnemyNode: NodeWithID
     {

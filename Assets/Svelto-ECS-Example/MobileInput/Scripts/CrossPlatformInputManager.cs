@@ -13,13 +13,13 @@ namespace UnityStandardAssets.CrossPlatformInput
 		}
 
 
-		private static VirtualInput activeInput;
+        static VirtualInput activeInput;
 
-		private static VirtualInput s_TouchInput;
-		private static VirtualInput s_HardwareInput;
+        private static VirtualInput s_TouchInput;
+        static VirtualInput s_HardwareInput;
 
 
-		static CrossPlatformInputManager()
+        static CrossPlatformInputManager()
 		{
 			s_TouchInput = new MobileInput();
 			s_HardwareInput = new StandaloneInput();
@@ -102,15 +102,15 @@ namespace UnityStandardAssets.CrossPlatformInput
 		}
 
 
-		// private function handles both types of axis (raw and not raw)
-		private static float GetAxis(string name, bool raw)
-		{
-			return activeInput.GetAxis(name, raw);
-		}
+        // private function handles both types of axis (raw and not raw)
+        static float GetAxis(string name, bool raw)
+        {
+            return activeInput.GetAxis(name, raw);
+        }
 
 
-		// -- Button handling --
-		public static bool GetButton(string name)
+        // -- Button handling --
+        public static bool GetButton(string name)
 		{
 			return activeInput.GetButton(name);
 		}
@@ -194,8 +194,8 @@ namespace UnityStandardAssets.CrossPlatformInput
 		public class VirtualAxis
 		{
 			public string name { get; private set; }
-			private float m_Value;
-			public bool matchWithInputManager { get; private set; }
+            float m_Value;
+            public bool matchWithInputManager { get; private set; }
 
 
 			public VirtualAxis(string name)
@@ -245,12 +245,12 @@ namespace UnityStandardAssets.CrossPlatformInput
 			public string name { get; private set; }
 			public bool matchWithInputManager { get; private set; }
 
-			private int m_LastPressedFrame = -5;
-			private int m_ReleasedFrame = -5;
-			private bool m_Pressed;
+            int m_LastPressedFrame = -5;
+            private int m_ReleasedFrame = -5;
+            bool m_Pressed;
 
 
-			public VirtualButton(string name)
+            public VirtualButton(string name)
 				: this(name, true)
 			{
 			}

@@ -1,7 +1,7 @@
-using Svelto.ECS.Example.Components.Gun;
+using Svelto.ECS.Example.Survive.Components.Gun;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Implementers.Player
+namespace Svelto.ECS.Example.Survive.Implementers.Player
 {
     public class PlayerShooting : MonoBehaviour, IGunAttributesComponent, IGunFXComponent, IGunHitTargetComponent
     {

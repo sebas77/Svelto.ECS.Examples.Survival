@@ -21,9 +21,9 @@ namespace UnityStandardAssets.CrossPlatformInput
 	{
 		CheckEnableControlRig();
 	}
-	#endif
+#endif
 
-        private void Start()
+        void Start()
         {
 #if UNITY_EDITOR
             if (Application.isPlaying) //if in the editor, need to check if we are playing, as start is also called just after exiting play
@@ -43,38 +43,38 @@ namespace UnityStandardAssets.CrossPlatformInput
 
 #if UNITY_EDITOR
 
-        private void OnEnable()
+        void OnEnable()
         {
             EditorUserBuildSettings.activeBuildTargetChanged += Update;
             EditorApplication.update += Update;
         }
 
 
-        private void OnDisable()
+        void OnDisable()
         {
             EditorUserBuildSettings.activeBuildTargetChanged -= Update;
             EditorApplication.update -= Update;
         }
 
 
-        private void Update()
+        void Update()
         {
             CheckEnableControlRig();
         }
 #endif
 
 
-        private void CheckEnableControlRig()
+        void CheckEnableControlRig()
         {
 #if MOBILE_INPUT
 		EnableControlRig(true);
-		#else
+#else
             EnableControlRig(false);
 #endif
         }
 
 
-        private void EnableControlRig(bool enabled)
+        void EnableControlRig(bool enabled)
         {
             foreach (Transform t in transform)
             {

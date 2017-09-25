@@ -5,14 +5,14 @@ namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
 {
     public class MobileInput : VirtualInput
     {
-        private void AddButton(string name)
+        void AddButton(string name)
         {
             // we have not registered this button yet so add it, happens in the constructor
             CrossPlatformInputManager.RegisterVirtualButton(new CrossPlatformInputManager.VirtualButton(name));
         }
 
 
-        private void AddAxes(string name)
+        void AddAxes(string name)
         {
             // we have not registered this button yet so add it, happens in the constructor
             CrossPlatformInputManager.RegisterVirtualAxis(new CrossPlatformInputManager.VirtualAxis(name));

@@ -1,11 +1,11 @@
-using Svelto.ECS.Example.Components.Enemy;
-using Svelto.ECS.Example.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.Components.Enemy;
+using Svelto.ECS.Example.Survive.Nodes.Enemies;
 using Svelto.DataStructures;
 using System;
 using UnityEngine;
 using System.Collections;
 
-namespace Svelto.ECS.Example.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
     public class EnemySpawnerEngine : INodesEngine
     {

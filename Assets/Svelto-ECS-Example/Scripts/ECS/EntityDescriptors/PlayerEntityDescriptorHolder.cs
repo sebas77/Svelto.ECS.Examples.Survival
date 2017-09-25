@@ -1,11 +1,11 @@
-﻿using Svelto.ECS.Example.Nodes.HUD;
+﻿using Svelto.ECS.Example.Survive.Nodes.HUD;
 using UnityEngine;
-using Svelto.ECS.Example.Nodes.Player;
-using Svelto.ECS.Example.Nodes.Enemies;
-using Svelto.ECS.Example.Nodes.DamageableEntities;
-using Svelto.ECS.Example.Nodes.Sound;
+using Svelto.ECS.Example.Survive.Nodes.Player;
+using Svelto.ECS.Example.Survive.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.Nodes.DamageableEntities;
+using Svelto.ECS.Example.Survive.Nodes.Sound;
 
-namespace Svelto.ECS.Example.EntityDescriptors.Player
+namespace Svelto.ECS.Example.Survive.EntityDescriptors.Player
 {
     class PlayerEntityDescriptor : EntityDescriptor
 	{
