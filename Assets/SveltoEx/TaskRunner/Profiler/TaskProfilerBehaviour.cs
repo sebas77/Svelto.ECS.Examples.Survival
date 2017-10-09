@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using Svelto.DataStructures;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace Svelto.Tasks.Profiler
 {
     public class TasksProfilerBehaviour : MonoBehaviour
     {
-        public Dictionary<string, TaskInfo>.ValueCollection  tasks { get { return TaskProfiler.taskInfos.Values; } }
+        public FasterList<TaskInfo>  tasks { get { return TaskProfiler.taskInfos.Values; } }
 
         public void ResetDurations()
         {

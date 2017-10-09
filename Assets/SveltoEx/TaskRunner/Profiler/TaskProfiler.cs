@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Diagnostics;
-using System.Collections.Generic;
+using Svelto.DataStructures;
 
 //This profiler is based on the Entitas Visual Debugging tool 
 //https://github.com/sschmid/Entitas-CSharp
@@ -11,19 +11,19 @@ namespace Svelto.Tasks.Profiler
     {
         static readonly Stopwatch _stopwatch = new Stopwatch();
 
-        internal static readonly Dictionary<string, TaskInfo> taskInfos =
-            new Dictionary<string, TaskInfo>();
+        internal static readonly ThreadSafeDictionary<string, TaskInfo> taskInfos =
+            new ThreadSafeDictionary<string, TaskInfo>();
 
-        public static bool MonitorUpdateDuration(IEnumerator enumerator, int threadID)
+        public static bool MonitorUpdateDuration(IEnumerator tickable, int threadID)
         {
-            bool value = MonitorUpdateDuration(enumerator, " ThreadID: ".FastConcat(threadID));
+            bool value = MonitorUpdateDuration(tickable, " ThreadID: ".FastConcat(threadID));
 
             return value;
         }
 
-        public static bool MonitorUpdateDuration(IEnumerator enumerator)
+        public static bool MonitorUpdateDuration(IEnumerator tickable)
         {
-            bool value = MonitorUpdateDuration(enumerator, " MainThread: ");
+            bool value = MonitorUpdateDuration(tickable, " MainThread: ");
 
             return value;
         }
@@ -33,38 +33,35 @@ namespace Svelto.Tasks.Profiler
             taskInfos.Clear();
         }
 
-        static bool MonitorUpdateDuration(IEnumerator enumerator, string threadInfo)
+        static bool MonitorUpdateDuration(IEnumerator tickable, string threadInfo)
         {
             TaskInfo info;
 
             bool result;
-            string name = enumerator.ToString().FastConcat(enumerator.GetHashCode());
 
-            lock (_safeDictionary)
+            if (taskInfos.TryGetValue(tickable.ToString(), out info) == false)
             {
-                if (taskInfos.TryGetValue(name, out info) == false)
-                {
-                    info = new TaskInfo(name);
+                info = new TaskInfo(tickable);
 
-                    info.AddUpdateDuration(_stopwatch.Elapsed.TotalMilliseconds);
-                    info.AddThreadInfo(threadInfo);
+                info.AddUpdateDuration(_stopwatch.Elapsed.TotalMilliseconds);
 
-                    taskInfos.Add(name, info);
-                }
-                else
-                {
-                    info.AddUpdateDuration(_stopwatch.Elapsed.TotalMilliseconds);
-                    info.AddThreadInfo(threadInfo);
-                }
+                info.AddThreadInfo(threadInfo);
+
+                taskInfos.Add(tickable.ToString(), info);
             }
-            
-            _stopwatch.Start();
-            result = enumerator.MoveNext();
+            else
+            {
+                info.AddUpdateDuration(_stopwatch.Elapsed.TotalMilliseconds);
+
+                info.AddThreadInfo(threadInfo);
+            }
+
             _stopwatch.Reset();
+            _stopwatch.Start();
+            result = tickable.MoveNext();
+            _stopwatch.Stop();
 
             return result;
         }
-
-        static object _safeDictionary = new object();
     }
 }

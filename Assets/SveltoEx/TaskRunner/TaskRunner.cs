@@ -20,7 +20,7 @@ public class TaskRunner
         }
     }
 
-    /// <summary>
+/// <summary>
 /// Use this function only to preallocate TaskRoutine that can be reused. this minimize run-time allocations
 /// </summary>
 /// <returns>
@@ -41,42 +41,42 @@ public class TaskRunner
         _runner.paused = false;
     }
 
-    public EnumeratorWrapper Run(Func<IEnumerator> taskGenerator)
+    public IEnumerator Run(Func<IEnumerator> taskGenerator)
     {
         return RunOnSchedule(_runner, taskGenerator);
     }
 
-    public EnumeratorWrapper Run(IEnumerator task)
+    public IEnumerator Run(IEnumerator task)
     {
         return RunOnSchedule(_runner, task);
     }
 
-    public EnumeratorWrapper RunOnSchedule(IRunner runner, Func<IEnumerator> taskGenerator)
+    public IEnumerator RunOnSchedule(IRunner runner, Func<IEnumerator> taskGenerator)
     {
         return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumeratorProvider(taskGenerator).Start();
     }
 
-    public EnumeratorWrapper RunOnSchedule(IRunner runner, IEnumerator task)
+    public IEnumerator RunOnSchedule(IRunner runner, IEnumerator task)
     {
         return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumerator(task).Start();
     }
 
-    public EnumeratorWrapper ThreadSafeRun(Func<IEnumerator> taskGenerator)
+    public IEnumerator ThreadSafeRun(Func<IEnumerator> taskGenerator)
     {
         return ThreadSafeRunOnSchedule(_runner, taskGenerator);
     }
 
-    public EnumeratorWrapper ThreadSafeRun(IEnumerator task)
+    public IEnumerator ThreadSafeRun(IEnumerator task)
     {
         return ThreadSafeRunOnSchedule(_runner, task);
     }
 
-    public EnumeratorWrapper ThreadSafeRunOnSchedule(IRunner runner, Func<IEnumerator> taskGenerator)
+    public IEnumerator ThreadSafeRunOnSchedule(IRunner runner, Func<IEnumerator> taskGenerator)
     {
         return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumeratorProvider(taskGenerator).ThreadSafeStart();
     }
 
-    public EnumeratorWrapper ThreadSafeRunOnSchedule(IRunner runner, IEnumerator task)
+    public IEnumerator ThreadSafeRunOnSchedule(IRunner runner, IEnumerator task)
     {
         return _taskPool.RetrieveTaskFromPool().SetScheduler(runner).SetEnumerator(task).ThreadSafeStart();
     }
@@ -103,8 +103,8 @@ public class TaskRunner
     static void InitInstance()
     {
         _instance = new TaskRunner();
-#if UNITY_5 || UNITY_5_3_OR_NEWER
-        _instance._runner = StandardSchedulers.mainThreadScheduler;
+#if UNITY_5_3_OR_NEWER || UNITY_5
+        _instance._runner = StandardSchedulers.coroutineScheduler;
 #else
         _instance._runner = new MultiThreadRunner();
 #endif

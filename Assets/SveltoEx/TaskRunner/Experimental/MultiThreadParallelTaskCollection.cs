@@ -2,11 +2,7 @@
 //is useless for generic game features.
 using System;
 using System.Collections;
-using System.Threading;
-using Svelto.Tasks.Internal;
-using System.Collections.Generic;
 using Svelto.DataStructures;
-using Svelto.ECS.Example.Flock.Engines;
 
 namespace Svelto.Tasks
 {
@@ -23,15 +19,26 @@ namespace Svelto.Tasks
         public MultiThreadParallelTaskCollection(uint numberOfThreads = MAX_CONCURRENT_TASKS)
         {
             _runners = new MultiThreadRunner[numberOfThreads];
+            _taskRoutines = new ITaskRoutine[numberOfThreads];
             _parallelTasks = new ParallelTaskCollection[numberOfThreads];
 
+            //prepare a single multithread runner for each group of fiber like task collections
+            //number of threads can be less than the number of tasks to run
+            for (int i = 0; i < numberOfThreads; i++) _runners[i] = new MultiThreadRunner();
+
+            //prepare the fiber-like paralleltasks
             for (int i = 0; i < numberOfThreads; i++)
             {
-                _parallelTasks[i] = new ParallelTaskCollection();
-                _parallelTasks[i].onComplete += DecrementConcurrentOperationsCounter;
-            }
+                var ptask = TaskRunner.Instance.AllocateNewTaskRoutine();
+                var ptc = new ParallelTaskCollection();
+                ptc.onComplete += DecrementConcurrentOperationsCounter;
 
-            for (int i = 0; i < numberOfThreads; i++) _runners[i] = new MultiThreadRunner();
+                ptask.SetEnumerator(ptc).SetScheduler(_runners[i]);
+
+                _parallelTasks[i] = ptc;
+                _taskRoutines[i] = ptask;
+                //once they are all done, the process will be completed               
+            }
 
             _enumeratorCopy = new FasterList<IEnumerator>();
         }
@@ -41,35 +48,47 @@ namespace Svelto.Tasks
             if (isRunning == false)
             {
                 int concurrentOperations = _enumeratorCopy.Count;
-                for (int i = 0; i < concurrentOperations; i++)
+
+                if (concurrentOperations > 0)
                 {
-                    var yieldIT = _enumeratorCopy[i];
+                    //spread the tasks over the available parallel collections
+                    for (int i = 0; i < concurrentOperations; i++)
+                    {
+                        //in case tasks are added before a clear and after a run:
+                        var index = _numberOfConcurrentOperationsToRun + i;
+                        var yieldIT = _enumeratorCopy[index];
 
-                    ParallelTaskCollection parallelTaskCollection = _parallelTasks[i % _parallelTasks.Length];
-                    parallelTaskCollection.Add(yieldIT);
+                        ParallelTaskCollection parallelTaskCollection = _parallelTasks[index % _parallelTasks.Length];
+                        parallelTaskCollection.Add(yieldIT);
+                    }
+
+                    concurrentOperations += _numberOfConcurrentOperationsToRun;
+
+                    //decide how many threads to run
+                    _numberOfConcurrentOperationsToRun = _counter = Math.Min(_parallelTasks.Length, concurrentOperations);
+
+                    _enumeratorCopy.Clear();
                 }
-
-                var numberOfConcurrentOperationsToRun = _counter = Math.Min(_parallelTasks.Length, concurrentOperations);
-
-                for (int i = 0; i < numberOfConcurrentOperationsToRun; i++)
-                    _parallelTasks[i].ThreadSafeRunOnSchedule(_runners[i]);
+                //start them
+                for (int i = 0; i < _numberOfConcurrentOperationsToRun; i++)
+                    _taskRoutines[i].ThreadSafeStart();
             }
 
-            System.Threading.Interlocked.MemoryBarrier();
+            MultiThreadRunner.MemoryBarrier();
+            //wait for completition, I am not using signaling as this Collection could be yield by a main thread runner
             isRunning = _counter > 0;
 
             return isRunning;
         }
 
+       
         public void Add(IEnumerator enumerator)
         {
+            if (isRunning == true)
+                throw new Exception("can't add enumerators on a started MultiThreadedParallelTaskCollection");
+
             _enumeratorCopy.Add(enumerator);
         }
-
-        void DecrementConcurrentOperationsCounter()
-        {
-            System.Threading.Interlocked.Decrement(ref _counter);
-        }   
 
         public bool MoveNext()
         {
@@ -78,13 +97,18 @@ namespace Svelto.Tasks
             if (onComplete != null)
                 onComplete();
 
+            Reset();
+
             return false;
         }
 
         public void Reset()
         {
-            _enumeratorCopy.Clear();
+            _counter = _numberOfConcurrentOperationsToRun;
         }
+
+        public void Clear()
+        {}
 
         public object Current
         {
@@ -94,11 +118,18 @@ namespace Svelto.Tasks
             }
         }
 
-        public bool                                 isRunning       { protected set; get; }
+        public bool              isRunning       { protected set; get; }
 
-        MultiThreadRunner[]      _runners;
-        volatile int             _counter;
-        ParallelTaskCollection[] _parallelTasks;
+        void DecrementConcurrentOperationsCounter()
+        {
+            System.Threading.Interlocked.Decrement(ref _counter);
+        }   
+
+        MultiThreadRunner[]         _runners;
+        int                         _counter;
+        ParallelTaskCollection[]    _parallelTasks;
+        ITaskRoutine[]              _taskRoutines;
         FasterList<IEnumerator> _enumeratorCopy;
+        private int _numberOfConcurrentOperationsToRun;
     }
 }

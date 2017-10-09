@@ -19,10 +19,9 @@ namespace Svelto.Tasks.Profiler
         public double maxUpdateDuration { get { return _maxUpdateDuration; } }
         public double averageUpdateDuration { get { return _updateFrameTimes.Count == 0 ? 0 : _accumulatedUpdateDuration / _updateFrameTimes.Count; } }
 
-        public TaskInfo(string name)
+        public TaskInfo(IEnumerator task)
         {
-            //_taskName = task.GetHashCode().ToString("x8");
-            _taskName = " ".FastConcat(name);
+            _taskName = " ".FastConcat(task.ToString());
 
             _updateFrameTimes = new ThreadSafeQueue<double>();
 

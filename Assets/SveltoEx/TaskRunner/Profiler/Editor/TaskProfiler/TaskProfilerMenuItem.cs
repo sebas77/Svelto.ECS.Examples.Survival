@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace Svelto.Tasks.Profiler
 {
-    class TaskProfilerMenuItem
+    internal class TaskProfilerMenuItem
     {
         [MenuItem("Tasks/Enable Profiler")]
         public static void EnableProfiler()

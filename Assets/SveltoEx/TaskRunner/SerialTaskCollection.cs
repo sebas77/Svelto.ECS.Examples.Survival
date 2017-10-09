@@ -3,7 +3,6 @@ using System.Collections;
 
 namespace Svelto.Tasks
 {
-//TO DO: be sure that the collection can be reuse without adding tasks again (restart)
     public class SerialTaskCollection: TaskCollection, IEnumerator
     {
         public event Action		onComplete;
@@ -23,9 +22,14 @@ namespace Svelto.Tasks
             _subProgress = 0.0f;
         }
 #endif
-        new public void Reset()
+        public void Reset()
         {
-            base.Reset();
+            _index = 0;
+        }
+
+        public new void Clear()
+        {
+            base.Clear();
             _index = 0;
         }
 
@@ -41,6 +45,7 @@ namespace Svelto.Tasks
                 onComplete();
 
             isRunning = false;
+            Reset();
 
             return false;
         }
@@ -70,13 +75,13 @@ namespace Svelto.Tasks
                         if (_current == ce)
                             throw new Exception("An enumerator returning itself is not supported");
 
-                        if (_current != null && _current != Break.It)
+                        if ((ce is TaskCollection == false) && _current != null && _current != Break.It)
                         {
                            IEnumerator result = StandardEnumeratorCheck(_current);
                            if (result != null)
                            {
                                stack.Push(result);
-                               continue; // the enumerator will continue running until it will find a null or a breakit
+                               continue;
                            }
                            //in all the cases above, the task collection is not meant to yield
                         }

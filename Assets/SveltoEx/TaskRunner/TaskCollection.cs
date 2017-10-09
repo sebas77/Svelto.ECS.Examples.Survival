@@ -20,12 +20,11 @@ namespace Svelto.Tasks
         protected TaskCollection(int initialSize)
         {
             _listOfStacks = FasterList<Stack<IEnumerator>>.PreFill<Stack<IEnumerator>>(initialSize);
-            _enumeratorCopy = new FasterList<IEnumerator>(initialSize);
         }
 
-        public void Reset()
+        public void Clear()
         {
-            _listOfStacks.Clear(); _enumeratorCopy.Clear();
+            _listOfStacks.Clear();
         }
 
         public TaskCollection Add(ITask task)
@@ -77,7 +76,6 @@ namespace Svelto.Tasks
 
             stack.Push(enumerator);
             _listOfStacks.Add(stack);
-            _enumeratorCopy.Add(enumerator);
 
             return this;
         }
@@ -124,7 +122,6 @@ namespace Svelto.Tasks
         {}
         
         protected FasterList<Stack<IEnumerator>> _listOfStacks;
-        protected FasterList<IEnumerator> _enumeratorCopy;
 
         const int _INITIAL_STACK_COUNT = 3;
         const int _INITIAL_STACK_SIZE = 3;
