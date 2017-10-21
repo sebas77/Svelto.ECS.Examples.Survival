@@ -1,22 +1,17 @@
 using System;
-using Svelto.ECS.Example.Nodes.HUD;
-using Svelto.ECS.Example.Observers.HUD;
+using Svelto.ECS.Example.Survive.Nodes.HUD;
+using Svelto.ECS.Example.Survive.Observers.HUD;
 
-namespace Svelto.ECS.Example.Engines.HUD
+namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
-    public class ScoreEngine : INodesEngine
+    public class ScoreEngine : SingleNodeEngine<HUDNode>
     {
         public ScoreEngine(ScoreOnEnemyKilledObserver scoreOnEnemyKilledObserver)
         {
             scoreOnEnemyKilledObserver.AddAction(AddScore);
         }
 
-        public Type[] AcceptedNodes() { return _acceptedNodes; }
-
-        public void Add(INode obj) { _guiNode = obj as HUDNode; }
-        public void Remove(INode obj) { _guiNode = null; }
-
-        private void AddScore(ref ScoreActions item)
+        void AddScore(ref ScoreActions item)
         {
             switch (item)
             {
@@ -32,7 +27,15 @@ namespace Svelto.ECS.Example.Engines.HUD
             }
         }
 
-        readonly Type[] _acceptedNodes = { typeof(HUDNode) };
+        protected override void Add(HUDNode node)
+        {
+            _guiNode = node;
+        }
+
+        protected override void Remove(HUDNode node)
+        {
+            _guiNode = null;
+        }
 
         HUDNode _guiNode;
     }

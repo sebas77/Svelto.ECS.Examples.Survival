@@ -1,8 +1,8 @@
-using Svelto.ECS.Example.Nodes.Sound;
-using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Survive.Nodes.Sound;
+using Svelto.ECS.Example.Survive.Components.Damageable;
 using System;
 
-namespace Svelto.ECS.Example.Engines.Sound.Damage
+namespace Svelto.ECS.Example.Survive.Engines.Sound.Damage
 {
     public class DamageSoundEngine : IEngine, IQueryableNodeEngine, IStep<PlayerDamageInfo>
     {

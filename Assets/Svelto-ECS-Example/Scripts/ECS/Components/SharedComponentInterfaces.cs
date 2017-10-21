@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Components.Base
+namespace Svelto.ECS.Example.Survive.Components.Base
 {
     public interface IAnimationComponent: IComponent
     {

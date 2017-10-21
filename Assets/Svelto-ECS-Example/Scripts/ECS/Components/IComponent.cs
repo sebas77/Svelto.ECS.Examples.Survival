@@ -1,4 +1,4 @@
-﻿namespace Svelto.ECS.Example
+﻿namespace Svelto.ECS.Example.Survive
 {
     public interface IComponent
     {

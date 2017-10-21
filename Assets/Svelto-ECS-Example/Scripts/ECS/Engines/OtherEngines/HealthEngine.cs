@@ -1,12 +1,12 @@
-using Svelto.ECS.Example.Components.Damageable;
-using Svelto.ECS.Example.Nodes.DamageableEntities;
+using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.ECS.Example.Survive.Nodes.DamageableEntities;
 using System;
 
-namespace Svelto.ECS.Example.Engines.Health
+namespace Svelto.ECS.Example.Survive.Engines.Health
 {
     public class HealthEngine : IEngine, IQueryableNodeEngine, IStep<DamageInfo>, IStep<PlayerDamageInfo>
     {
-        private Sequencer _damageSequence;
+        Sequencer _damageSequence;
 
         public HealthEngine(Sequencer playerDamageSequence)
         {

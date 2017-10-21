@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Svelto.ECS.Example.Components.HUD
+namespace Svelto.ECS.Example.Survive.Components.HUD
 {
     public interface IAnimatorHUDComponent: IComponent
     {

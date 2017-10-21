@@ -1,13 +1,13 @@
-using Svelto.ECS.Example.Components.Enemy;
-using Svelto.ECS.Example.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.Components.Enemy;
+using Svelto.ECS.Example.Survive.Nodes.Enemies;
 using Svelto.DataStructures;
 using System;
 using UnityEngine;
 using System.Collections;
 
-namespace Svelto.ECS.Example.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemySpawnerEngine : INodesEngine
+    public class EnemySpawnerEngine : SingleNodeEngine<EnemySpawningNode>
     {
         internal class EnemySpawnerData
         {
@@ -30,24 +30,6 @@ namespace Svelto.ECS.Example.Engines.Enemies
             _factory = factory;
             _entityFactory = entityFactory;
             TaskRunner.Instance.Run(IntervaledTick);
-        }
-
-        public Type[] AcceptedNodes()
-        {
-            return _acceptedNodes;
-        }
-
-        public void Add(INode obj)
-        {
-            var spawnerComponents = (obj as EnemySpawningNode).spawnerComponents;
-
-            for (int i = 0; i < spawnerComponents.Length; i++)
-                _enemiestoSpawn.Add(new EnemySpawnerData(spawnerComponents[i]));
-        }
-
-        public void Remove(INode obj)
-        {
-            //remove is called on context destroyed, in this case the entire engine will be destroyed
         }
 
         IEnumerator IntervaledTick()
@@ -82,7 +64,17 @@ namespace Svelto.ECS.Example.Engines.Enemies
             }
         }
 
-        readonly Type[]                     _acceptedNodes = { typeof(EnemySpawningNode) };
+        protected override void Add(EnemySpawningNode node)
+        {
+            var spawnerComponents = (node).spawnerComponents;
+
+            for (int i = 0; i < spawnerComponents.Length; i++)
+                _enemiestoSpawn.Add(new EnemySpawnerData(spawnerComponents[i]));
+        }
+
+        protected override void Remove(EnemySpawningNode node)
+        {}
+
         FasterList<EnemySpawnerData>        _enemiestoSpawn = new FasterList<EnemySpawnerData>();
         Svelto.Factories.IGameObjectFactory _factory;
         IEntityFactory                      _entityFactory;

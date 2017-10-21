@@ -1,37 +1,34 @@
-using Svelto.ECS.Example.Components.Gun;
+using Svelto.ECS.Example.Survive.Components.Gun;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Implementers.Player
+namespace Svelto.ECS.Example.Survive.Implementers.Player
 {
     public class PlayerShooting : MonoBehaviour, IGunAttributesComponent, IGunFXComponent, IGunHitTargetComponent
     {
-        public int damagePerShot = 20;                  // The damage inflicted by each bullet.
-        public float timeBetweenBullets = 0.15f;        // The time between each shot.
-        public float range = 100f;                      // The distance the gun can fire.
+        public int DamagePerShot = 20;                  // The damage inflicted by each bullet.
+        public float TimeBetweenBullets = 0.15f;        // The time between each shot.
+        public float Range = 100f;                      // The distance the gun can fire.
 
-        float IGunAttributesComponent.timeBetweenBullets { get { return timeBetweenBullets; } }
-        float IGunAttributesComponent.range { get { return range; } }
-        int IGunAttributesComponent.damagePerShot { get { return damagePerShot; } }
-        DispatchOnSet<bool> IGunHitTargetComponent.targetHit { get { return _targetHit; } }
-        Vector3 IGunAttributesComponent.lastTargetPosition { set { _lastTargetPosition = value; } get { return _lastTargetPosition; } }
-        float IGunAttributesComponent.timer { get; set; }
-        Ray IGunAttributesComponent.shootRay
+        public float timeBetweenBullets { get { return TimeBetweenBullets; } }
+        public float range { get { return Range; } }
+        public int damagePerShot { get { return DamagePerShot; } }
+        public DispatchOnSet<bool> targetHit { get { return _targetHit; } }
+        public Vector3 lastTargetPosition { set { _lastTargetPosition = value; } get { return _lastTargetPosition; } }
+        public float timer { get; set; }
+        public Ray shootRay
         {
             get
             {
-                _shootRay.origin = _transform.position;
-                _shootRay.direction = _transform.forward;
-
-                return _shootRay;
+                return new Ray(_transform.position, _transform.forward);
             }
         }
 
-        ParticleSystem IGunFXComponent.particles { get { return _gunParticles; } }
-        LineRenderer IGunFXComponent.line { get { return _gunLine; } }
-        AudioSource IGunFXComponent.audio { get { return _gunAudio; } }
-        Light IGunFXComponent.light { get { return _gunLight; }}
+        public ParticleSystem particles { get { return _gunParticles; } }
+        public LineRenderer line { get { return _gunLine; } }
+        new public AudioSource audio { get { return _gunAudio; } }
+        new public Light light { get { return _gunLight; }}
 
-        float IGunFXComponent.effectsDisplayTime { get { return _effectsDisplayTime; } }
+        public float effectsDisplayTime { get { return _effectsDisplayTime; } }
 
         void Awake ()
         {
@@ -52,7 +49,6 @@ namespace Svelto.ECS.Example.Implementers.Player
         AudioSource     _gunAudio;                          // Reference to the audio source.
         Light           _gunLight;                          // Reference to the light component.
         float           _effectsDisplayTime = 0.2f;         // The proportion of the timeBetweenBullets that the effects will display for.
-        Ray             _shootRay;
         Vector3         _lastTargetPosition;
 
         DispatchOnSet<bool> _targetHit;

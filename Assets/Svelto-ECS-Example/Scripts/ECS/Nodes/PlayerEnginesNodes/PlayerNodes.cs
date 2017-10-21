@@ -1,9 +1,9 @@
-using Svelto.ECS.Example.Components.Base;
-using Svelto.ECS.Example.Components.Damageable;
-using Svelto.ECS.Example.Components.Gun;
-using Svelto.ECS.Example.Components.Player;
+using Svelto.ECS.Example.Survive.Components.Base;
+using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.ECS.Example.Survive.Components.Gun;
+using Svelto.ECS.Example.Survive.Components.Player;
 
-namespace Svelto.ECS.Example.Nodes.Player
+namespace Svelto.ECS.Example.Survive.Nodes.Player
 {
     public class PlayerNode : NodeWithID
     {
@@ -21,7 +21,7 @@ namespace Svelto.ECS.Example.Nodes.Player
     }
 }
 
-namespace Svelto.ECS.Example.Nodes.Gun
+namespace Svelto.ECS.Example.Survive.Nodes.Gun
 {
     public class GunNode : NodeWithID
     {

@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using Svelto.Tasks;
-using Svelto.ECS.Example.Nodes.Gun;
+using Svelto.ECS.Example.Survive.Nodes.Gun;
 
-namespace Svelto.ECS.Example.Engines.Player.Gun
+namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
     public class PlayerGunShootingFXsEngine : SingleNodeEngine<GunNode>, IQueryableNodeEngine
     {

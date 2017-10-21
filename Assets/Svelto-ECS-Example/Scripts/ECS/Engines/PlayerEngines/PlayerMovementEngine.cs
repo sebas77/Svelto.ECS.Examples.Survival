@@ -1,10 +1,10 @@
 using UnityEngine;
-using Svelto.ECS.Example.Nodes.Player;
+using Svelto.ECS.Example.Survive.Nodes.Player;
 using UnityStandardAssets.CrossPlatformInput;
 using System;
-using Svelto.ECS.Example.Components.Damageable;
+using Svelto.ECS.Example.Survive.Components.Damageable;
 
-namespace Svelto.ECS.Example.Engines.Player
+namespace Svelto.ECS.Example.Survive.Engines.Player
 {
     public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IStep<PlayerDamageInfo>
     {

@@ -1,9 +1,9 @@
-﻿using Svelto.ECS.Example.Components.Player;
-using Svelto.ECS.Example.Observables.Enemies;
+﻿using Svelto.ECS.Example.Survive.Components.Player;
+using Svelto.ECS.Example.Survive.Observables.Enemies;
 using Svelto.Observer.InterNamespace;
 using System.Collections.Generic;
 
-namespace Svelto.ECS.Example.Observers.HUD
+namespace Svelto.ECS.Example.Survive.Observers.HUD
 {
 	public class ScoreOnEnemyKilledObserver:Observer<PlayerTargetType, ScoreActions>
 	{

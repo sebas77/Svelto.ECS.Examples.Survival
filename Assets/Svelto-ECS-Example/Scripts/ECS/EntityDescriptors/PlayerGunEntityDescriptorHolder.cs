@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using Svelto.ECS.Example.Nodes.Gun;
+using Svelto.ECS.Example.Survive.Nodes.Gun;
 
-namespace Svelto.ECS.Example.EntityDescriptors.Player
+namespace Svelto.ECS.Example.Survive.EntityDescriptors.Player
 {
     class PlayerGunEntityDescriptor : EntityDescriptor
     {
-        static private readonly INodeBuilder[] _nodesToBuild;
+        static readonly INodeBuilder[] _nodesToBuild;
 
         static PlayerGunEntityDescriptor()
 		{
