@@ -145,7 +145,6 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 #endif
         }
 
-
         /// <summary>
         /// This is just to be sure everything is actually running
         /// it also shows how you can run instruction on the mainthread
@@ -236,16 +235,14 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 
                         boidNode.position.Set(x / sqrdmagnitude, y / sqrdmagnitude, z / sqrdmagnitude);
 #elif FOURTH_TIER_EXAMPLE
-                        var boidNode = entities[index];
-                        var x = (realTarget.x - boidNode.position.x);
-                        var y = (realTarget.y - boidNode.position.y);
-                        var z = (realTarget.z - boidNode.position.z);
+                        var x = (realTarget.x - entities[index].position.x);
+                        var y = (realTarget.y - entities[index].position.y);
+                        var z = (realTarget.z - entities[index].position.z);
 
                         var sqrdmagnitude = x * x + y * y + z * z;
-                        boidNode.position.x = x * sqrdmagnitude;
-                        boidNode.position.y = y * sqrdmagnitude;
-                        boidNode.position.z = z * sqrdmagnitude;
-                        entities[index] = boidNode;
+                        entities[index].position.x = x * sqrdmagnitude;
+                        entities[index].position.y = y * sqrdmagnitude;
+                        entities[index].position.z = z * sqrdmagnitude;
 #endif
 #if FIRST_TIER_EXAMPLE
                         var position = entities[index].node.position;
