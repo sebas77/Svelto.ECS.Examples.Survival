@@ -17,7 +17,7 @@ namespace Svelto.ECS.Example.Survive.EntityDescriptors.EnemySpawner
 
         //this shows how you can override the BuildNodes to adapt it to your needs. Without calling the base
         //function, the automatic component injection will be disabled
-        public override FasterList<INode> BuildNodes(int ID, Action<FasterReadOnlyList<INode>> removeAction)
+        public override FasterList<INode> BuildNodes(int ID)
         {
             var nodes = new FasterList<INode>();
             var node = new EnemySpawningNode

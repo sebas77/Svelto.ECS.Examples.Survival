@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Svelto.Tasks
 {
-    public class SerialTaskCollection: TaskCollection, IEnumerator
+    public class SerialTaskCollection: TaskCollection
     {
         public event Action		onComplete;
 
@@ -12,17 +12,13 @@ namespace Svelto.Tasks
 
         public SerialTaskCollection()        
         {}
-#if TO_IMPLEMENT_PROPERLY
-        override public float 	progress { get { return _progress + _subProgress;} }
-#endif
-#if TO_IMPLEMENT_PROPERLY     
-        public SerialTaskCollection()        
+
+        public override object Current
         {
-            _progress = 0.0f;
-            _subProgress = 0.0f;
+            get { return _current; }
         }
-#endif
-        public void Reset()
+
+        public override void Reset()
         {
             _index = 0;
         }
@@ -33,12 +29,10 @@ namespace Svelto.Tasks
             _index = 0;
         }
 
-        public bool MoveNext()
+        public override bool MoveNext()
         {
             isRunning = true;
-#if TO_IMPLEMENT_PROPERLY            
-            int startingCount = registeredEnumerators.Count;
-#endif
+
             if (RunTasks()) return true;
 
             if (onComplete != null)
@@ -52,70 +46,79 @@ namespace Svelto.Tasks
 
         bool RunTasks()
         {
-            while (_index < _listOfStacks.Count)
+            var count = _listOfStacks.Count;
+            while (_index < count)
             {
                 var stack = _listOfStacks[_index];
 
                 while (stack.Count > 0)
                 {
                     var ce = stack.Peek(); //get the current task to execute
+                    _current = ce;
 
-                    if (ce.MoveNext() == false)
+                    if (ce.MoveNext() == false) //execute step and check if continue
                     {
-#if TO_IMPLEMENT_PROPERLY
-                        _progress = (float)(startingCount - registeredEnumerators.Count) / (float)startingCount;
-                        _subProgress = 0;
-#endif
-                        stack.Pop(); //task is done (the iteration is over)
+                        if (ce.Current == Break.AndStop)
+                        {
+                            _current = ce.Current;
+
+                            return false;
+                        }
+
+                        if (stack.Count > 1)
+                            stack.Pop(); //task is done (the iteration is over)
+                        else
+                        {
+                            //in order to be able to reuse the task collection, we will keep the stack 
+                            //in its original state and move to the next task
+                            _index++;
+                            break;
+                        }
                     }
-                    else
+                    else //ok the iteration is not over
                     {
-                        _current = ce.Current;
+                        var current = ce.Current;
 
-                        if (_current == ce)
+                        if (current == ce)
                             throw new Exception("An enumerator returning itself is not supported");
 
-                        if ((ce is TaskCollection == false) && _current != null && _current != Break.It)
+                        if ((ce is TaskCollection == false) 
+                            && current != null && current != Break.It
+                            && current != Break.AndStop)
                         {
-                           IEnumerator result = StandardEnumeratorCheck(_current);
+                           IEnumerator result = StandardEnumeratorCheck(current);
                            if (result != null)
                            {
-                               stack.Push(result);
-                               continue;
+                               stack.Push(result); //push the new yielded task and execute it immediately
+
+                                continue;
                            }
-                           //in all the cases above, the task collection is not meant to yield
                         }
-                        else 
-                        if (_current == Break.It)
-                             return false;
-                        
-                        return true;
-#if TO_IMPLEMENT_PROPERLY
-                        if (ce is AsyncTask) //asyn
-                            _subProgress = (ce as AsyncTask).task.progress * (((float)(startingCount - (registeredEnumerators.Count - 1)) / (float)startingCount) - progress);
                         else
-                        if (ce is EnumeratorWithProgress) //asyn
-                            _subProgress = (ce as EnumeratorWithProgress).progress / (float)registeredEnumerators.Count;
-#endif
+                        //Break.It breaks only the current task collection 
+                        //enumeration but allows the parent task to continue
+                        //yield break would instead stops only the single task
+                        if (current == Break.It || current == Break.AndStop)
+                        {
+                            _current = ce.Current;
+
+                            return false;
+                        }
+
+                        return true;
                     }
                 }
-
-                _index++;
             }
             return false;
         }
 
-        int _index;
-
-#if TO_IMPLEMENT_PROPERLY
-        float 	_progress;
-        float 	_subProgress;
-#endif
-        public object Current
+        internal void FastClear()
         {
-            get { return _current; }
+            _listOfStacks.FastClear();
+            _index = 0;
         }
 
+        int _index;
         object _current;
     }
 }

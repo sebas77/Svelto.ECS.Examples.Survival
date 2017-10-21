@@ -5,30 +5,23 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
-    public class HUDEngine : INodesEngine, IQueryableNodeEngine, IStep<PlayerDamageInfo>
+    public class HUDEngine : SingleNodeEngine<HUDNode>, IQueryableNodeEngine, IStep<PlayerDamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
-
-        public Type[] AcceptedNodes()
-        {
-            return _acceptedNodes;
-        }
 
         public HUDEngine()
         {
             TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
-        public void Add(INode obj)
+        protected override void Add(HUDNode node)
         {
-            if (obj is HUDNode)
-                _guiNode = obj as HUDNode;
+            _guiNode = node;
         }
 
-        public void Remove(INode obj)
+        protected override void Remove(HUDNode node)
         {
-            if (obj is HUDNode)
-                _guiNode = null;
+            _guiNode = null;
         }
 
         void Tick(float deltaSec)
@@ -65,8 +58,6 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
                 OnDeadEvent();
                 
         }
-
-        readonly Type[] _acceptedNodes = { typeof(HUDNode) };
 
         HUDNode         _guiNode;
     }

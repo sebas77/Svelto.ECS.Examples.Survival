@@ -7,7 +7,7 @@ using Svelto.ECS.Example.Survive.Nodes.Gun;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
-    public class PlayerGunShootingEngine : INodesEngine, IQueryableNodeEngine, IStep<DamageInfo>
+    public class PlayerGunShootingEngine : MultiNodesEngine<GunNode, PlayerNode>, IQueryableNodeEngine, IStep<DamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
@@ -19,18 +19,20 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
-        public Type[] AcceptedNodes() { return _acceptedNodes; }
-
-        public void Add(INode obj)
+          protected override void AddNode(GunNode node)
         {
-            if (obj is GunNode)
-                _playerGunNode = obj as GunNode;
+            _playerGunNode = node;
         }
 
-        public void Remove(INode obj)
+        protected override void RemoveNode(GunNode node)
+        {}
+
+        protected override void AddNode(PlayerNode node)
+        {}
+
+        protected override void RemoveNode(PlayerNode node)
         {
-            if (obj is PlayerNode) //the gun is never removed (because the level reloads on death), so remove on playerdeath
-                _playerGunNode = null;
+            _playerGunNode = null; //the gun is never removed (because the level reloads on death), so remove on playerdeath
         }
 
         void OnPlayerDead(int ID, bool isDead)
@@ -64,7 +66,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
                 PlayerTargetNode targetComponent = null;
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (hitGO.layer == ENEMY_LAYER && nodesDB.QueryNode(hitGO.GetInstanceID(), out targetComponent))
+                if (hitGO.layer == ENEMY_LAYER && nodesDB.TryQueryNode(hitGO.GetInstanceID(), out targetComponent))
                 {
                     var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, shootHit.point, hitGO.GetInstanceID());
                     _enemyDamageSequence.Next(this, ref damageInfo);
@@ -91,8 +93,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         {
             OnTargetDead(token.entityDamaged);
         }
-
-        readonly Type[] _acceptedNodes = { typeof(GunNode), typeof(PlayerNode) };
 
         GunNode                 _playerGunNode;
         EnemyKilledObservable   _enemyKilledObservable;

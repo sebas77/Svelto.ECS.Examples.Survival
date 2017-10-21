@@ -1,5 +1,13 @@
 using System;
 
+
+//Observer and Observable are used between different ECS namespaces
+//it useful to maintain the code clean and the namespaces separated
+//it maps a DispatchType (usually an enum) from the namespace A 
+//to an ActionType (also an enum) of the namespace B so that
+//the Observervable can dispatch a Type from namespace A
+//and the Observer can act through a Type of the namespace B
+//ScoreOnEnemyKilledObserver is a good example of use.
 namespace Svelto.Observer.InterNamespace
 {
     public abstract class Observer<DispatchType, ActionType> : IObserver<ActionType>
@@ -43,6 +51,7 @@ namespace Svelto.Observer.InterNamespace
     }
 }
 
+//Observer and Observable are used inside the same ECS namespace
 namespace Svelto.Observer.IntraNamespace
 {
     public class Observer<DispatchType> : InterNamespace.Observer<DispatchType, DispatchType>
@@ -57,6 +66,7 @@ namespace Svelto.Observer.IntraNamespace
     }
 }
 
+//simple Observable that doesn't need parameters to be passed to the Observer
 namespace Svelto.Observer
 {
     public class Observer: IObserver

@@ -22,6 +22,7 @@ namespace Svelto.Tasks
             _timer = new System.Timers.Timer(frequency);
             _timer.AutoReset = false;
             _timer.Elapsed += RunCoroutineFiber;
+            _name = _timer.ToString();
         }
 
         public override string ToString()
@@ -46,8 +47,6 @@ namespace Svelto.Tasks
                 _waitForflush = false;
 
                 _timer.Start();
-
-                _name = _threadID.ToString();
             }
         }
 
@@ -75,7 +74,7 @@ namespace Svelto.Tasks
 
         private System.Timers.Timer _timer;
 
-        public bool stopped
+        public bool isStopping
         {
             get
             {
@@ -90,8 +89,6 @@ namespace Svelto.Tasks
 
         void RunCoroutineFiber(object sender, EventArgs ea)
         {
-            _threadID = Thread.CurrentThread.ManagedThreadId;
-
             if (_coroutines.Count > 0 || (_newTaskRoutines.Count > 0 && false == _waitForflush))
             {
                 MultiThreadRunner.MemoryBarrier();
@@ -144,7 +141,6 @@ namespace Svelto.Tasks
 
         bool _paused;
  
-        volatile int  _threadID;
         volatile bool _waitForflush;
         string _name;
     }

@@ -14,6 +14,8 @@ namespace Svelto.Tasks
             var runnerBehaviour = go.AddComponent<RunnerBehaviourUpdate>();
             var runnerBehaviourForUnityCoroutine = go.AddComponent<RunnerBehaviour>();
 
+            _info = new UnityCoroutineRunner.RunningTasksInfo() { runnerName = name };
+
             runnerBehaviour.StartUpdateCoroutine(UnityCoroutineRunner.Process
                 (_newTaskRoutines, coroutines, _flushingOperation, _info,
                  UnityCoroutineRunner.StandardTasksFlushing,
@@ -29,9 +31,9 @@ namespace Svelto.Tasks
         protected override UnityCoroutineRunner.FlushingOperation flushingOperation
         { get { return _flushingOperation; } }
 
-        readonly ThreadSafeQueue<IPausableTask>          _newTaskRoutines = new ThreadSafeQueue<IPausableTask>();
+        readonly ThreadSafeQueue<IPausableTask>         _newTaskRoutines = new ThreadSafeQueue<IPausableTask>();
         readonly UnityCoroutineRunner.FlushingOperation _flushingOperation = new UnityCoroutineRunner.FlushingOperation();
-        readonly UnityCoroutineRunner.RunningTasksInfo  _info = new UnityCoroutineRunner.RunningTasksInfo();
+        readonly UnityCoroutineRunner.RunningTasksInfo  _info;
 
         const int NUMBER_OF_INITIAL_COROUTINE = 3;
     }

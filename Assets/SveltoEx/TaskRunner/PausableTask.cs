@@ -8,7 +8,6 @@
 /// 
 /// 
 
-using Svelto.Tasks.Internal;
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
@@ -65,12 +64,12 @@ namespace Svelto.Tasks.Internal
             if (_taskEnumerator != taskEnumerator)
                 _taskEnumeratorJustSet = true;
             _taskEnumerator = taskEnumerator;
-#if UNITY_EDITOR
-//            _compilerGenerated = IsCompilerGenerated(taskEnumerator.GetType());
+#if DEBUG && !PROFILER
+            _compilerGenerated = IsCompilerGenerated(taskEnumerator.GetType());
 #else
             _compilerGenerated = false;
 #endif
-            
+
             return this;
         }
 
@@ -85,9 +84,9 @@ namespace Svelto.Tasks.Internal
                     _name = _taskEnumerator.ToString();
                 else
 #if NETFX_CORE
-                    _name = _taskGenerator.GetMethodInfo().DeclaringType + "." + _taskGenerator.GetMethodInfo().Name;
+                    _name = _taskGenerator.GetMethodInfo().DeclaringType.ToString().FastConcat(".", _taskGenerator.GetMethodInfo().Name);
 #else
-                    _name = _taskGenerator.Method.ReflectedType + "." + _taskGenerator.Method.Name;
+                    _name = _taskGenerator.Method.ReflectedType.ToString().FastConcat(".",  _taskGenerator.Method.Name);
 #endif
             }
 
@@ -96,19 +95,9 @@ namespace Svelto.Tasks.Internal
 
         public bool MoveNext()
         {
-            if (_stopped == true || _runner.stopped == true)
+            if (_stopped == true || _runner.isStopping == true)
             {
                 _completed = true;
-
-                //this is needed to avoid to create multiple CoRoutine when
-                //Stop and Start are called in the same frame
-                if (_pendingRestart == true)
-                {
-                    //start new coroutine using this task
-                    Restart(_pendingEnumerator);
-
-                    return false;
-                }
 
                 if (_onStop != null)
                     _onStop();
@@ -118,9 +107,15 @@ namespace Svelto.Tasks.Internal
             {
                 try
                 {
+#if DEBUG
+                    if (_started == false)
+                        throw new Exception("Enumerating PausableTask without starting it, please call Start() first");
+#endif
                     _completed = !_coroutine.MoveNext();
 
-                    if (_coroutine.Current == Break.It)
+                    var current = _coroutine.Current;
+                    if (current == Break.It ||
+                        current == Break.AndStop)
                     {
                         Stop();
 
@@ -134,37 +129,46 @@ namespace Svelto.Tasks.Internal
                 {
                     _completed = true;
 
+                    FinalizeIt();
+
                     if (_onFail != null && (e is TaskYieldsIEnumerableException) == false)
                         _onFail(new PausableTaskException(e));
                     else
-                    {
-                        if (_pool != null)
-                            _pool.PushTaskBack(this);
-
                         throw new PausableTaskException(e);
-                    }
                 }
             }
 
             if (_completed == true)
             {
-                _enumeratorWrap.Completed();
-                if (_pool != null)
-                    _pool.PushTaskBack(this);
+                FinalizeIt();
+
+                if (_pendingRestart == true)
+                    //start new coroutine using this task
+                    Restart(_pendingEnumerator);
+
+                return false;
             }
 
-            return !_completed;
+            return true;
+        }
+
+        private void FinalizeIt()
+        {
+            _coroutineWrapper.FastClear();
+            Stop();
+
+            if (_pool != null)
+                _pool.PushTaskBack(this);
+
+            _enumeratorWrap.Completed();
         }
 
         //Reset task on reuse, when fetched from the Pool
         public void Reset()
         {
-            _enumeratorWrap.Reset();            
-
             _pendingEnumerator = null;
             _taskGenerator     = null;
             _taskEnumerator    = null;
-            _originalEnumerator = null;
 
             _runner            = null;
             _onFail            = null;
@@ -177,6 +181,7 @@ namespace Svelto.Tasks.Internal
             _completed         = false;
             _started           = false;
             _pendingRestart    = false;
+            _name              = string.Empty;
         }
 
         public void Pause()
@@ -228,10 +233,10 @@ namespace Svelto.Tasks.Internal
 
         internal PausableTask()
         {
-            Stop();
-
             _enumeratorWrap = new EnumeratorWrapper();
-            _coroutine = new CoroutineEx();
+            _coroutineWrapper = new SerialTaskCollection(1);
+
+            Reset();
         }
 
         bool IsCompilerGenerated(Type t)
@@ -260,17 +265,17 @@ namespace Svelto.Tasks.Internal
                 if (_taskGenerator == null && _taskEnumerator == null)
                     throw new Exception("An enumerator or enumerator provider is required to enable this function, please use SetEnumeratorProvider/SetEnumerator before to call start");
 
-                _originalEnumerator = _taskEnumerator ?? _taskGenerator();
+                var originalEnumerator = _taskEnumerator ?? _taskGenerator();
                 
                 if (_started == true && _completed == false)
                 {
                     Stop(); //if it's reused, must stop naturally
 
-                    _pendingEnumerator = _originalEnumerator;
+                    _pendingEnumerator = originalEnumerator;
                     _pendingRestart = true;
                 }
                 else
-                    Restart(_originalEnumerator);
+                    Restart(originalEnumerator);
             }
         }
 
@@ -297,6 +302,7 @@ namespace Svelto.Tasks.Internal
             _started               = true;
             _pendingEnumerator     = null;
             _pendingRestart        = false;
+            _enumeratorWrap.Reset();
 
             SetTask(task);
 
@@ -308,21 +314,20 @@ namespace Svelto.Tasks.Internal
 
         void SetTask(IEnumerator task)
         {
-            var taskc = task as CoroutineEx;
+            var taskc = task as TaskCollection;
 
             if (taskc == null)
-                _coroutine.Reuse(task);
+            {
+                _coroutineWrapper.Add(task);
+                _coroutine = _coroutineWrapper;
+            }
             else
                 _coroutine = taskc;
         }
 
-        internal IEnumerator originalEnumerator
-        {
-            get { return _originalEnumerator; }
-        }
-
         IRunner                       _runner;
-        CoroutineEx                   _coroutine;
+        IEnumerator                   _coroutine;
+        SerialTaskCollection          _coroutineWrapper;
 
         bool                          _stopped;
         bool                          _paused;
@@ -333,9 +338,7 @@ namespace Svelto.Tasks.Internal
 
         IEnumerator                   _pendingEnumerator;
         IEnumerator                   _taskEnumerator;
-        IEnumerator                   _originalEnumerator;
-
-        EnumeratorWrapper              _enumeratorWrap;
+        EnumeratorWrapper             _enumeratorWrap;
 
         readonly IPausableTaskPool    _pool;
         Func<IEnumerator>             _taskGenerator;
@@ -351,20 +354,22 @@ namespace Svelto.Tasks.Internal
         {
             public bool MoveNext()
             {
-                MultiThreadRunner.MemoryBarrier();
+                if (_completed == true)
+                {
+                    _completed = false;
+                    return false;
+                }
                 return _completed == false;
             }
 
             public void Completed()
             {
                 _completed = true;
-                MultiThreadRunner.MemoryBarrier();
             }
 
             public void Reset()
             {
                 _completed = false;
-                MultiThreadRunner.MemoryBarrier();
             }
 
             public object Current { get; private set; }

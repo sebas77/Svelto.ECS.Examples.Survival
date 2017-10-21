@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemyMovementEngine : INodesEngine, IQueryableNodeEngine, IStep<DamageInfo>
+    public class EnemyMovementEngine : SingleNodeEngine<EnemyTargetNode>, IQueryableNodeEngine, IStep<DamageInfo>
     {
         public IEngineNodeDB nodesDB { set; private get; }
 
@@ -14,21 +14,14 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
-        public Type[] AcceptedNodes()
+        protected override void Add(EnemyTargetNode node)
         {
-            return _acceptedNodes;
+            _targetNode = node;
         }
 
-        public void Add(INode obj)
+        protected override void Remove(EnemyTargetNode node)
         {
-            if (obj is EnemyTargetNode == true)
-                _targetNode = obj as EnemyTargetNode;
-        }
-
-        public void Remove(INode obj)
-        {
-            if (obj is EnemyTargetNode == true)
-                _targetNode = null;
+            _targetNode = null;
         }
 
         void Tick(float deltaSec)
@@ -61,8 +54,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
         {
             StopEnemyOnDeath(token.entityDamaged);
         }
-
-        readonly Type[] _acceptedNodes = { typeof(EnemyTargetNode) };
 
         EnemyTargetNode   _targetNode;
     }

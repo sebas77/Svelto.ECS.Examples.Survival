@@ -2,6 +2,7 @@ using System;
 using Svelto.ECS.Example.Survive.Components.Base;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Svelto.ECS.Example.Survive.Implementers.Player
 {
@@ -34,7 +35,7 @@ namespace Svelto.ECS.Example.Survive.Implementers.Player
         {
             TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks(); //Tasks like not ending loops must be cleared manually with this function
 
-            Application.LoadLevel (Application.loadedLevel);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         int                 _currentHealth;

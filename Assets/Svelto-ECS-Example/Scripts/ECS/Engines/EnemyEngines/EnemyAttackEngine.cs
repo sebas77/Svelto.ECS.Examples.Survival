@@ -6,10 +6,9 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemyAttackEngine : INodesEngine, IQueryableNodeEngine
+    public class EnemyAttackEngine : MultiNodesEngine<EnemyNode, EnemyTargetNode>, IQueryableNodeEngine
     {
         public IEngineNodeDB nodesDB { set; private get; }
-        public Type[] AcceptedNodes() { return _acceptedNodes; }
 
         public EnemyAttackEngine(Sequencer enemyrDamageSequence)
         {
@@ -18,28 +17,28 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             TaskRunner.Instance.Run(new TimedLoopActionEnumerator(Tick));
         }
 
-        public void Add(INode obj)
+        protected override void AddNode(EnemyNode obj)
         {
-            if (obj is EnemyNode)
-            {
-                EnemyNode enemyNode = (obj as EnemyNode);
+            EnemyNode enemyNode = (obj as EnemyNode);
 
-                enemyNode.targetTriggerComponent.entityInRange += CheckTarget;
-            }
-            else
-                _targetNode = obj as EnemyTargetNode;
+            enemyNode.targetTriggerComponent.entityInRange += CheckTarget;
         }
 
-        public void Remove(INode obj)
+        protected override void RemoveNode(EnemyNode obj)
         {
-            if (obj is EnemyNode)
-            {
-                EnemyNode enemyNode = (obj as EnemyNode);
+            EnemyNode enemyNode = (obj as EnemyNode);
 
                 enemyNode.targetTriggerComponent.entityInRange -= CheckTarget;
-            }
-            else
-                _targetNode = null;
+        }
+
+        protected override void AddNode(EnemyTargetNode obj)
+        {
+            _targetNode = obj as EnemyTargetNode;
+        }
+
+        protected override void RemoveNode(EnemyTargetNode obj)
+        {
+            _targetNode = null;
         }
 
         void Tick(float deltaSec)
@@ -85,8 +84,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                     component.targetInRange = false;
             }
         }
-
-        readonly Type[] _acceptedNodes = { typeof(EnemyNode), typeof(EnemyTargetNode) };
 
         EnemyTargetNode _targetNode;
         Sequencer _targetDamageSequence;
