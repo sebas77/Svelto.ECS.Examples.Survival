@@ -18,6 +18,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         {
             _playerGunNode = playerGunNode;
             playerGunNode.gunHitTargetComponent.targetHit.NotifyOnValueSet(Shoot);
+            _waitForSeconds = new WaitForSeconds(_playerGunNode.gunComponent.timeBetweenBullets * _playerGunNode.gunFXComponent.effectsDisplayTime);
         }
 
         override protected  void Remove(GunNode playerGunNode)
@@ -66,8 +67,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         }
 
         IEnumerator DisableFXAfterTime()
-        {
-            yield return new WaitForSeconds(_playerGunNode.gunComponent.timeBetweenBullets * _playerGunNode.gunFXComponent.effectsDisplayTime);
+        {           
+            yield return _waitForSeconds;
 
             // ... disable the effects.
             DisableEffects();
@@ -83,5 +84,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         ITaskRoutine   _taskRoutine;
         GunNode        _playerGunNode;
+        WaitForSeconds _waitForSeconds;
     }
 }
