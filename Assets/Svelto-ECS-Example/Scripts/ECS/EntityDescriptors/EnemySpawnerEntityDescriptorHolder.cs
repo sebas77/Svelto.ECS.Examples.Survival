@@ -10,7 +10,7 @@ namespace Svelto.ECS.Example.Survive.EntityDescriptors.EnemySpawner
      {
          IEnemySpawnerComponent[] _components;
 
-        public EnemySpawnerEntityDescriptor(IEnemySpawnerComponent[] componentsImplementor):base(null, null)
+        public EnemySpawnerEntityDescriptor(IEnemySpawnerComponent[] componentsImplementor):base()
 		{
              _components = componentsImplementor;
         }
