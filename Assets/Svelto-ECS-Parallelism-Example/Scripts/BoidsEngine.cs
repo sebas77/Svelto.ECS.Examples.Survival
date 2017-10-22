@@ -217,10 +217,10 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
                 Vector3 realTarget = new Vector3();
                 realTarget.Set(1,2,3);
 
-                for (int j = 0; j < 4; j++)
+                var count = _start + _countn;
+                for (int index = _start; index < count; index++)
                 {
-                    var count = _start + _countn;
-                    for (int index = _start; index < count; index++)
+                    for (int j = 0; j < 4; j++)
                     {
 #if SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
                         IBoidComponent boidNode = entities[index].node;
