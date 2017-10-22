@@ -34,6 +34,13 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
                 //therefore main threads waits until the other threads are finished
                 //I know it sounds complex, but look, is very simple right?
                 yield return _multiParallelTask.ThreadSafeRunOnSchedule(_syncRunner);
+            
+                //try this if you want to see what happens if you don't stall the mainthread
+                //don't be shocked, while the demo will run at thousand of frame per second
+                //the operation will call _testEnumerator still at the same frequency
+                //it would have happened before. However this would be the way to use it
+                //in a normal scenarion, as you don't want the main thread to be stalled.
+                //yield return _multiParallelTask;
 #else
                 //yield on the sync scheduler as I want hold the main thread on purpose.
                 //In real life you wouldn't use sync scheduler as you don't want to 
