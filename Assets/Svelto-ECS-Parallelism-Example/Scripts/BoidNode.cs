@@ -8,7 +8,7 @@ namespace Svelto.ECS.Example.Parallelism
     {
         public Vector3 position;
 
-        public short ID { get; set; }
+        public int ID { get; set; }
     }
 #elif FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
     public class BoidNode : NodeWithID
