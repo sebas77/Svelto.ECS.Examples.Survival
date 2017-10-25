@@ -19,7 +19,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
-          protected override void AddNode(GunNode node)
+        protected override void AddNode(GunNode node)
         {
             _playerGunNode = node;
         }
@@ -32,12 +32,9 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         protected override void RemoveNode(PlayerNode node)
         {
-            _playerGunNode = null; //the gun is never removed (because the level reloads on death), so remove on playerdeath
-        }
-
-        void OnPlayerDead(int ID, bool isDead)
-        {
-            _playerGunNode = null;
+            //the gun is never removed (because the level reloads on death), 
+            //so remove on playerdeath
+            _playerGunNode = null; 
         }
 
         void Tick(float deltaSec)
@@ -60,7 +57,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
             playerGunComponent.timer = 0;
 
-            if (Physics.Raycast(playerGunComponent.shootRay, out shootHit, playerGunComponent.range, SHOOTABLE_MASK | ENEMY_MASK))
+            if (Physics.Raycast(playerGunComponent.shootRay, 
+                out shootHit, playerGunComponent.range, SHOOTABLE_MASK | ENEMY_MASK))
             {
                 var hitGO = shootHit.collider.gameObject;
 
@@ -95,8 +93,9 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         }
 
         GunNode                 _playerGunNode;
-        EnemyKilledObservable   _enemyKilledObservable;
-        Sequencer              _enemyDamageSequence;
+
+        readonly EnemyKilledObservable   _enemyKilledObservable;
+        readonly Sequencer               _enemyDamageSequence;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
         static readonly int ENEMY_MASK = LayerMask.GetMask("Enemies");
