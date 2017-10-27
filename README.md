@@ -7,6 +7,8 @@ Most of the source code has been rewritten to work with the ECS framework. You s
 
 The Survival Demo should be compatible with Unity 5.3 and above (after the due updates)
 
+New Parallelism Example is explained here: http://www.sebaslab.com/svelto-ecs-svelto-tasks-new-example-plus-whats-coming-and-optimization-related-thoughts/ the article complements the comments in the code.
+
 You can add Svelto-ECS framework from the original repository or syncing it from this one using the submodule approach. 
 
 *Note: In this demo I extensively use explicit interface implementations. While I like them because they make the code clearer to read, I later found out that explicit implemented methods are marked as virtual. This could potentially impact the performance of the application, so it's better avoid it. It would be too much work to change the example code, so you have been warned.*
