@@ -1,3 +1,5 @@
+#define DONT_TRY_THIS_AT_HOME
+
 using Svelto.Context;
 using Svelto.ECS.NodeSchedulers;
 using UnityEngine;
@@ -21,6 +23,19 @@ namespace Svelto.ECS.Example.Parallelism
 
         void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
+            var tasksCount = NumberOfEntities.value;
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
+            var boidDescriptor = new BoidEntityDescriptor(new[]{ new Boid() });
+#else
+            var boidDescriptor = new BoidEntityDescriptor();
+#endif
+#if DONT_TRY_THIS_AT_HOME
+            for (int i = 0; i < tasksCount; i++)
+            {
+                GameObject crazyness = new GameObject();
+                crazyness.AddComponent<UnityWay>();
+            }
+#else
             IEnginesRoot enginesRoot;
             IEntityFactory entityFactory = (enginesRoot = new EnginesRoot(new UnitySumbmissionNodeScheduler())) as IEntityFactory;
 
@@ -28,16 +43,11 @@ namespace Svelto.ECS.Example.Parallelism
             enginesRoot.AddEngine(boidsEngine);
             _contextNotifier.AddFrameworkDestructionListener(boidsEngine);
 
-            var tasksCount = NumberOfEntities.value;
-#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-            var boidDescriptor = new BoidEntityDescriptor(new[]{ new Boid() });
-#else
-            var boidDescriptor = new BoidEntityDescriptor();
-#endif
             for (int i = 0; i < tasksCount; i++)
                 entityFactory.BuildEntity(i, boidDescriptor);
 
             entityFactory.BuildEntity(0, new GenericEntityDescriptor<PrintTimeNode>(contextHolder.GetComponentInChildren<PrintIteration>()));
+#endif
         }
 
         void ICompositionRoot.OnContextInitialized()

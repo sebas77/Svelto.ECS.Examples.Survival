@@ -1,9 +1,7 @@
 ﻿using Svelto.Tasks;
 using System;
 using System.Collections;
-using System.Diagnostics;
 using UnityEngine;
-using System.Timers;
 
 namespace Svelto.ECS.Example.Parallelism
 {
@@ -135,8 +133,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 #endif
             _testEnumerator = new TestEnumerator(_printNode);
 
-            Update().ThreadSafeRunOnSchedule(StandardSchedulers.updateScheduler);
-            
+            Update().ThreadSafeRunOnSchedule(StandardSchedulers.updateScheduler);           
         }
 
         public void Ready()
