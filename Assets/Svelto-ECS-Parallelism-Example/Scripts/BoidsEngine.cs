@@ -222,6 +222,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
                 realTarget.Set(1,2,3);
 
                 var count = _start + _countn;
+                var totalCount = _countn * 4;
                 for (int index = _start; index < count; index++)
                 {
                     for (int j = 0; j < 4; j++)
@@ -256,9 +257,13 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 
                         entities[index].node.position = direction / (sqrdmagnitude);
 #endif
-                        System.Threading.Interlocked.Increment(ref _totalCount);
                     }
                 }
+#if TURBO_EXAMPLE
+                System.Threading.Interlocked.Add(ref _totalCount, totalCount);
+#else
+                _totalCount += totalCount;
+#endif
 
                 return false;
             }

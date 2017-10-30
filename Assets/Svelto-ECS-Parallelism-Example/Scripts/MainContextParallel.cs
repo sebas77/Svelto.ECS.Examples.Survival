@@ -1,4 +1,4 @@
-#define DONT_TRY_THIS_AT_HOME
+//#define DONT_TRY_THIS_AT_HOME
 
 using Svelto.Context;
 using Svelto.ECS.NodeSchedulers;
