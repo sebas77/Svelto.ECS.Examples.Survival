@@ -37,8 +37,8 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
             
                 //try this if you want to see what happens if you don't stall the mainthread
                 //don't be shocked, while the demo will run at thousand of frame per second
-                //the operation will call _testEnumerator still at the same frequency
-                //it would have happened before. However this would be the way to use it
+                //the operation will still call _testEnumerator at the same frequency
+                //of before. However this would be the way to use it
                 //in a normal scenarion, as you don't want the main thread to be stalled.
                 //yield return _multiParallelTask;
 #else
@@ -136,7 +136,6 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
             _testEnumerator = new TestEnumerator(_printNode);
 
             Update().ThreadSafeRunOnSchedule(StandardSchedulers.updateScheduler);
-            
         }
 
         public void Ready()
@@ -193,14 +192,13 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
         /// </summary>
         class BoidEnumerator : IEnumerator
         {
-            private int _countn;
-            private int _start;
+            int _countn;
+            int _start;
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
             private DataStructures.FasterList<BoidNode> _nodes;
 #else
             BoidNode[] _nodes;
 #endif
-
             public object Current  {   get { return null;  }  }
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
             public BoidEnumerator(DataStructures.FasterList<BoidNode> nodes, int start, int countn)
@@ -225,6 +223,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
                 realTarget.Set(1,2,3);
 
                 var count = _start + _countn;
+                var totalIteration = _countn * 4;
                 for (int index = _start; index < count; index++)
                 {
                     for (int j = 0; j < 4; j++)
@@ -259,10 +258,13 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 
                         entities[index].node.position = direction / (sqrdmagnitude);
 #endif
-                        System.Threading.Interlocked.Increment(ref _totalCount);
                     }
                 }
-
+#if TURBO_EXAMPLE
+                System.Threading.Interlocked.Add(ref _totalCount, totalIteration);
+#else
+                _totalCount += totalIteration;
+#endif
                 return false;
             }
 
