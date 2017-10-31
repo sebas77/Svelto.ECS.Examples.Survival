@@ -123,7 +123,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 
             var countn = count / numberOfThreads;
 
-            _multiParallelTask = new MultiThreadedParallelTaskCollection(numberOfThreads);
+            _multiParallelTask = new MultiThreadedParallelTaskCollection(numberOfThreads, false);
             _syncRunner = new SyncRunner(true);
 
             for (int i = 0; i < numberOfThreads; i++)
