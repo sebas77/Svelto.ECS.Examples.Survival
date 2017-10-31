@@ -16,9 +16,6 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
         public const uint NUM_OF_THREADS = 8; //must be divisible by 4 for this exercise as I am not handling reminders
 #endif
         
-        public BoidsEngine()
-        {}
-
         IEnumerator Update()
         {
             while (true)
