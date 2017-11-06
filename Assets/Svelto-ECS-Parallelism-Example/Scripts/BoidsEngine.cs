@@ -100,7 +100,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 //entities are created on the same frame).This demo aims to be allocation free during the main execution, that's 
 //why all the tasks are prepared before hand. In this step, we prepare just one task that runs the main operations 
 //that must be executed on the entities.         
-            int count;
+            int count = 0;
 #if FOURTH_TIER_EXAMPLE
             BoidNode[] _nodes;
 #endif
@@ -125,7 +125,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 
             for (int i = 0; i < numberOfThreads; i++)
                 _multiParallelTask.Add(new BoidEnumerator(_nodes, countn * i, countn));
-#else
+#elif FOURTH_TIER_EXAMPLE
             _boidEnumerator = new BoidEnumerator(_nodes, 0, count);
 #endif
             _testEnumerator = new TestEnumerator(_printNode);
