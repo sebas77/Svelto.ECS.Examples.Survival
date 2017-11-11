@@ -15,7 +15,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 #if TURBO_EXAMPLE
         public const uint NUM_OF_THREADS = 8; //must be divisible by 4 for this exercise as I am not handling reminders
 #endif
-        
+
         IEnumerator Update()
         {
             while (true)
@@ -125,7 +125,7 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 
             for (int i = 0; i < numberOfThreads; i++)
                 _multiParallelTask.Add(new BoidEnumerator(_nodes, countn * i, countn));
-#elif FOURTH_TIER_EXAMPLE
+#elif FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE || FOURTH_TIER_EXAMPLE
             _boidEnumerator = new BoidEnumerator(_nodes, 0, count);
 #endif
             _testEnumerator = new TestEnumerator(_printNode);
