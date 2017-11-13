@@ -1,5 +1,5 @@
 # Svelto-ECS-Example
-Example for Svelto ECS (https://github.com/sebas77/Svelto-ECS)
+Code example for Svelto ECS (https://github.com/sebas77/Svelto-ECS)
 
 I used the Survival Shooter Unity Demo to show how an ECS framework could work inside Unity. I am not sure about the license of this demo, so use it only for learning purposes.
 
