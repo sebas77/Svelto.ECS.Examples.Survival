@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Svelto.Tasks
+namespace Svelto.Tasks.Enumerators
 {
     public class WWWEnumerator : IEnumerator<WWW>
     {

@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Components.Enemy
+namespace Svelto.ECS.Example.Survive.Components.Enemies
 {
     public interface IEnemyAttackComponent: IComponent
     {
@@ -23,9 +24,17 @@ namespace Svelto.ECS.Example.Survive.Components.Enemy
 
     public interface IEnemySpawnerComponent: IComponent
     {
-        GameObject enemyPrefab  { get; }
-        Transform[] spawnPoints { get; }
-        float spawnTime         { get; }
+        EnemySpawnData[] enemySpawnData { get; }
+    }
+    
+    [Serializable]
+    public struct EnemySpawnData
+    {
+        public GameObject enemyPrefab;
+        public Transform[] spawnPoints;
+        public float spawnTime;
+        [HideInInspector]
+        public float timeLeft;
     }
 
     public interface IEnemyTriggerComponent: IComponent

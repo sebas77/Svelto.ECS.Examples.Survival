@@ -1,16 +1,20 @@
-using Svelto.ECS.Example.Survive.Components.Enemy;
-using UnityEngine;
+﻿using Svelto.ECS.Example.Survive.Others;
+using Svelto.ECS.Example.Survive.Components.Enemies;
 
-namespace Svelto.ECS.Example.Survive.Implementers.Enemies
+namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 {
-    public class EnemySpawner : MonoBehaviour, IEnemySpawnerComponent
+    public class EnemySpawningImplementor:IEnemySpawnerComponent
     {
-        public GameObject enemy;                // The enemy prefab to be spawned.
-        public float spawnTime = 3f;            // How long between each spawn.
-        public Transform[] spawnPoints;         // An array of the spawn points this enemy can spawn from.
+        public EnemySpawnData[] enemySpawnData { get { return _enemySpawnData; }}
 
-        GameObject IEnemySpawnerComponent.enemyPrefab { get { return enemy; } }
-        float IEnemySpawnerComponent.spawnTime { get { return spawnTime; } }
-        Transform[] IEnemySpawnerComponent.spawnPoints { get { return spawnPoints; } }
+        public EnemySpawningImplementor(EnemySpawnDataSource[] data)
+        {
+            _enemySpawnData = new EnemySpawnData[data.Length];
+
+            for (int i = 0; i < data.Length; i++)
+                _enemySpawnData[i] = data[i].spawnData;
+        }
+        
+        EnemySpawnData[] _enemySpawnData;
     }
 }

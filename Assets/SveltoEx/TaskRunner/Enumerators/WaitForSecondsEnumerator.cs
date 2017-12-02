@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace Svelto.Tasks
+namespace Svelto.Tasks.Enumerators
 {
     public class WaitForSecondsEnumerator:IEnumerator
     {
@@ -30,7 +30,7 @@ namespace Svelto.Tasks
         public object Current { get { return null; } }
 
         DateTime _future;
-        float _seconds;
+        readonly float _seconds;
     }
 }
 

@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
-using Svelto.ECS.Example.Survive.Components.Enemy;
+using Svelto.ECS.Example.Survive.Components.Enemies;
 using Svelto.ECS.Example.Survive.Components.Base;
 
-namespace Svelto.ECS.Example.Survive.Implementers.Enemies
+namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 {
     public class EnemyMovement : MonoBehaviour, IEnemyMovementComponent, ITransformComponent
     {

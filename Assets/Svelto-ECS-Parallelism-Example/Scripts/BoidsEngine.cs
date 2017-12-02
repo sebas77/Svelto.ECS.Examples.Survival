@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Svelto.ECS.Example.Parallelism
 {
@@ -16,7 +17,30 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
         public const uint NUM_OF_THREADS = 8; //must be divisible by 4 for this exercise as I am not handling reminders
 #endif
 
-        IEnumerator Update()
+		public BoidsEngine()
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere) ;
+            var mesh = go.GetComponent<MeshFilter>().mesh; GameObject.Destroy(go);
+
+
+            var material = new Material (Shader.Find ("Unlit/Texture"));
+        //    material.enableInstancing = true;
+            var transform = new Matrix4x4[1];
+            transform[0] = Matrix4x4.identity;
+            _command = new CommandBuffer();
+
+            //              command.DrawMeshInstanced(mesh, 0, material, 0, transform);
+
+            //for (int i = 0; i < 40000; i++)
+            {
+                _command.SetViewProjectionMatrices(Camera.main.worldToCameraMatrix, Camera.main.projectionMatrix);
+                _command.DrawMesh(mesh, Camera.main.transform.localToWorldMatrix, material);
+                transform[0].m20 += 0.1f;
+            }
+            Camera.main.AddCommandBuffer(CameraEvent.AfterSkybox, _command);
+        }
+
+		IEnumerator Update()
         {
             while (true)
             {
@@ -43,12 +67,14 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
                 //note: RunOnSchedule (and ThreadSafeRunOnSchedule) allows to continue
                 //the operation on another runner without stalling the current one.
                 //yielding it allows the current operation to wait for the result.
-                yield return _boidEnumerator.ThreadSafeRunOnSchedule(StandardSchedulers.syncScheduler);
+                //     yield return _boidEnumerator.ThreadSafeRunOnSchedule(StandardSchedulers.syncScheduler);
 #endif
                 //run the cached enumerator on the next coroutine phase, yield until it's done. 
                 //The thread will spin until is done. Yielding an enumerator on the same
                 //runner actually executes it immediatly.
-                yield return _testEnumerator;
+                //      yield return _testEnumerator;
+
+                Graphics.ExecuteCommandBuffer(_command);
 
                 //since _testEnumerator runs synchronously, we need to yield for a frame
                 //at least once, otherwise this enumerator becomes totally synchronously
@@ -287,5 +313,6 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
 #endif
         TestEnumerator _testEnumerator;
         PrintTimeNode _printNode;
+        private CommandBuffer _command;
     }
 }

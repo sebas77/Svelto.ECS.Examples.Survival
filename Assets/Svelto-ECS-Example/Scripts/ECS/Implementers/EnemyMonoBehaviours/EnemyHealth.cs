@@ -1,11 +1,11 @@
 using System;
 using Svelto.ECS.Example.Survive.Components.Base;
 using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.Components.Enemy;
+using Svelto.ECS.Example.Survive.Components.Enemies;
 using Svelto.ECS.Example.Survive.Components.Player;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Implementers.Enemies
+namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 {
     public class EnemyHealth : MonoBehaviour, IHealthComponent, IAnimationComponent, IEnemyVFXComponent, IDamageSoundComponent, ITargetTypeComponent, IRemoveEntityComponent
     {

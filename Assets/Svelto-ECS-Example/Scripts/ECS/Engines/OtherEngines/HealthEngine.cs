@@ -35,6 +35,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Health
             if (healthComponent.currentHealth <= 0)
             {
                 _damageSequence.Next(this, ref damage, DamageCondition.dead);
+
                 node.removeEntityComponent.removeEntity();
             }
             else

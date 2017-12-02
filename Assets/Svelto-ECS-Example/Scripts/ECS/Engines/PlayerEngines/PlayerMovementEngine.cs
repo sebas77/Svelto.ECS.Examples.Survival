@@ -2,33 +2,41 @@ using UnityEngine;
 using Svelto.ECS.Example.Survive.Nodes.Player;
 using UnityStandardAssets.CrossPlatformInput;
 using System;
+using System.Collections;
 using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player
 {
     public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IStep<PlayerDamageInfo>
     {
         public PlayerMovementEngine()
-        { 
-            TaskRunner.Instance.RunOnSchedule(Tasks.StandardSchedulers.physicScheduler, new Tasks.TimedLoopActionEnumerator(PhysicsTick));
+        {
+            PhysicsTick().RunOnSchedule(StandardSchedulers.physicScheduler);
         }
 
-        override protected void Add(PlayerNode obj)
+        protected override void Add(PlayerNode obj)
         {
             _playerNode = obj as PlayerNode;
         }
 
-        override protected void Remove(PlayerNode obj)
+        protected override void Remove(PlayerNode obj)
         {
             _playerNode = null;
         }
 
-        void PhysicsTick(float deltaSec)
+        IEnumerator PhysicsTick()
         {
-            if (_playerNode == null) return;
+            while (true)
+            {
+                if (_playerNode != null)
+                {
+                    Movement();
+                    Turning();
+                }
 
-            Movement();
-            Turning();
+                yield return null; //don't forget to yield or you will enter in an infinite loop!
+            }
         }
 
         void Movement()

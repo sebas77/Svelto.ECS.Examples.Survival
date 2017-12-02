@@ -1,4 +1,3 @@
-using System;
 using Svelto.ECS.Example.Survive.Nodes.HUD;
 using Svelto.ECS.Example.Survive.Observers.HUD;
 

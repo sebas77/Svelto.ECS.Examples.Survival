@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Svelto.ECS.Example.Survive.Components.Enemy;
+using Svelto.ECS.Example.Survive.Components.Enemies;
 
-namespace Svelto.ECS.Example.Survive.Implementers.Enemies
+namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 {
     public class EnemyTrigger : MonoBehaviour, IEnemyTriggerComponent, IEnemyAttackComponent
     {

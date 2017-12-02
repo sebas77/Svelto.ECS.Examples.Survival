@@ -20,31 +20,43 @@ namespace Svelto.ECS.Example.Survive
     {
         public Main()
         {
-            SetupEnginesAndComponents();
+            SetupEnginesAndEntities();
         }
 
-        void SetupEnginesAndComponents()
+        void SetupEnginesAndEntities()
         {
+            //The Engines Root is the core of Svelto.ECS. You must NEVER inject the EngineRoot
+            //as it is, however you may inject it as IEntityFactory. In fact, you can build entity
+            //inside other engines or factories as well.
+            //the UnitySumbmissionNodeScheduler is the scheduler that is used by the Root to know
+            //when to inject the nodes. You shouldn't use a custom one unless you know what you 
+            //are doing, so let's assume it's part of the pattern right now.
             _entityFactory = _enginesRoot = new EnginesRoot(new UnitySumbmissionNodeScheduler());
 
             GameObjectFactory factory = new GameObjectFactory();
-    
+
             var enemyKilledObservable = new EnemyKilledObservable();
             var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver(enemyKilledObservable);
 
             Sequencer playerDamageSequence = new Sequencer();
             Sequencer enemyDamageSequence = new Sequencer();
 
-            var enemyAnimationEngine = new EnemyAnimationEngine();
+            //Player related engines
             var playerHealthEngine = new HealthEngine(playerDamageSequence);
-            var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
-            var hudEngine = new HUDEngine();
-            var damageSoundEngine = new DamageSoundEngine();
             var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence);
             var playerMovementEngine = new PlayerMovementEngine();
             var playerAnimationEngine = new PlayerAnimationEngine();
+
+            //Enemy related engines
+            var enemyAnimationEngine = new EnemyAnimationEngine();
+            var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
             var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence);
             var enemyMovementEngine = new EnemyMovementEngine();
+
+            //hud and sound engines
+            var hudEngine = new HUDEngine();
+            var damageSoundEngine = new DamageSoundEngine();
+            EnemySpawnerEngine enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
 
             playerDamageSequence.SetSequence(
                 new Steps() //sequence of steps
@@ -82,7 +94,7 @@ namespace Svelto.ECS.Example.Survive
                         new Dictionary<System.Enum, IStep[]>()
                         { 
                             {  DamageCondition.damage, new IStep[] { enemyAnimationEngine }  },
-                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, enemyAnimationEngine, playerShootingEngine }  },
+                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine }  },
                         }  
                     }  
                 }
@@ -94,7 +106,7 @@ namespace Svelto.ECS.Example.Survive
             AddEngine(playerHealthEngine);
             AddEngine(new PlayerGunShootingFXsEngine());
 
-            AddEngine(new EnemySpawnerEngine(factory, _entityFactory));
+            AddEngine(enemySpawnerEngine);
             AddEngine(enemyAttackEngine);
             AddEngine(enemyMovementEngine);
             AddEngine(enemyAnimationEngine);
@@ -115,7 +127,10 @@ namespace Svelto.ECS.Example.Survive
             IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
 
             for (int i = 0; i < entities.Length; i++)
-                _entityFactory.BuildEntity((entities[i] as MonoBehaviour).gameObject.GetInstanceID(), entities[i].BuildDescriptorType());
+            {
+                var entityDescriptorHolder = entities[i];
+                _entityFactory.BuildEntity(((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(), entityDescriptorHolder.BuildDescriptorType());
+            }
         }
 
         void ICompositionRoot.OnContextInitialized()

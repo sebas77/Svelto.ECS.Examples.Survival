@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Svelto.DataStructures;
 using Console = Utility.Console;
 using System.Threading;
+using Svelto.Utilities;
 
 #if NETFX_CORE
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace Svelto.Tasks
         {
             get
             {
+                ThreadUtility.MemoryBarrier();
                 return _waitForflush == true;
             }
         }
@@ -99,7 +101,7 @@ namespace Svelto.Tasks
         public void StartCoroutine(IPausableTask task)
         {
             paused = false;
-
+            
             _newTaskRoutines.Enqueue(task);
 
             MemoryBarrier();
@@ -114,7 +116,7 @@ namespace Svelto.Tasks
         public void StopAllCoroutines()
         {
             _newTaskRoutines.Clear();
-
+            
             _waitForflush = true;
             
             MemoryBarrier();
@@ -123,6 +125,7 @@ namespace Svelto.Tasks
         public void Kill()
         {
             _breakThread = true;
+            
             UnlockThread();
         }
 
@@ -174,18 +177,23 @@ namespace Svelto.Tasks
                         _coroutines.UnorderedRemoveAt(i--);
                     }
                 }
-
-                if (_newTaskRoutines.Count == 0 && _coroutines.Count == 0)
-                {
-                    _isAlive = false;
-                    _waitForflush = false;
-
-                    _lockingMechanism();
-                }
-                else
-                if (_interval > 0)
+                
+                if (_interval > 0 && _waitForflush == false)
                 {
                     _waitForInterval();
+                }
+
+                if (_coroutines.Count == 0)
+                {
+                    _waitForflush = false;
+                    
+                    if (_newTaskRoutines.Count == 0)
+                    {
+                        _isAlive = false;
+                        
+                        _lockingMechanism();
+                    }
+                    ThreadUtility.MemoryBarrier();
                 }
             }
 

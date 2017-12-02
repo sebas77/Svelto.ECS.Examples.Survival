@@ -4,7 +4,7 @@ using Svelto.ECS.Example.Survive.Components.Damageable;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Svelto.ECS.Example.Survive.Implementers.Player
+namespace Svelto.ECS.Example.Survive.Implementors.Player
 {
     public class PlayerHealth : MonoBehaviour, IHealthComponent, IDamageSoundComponent, IRemoveEntityComponent
     {

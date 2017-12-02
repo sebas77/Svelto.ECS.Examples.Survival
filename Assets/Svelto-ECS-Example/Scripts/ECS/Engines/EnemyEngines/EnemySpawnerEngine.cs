@@ -1,34 +1,20 @@
-using Svelto.ECS.Example.Survive.Components.Enemy;
+using Svelto.ECS.Example.Survive.Components.Enemies;
+using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.Nodes.Enemies;
-using Svelto.DataStructures;
-using System;
-using UnityEngine;
 using System.Collections;
+using Svelto.Tasks.Enumerators;
+using System;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemySpawnerEngine : SingleNodeEngine<EnemySpawningNode>
+    public class EnemySpawnerEngine : SingleNodeEngine<EnemySpawningNode>, IStep<DamageInfo>
     {
-        internal class EnemySpawnerData
-        {
-            internal float timeLeft;
-            internal GameObject enemy;
-            internal float spawnTime;
-            internal Transform[] spawnPoints;
-
-            internal EnemySpawnerData(IEnemySpawnerComponent spawnerComponent)
-            {
-                enemy = spawnerComponent.enemyPrefab;
-                spawnTime = spawnerComponent.spawnTime;
-                spawnPoints = spawnerComponent.spawnPoints;
-                timeLeft = spawnTime;
-            }
-        }
-
         public EnemySpawnerEngine(Factories.IGameObjectFactory factory, IEntityFactory entityFactory)
         {
             _factory = factory;
             _entityFactory = entityFactory;
+            _numberOfEnemyToSpawn = 15;
+
             TaskRunner.Instance.Run(IntervaledTick);
         }
 
@@ -37,47 +23,56 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             while (true)
             {
                 yield return _waitForSecondsEnumerator;
-
-                for (int i = _enemiestoSpawn.Count - 1; i >= 0; --i)
+                
+                if (_enemiestoSpawn != null)
                 {
-                    var spawnData = _enemiestoSpawn[i];
-
-                    if (spawnData.timeLeft <= 0.0f)
+                    for (int i = _enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
                     {
-                        // Find a random index between zero and one less than the number of spawn points.
-                        int spawnPointIndex = UnityEngine.Random.Range(0, spawnData.spawnPoints.Length);
+                        var spawnData = _enemiestoSpawn[i];
 
-                        // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
-                        var go = _factory.Build(spawnData.enemy);
-                        _entityFactory.BuildEntity(go.GetInstanceID(), go.GetComponent<IEntityDescriptorHolder>().BuildDescriptorType());
-                        var transform = go.transform;
-                        var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
+                        if (spawnData.timeLeft <= 0.0f)
+                        {
+                            // Find a random index between zero and one less than the number of spawn points.
+                            int spawnPointIndex = UnityEngine.Random.Range(0, spawnData.spawnPoints.Length);
 
-                        transform.position = spawnInfo.position;
-                        transform.rotation = spawnInfo.rotation;
+                            // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
+                            var go = _factory.Build(spawnData.enemyPrefab);
+                            _entityFactory.BuildEntity(go.GetInstanceID(),
+                                                       go.GetComponent<IEntityDescriptorHolder>()
+                                                         .BuildDescriptorType());
+                            var transform = go.transform;
+                            var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
 
-                        spawnData.timeLeft = spawnData.spawnTime;
+                            transform.position = spawnInfo.position;
+                            transform.rotation = spawnInfo.rotation;
+
+                            spawnData.timeLeft = spawnData.spawnTime;
+                        }
+
+                        spawnData.timeLeft -= 1.0f;
+                        _numberOfEnemyToSpawn--;
                     }
-
-                    spawnData.timeLeft -= 1.0f;
                 }
             }
         }
 
         protected override void Add(EnemySpawningNode node)
         {
-            var spawnerComponents = (node).spawnerComponents;
-
-            for (int i = 0; i < spawnerComponents.Length; i++)
-                _enemiestoSpawn.Add(new EnemySpawnerData(spawnerComponents[i]));
+            _enemiestoSpawn = node.spawnerComponent.enemySpawnData;
         }
 
         protected override void Remove(EnemySpawningNode node)
         {}
 
-        FasterList<EnemySpawnerData>        _enemiestoSpawn = new FasterList<EnemySpawnerData>();
+        public void Step(ref DamageInfo token, Enum condition)
+        {
+            _numberOfEnemyToSpawn++;
+        }
+
+        EnemySpawnData[]                    _enemiestoSpawn;
         Svelto.Factories.IGameObjectFactory _factory;
         IEntityFactory                      _entityFactory;
-        Tasks.WaitForSecondsEnumerator      _waitForSecondsEnumerator = new Tasks.WaitForSecondsEnumerator(1);
+        WaitForSecondsEnumerator            _waitForSecondsEnumerator = new WaitForSecondsEnumerator(1);
+        int                                 _numberOfEnemyToSpawn;
     }
 }

@@ -104,7 +104,7 @@ public class TaskRunner
 #if UNITY_5_3_OR_NEWER || UNITY_5
         _instance._runner = StandardSchedulers.coroutineScheduler;
 #else
-        _instance._runner = new MultiThreadRunner();
+        _instance._runner = new MultiThreadRunner("TaskThread");
 #endif
         _instance._taskPool = new PausableTaskPool();
 
