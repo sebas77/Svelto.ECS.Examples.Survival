@@ -108,7 +108,7 @@ public class TaskRunner
 #endif
         _instance._taskPool = new PausableTaskPool();
 
-#if TASKS_PROFILER_ENABLED && UNITY_EDITOR
+#if UNITY_EDITOR
         var debugTasksObject = GameObject.Find("Svelto.Tasks.Profiler");
         if (debugTasksObject == null)
         {

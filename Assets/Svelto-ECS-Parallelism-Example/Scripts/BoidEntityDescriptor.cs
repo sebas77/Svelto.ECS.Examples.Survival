@@ -9,7 +9,7 @@
             _nodesToBuild = new INodeBuilder[]
             {
 #if FOURTH_TIER_EXAMPLE
-                new FastStructNodeBuilder<BoidNode>(),
+                new StructNodeBuilder<BoidNode>(),
 #endif
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
                 new NodeBuilder<BoidNode>(),
