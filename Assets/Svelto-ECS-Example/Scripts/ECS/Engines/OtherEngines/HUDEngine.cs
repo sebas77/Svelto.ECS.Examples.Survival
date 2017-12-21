@@ -1,34 +1,37 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.Nodes.HUD;
+using Svelto.ECS.Example.Survive.EntityViews.HUD;
 using System;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
-    public class HUDEngine : SingleNodeEngine<HUDNode>, IQueryableNodeEngine, IStep<PlayerDamageInfo>
+    public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<PlayerDamageInfo>
     {
-        public IEngineNodeDB nodesDB { set; private get; }
+        public IEngineEntityViewDB entityViewsDB { set; private get; }
+
+        public void Ready()
+        {}
 
         public HUDEngine()
         {
             TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
-        protected override void Add(HUDNode node)
+        protected override void Add(HUDEntityView EntityView)
         {
-            _guiNode = node;
+            _guiEntityView = EntityView;
         }
 
-        protected override void Remove(HUDNode node)
+        protected override void Remove(HUDEntityView EntityView)
         {
-            _guiNode = null;
+            _guiEntityView = null;
         }
 
         void Tick(float deltaSec)
         {
-            if (_guiNode == null) return;
+            if (_guiEntityView == null) return;
 
-            var damageComponent = _guiNode.damageImageComponent;
+            var damageComponent = _guiEntityView.damageImageComponent;
             var damageImage = damageComponent.damageImage;
 
             damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * deltaSec);
@@ -36,17 +39,17 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
 
         void OnDamageEvent(ref PlayerDamageInfo damaged)
         {
-            var damageComponent = _guiNode.damageImageComponent;
+            var damageComponent = _guiEntityView.damageImageComponent;
             var damageImage = damageComponent.damageImage;
 
             damageImage.color = damageComponent.flashColor;
 
-            _guiNode.healthSliderComponent.healthSlider.value = nodesDB.QueryNode<HUDDamageEventNode>(damaged.entityDamaged).healthComponent.currentHealth;
+            _guiEntityView.healthSliderComponent.healthSlider.value = entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamaged).healthComponent.currentHealth;
         }
 
         void OnDeadEvent()
         {
-            _guiNode.HUDAnimator.hudAnimator.SetTrigger("GameOver");
+            _guiEntityView.HUDAnimator.hudAnimator.SetTrigger("GameOver");
         }
 
         public void Step(ref PlayerDamageInfo token, Enum condition)
@@ -59,7 +62,7 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
                 
         }
 
-        HUDNode         _guiNode;
+        HUDEntityView         _guiEntityView;
     }
 }
 

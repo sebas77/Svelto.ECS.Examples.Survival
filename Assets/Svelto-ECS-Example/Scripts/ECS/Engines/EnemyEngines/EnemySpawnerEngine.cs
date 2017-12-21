@@ -1,19 +1,24 @@
 using Svelto.ECS.Example.Survive.Components.Enemies;
 using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.Nodes.Enemies;
 using System.Collections;
 using Svelto.Tasks.Enumerators;
 using System;
+using System.IO;
+using Svelto.ECS.Example.Survive.EntityDescriptors.Enemies;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemySpawnerEngine : SingleNodeEngine<EnemySpawningNode>, IStep<DamageInfo>
+    public class EnemySpawnerEngine : IEngine, IStep<DamageInfo>
     {
-        public EnemySpawnerEngine(Factories.IGameObjectFactory factory, IEntityFactory entityFactory)
+        public EnemySpawnerEngine(Factories.IGameObjectFactory gameobjectFactory, IEntityFactory entityFactory)
         {
-            _factory = factory;
+            _gameobjectFactory = gameobjectFactory;
             _entityFactory = entityFactory;
             _numberOfEnemyToSpawn = 15;
+            
+            var json = File.ReadAllText("EnemySpawningData.json");
+            
+            _enemiestoSpawn = JsonHelper.getJsonArray<EnemySpawnData>(json);
 
             TaskRunner.Instance.Run(IntervaledTick);
         }
@@ -36,10 +41,10 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                             int spawnPointIndex = UnityEngine.Random.Range(0, spawnData.spawnPoints.Length);
 
                             // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
-                            var go = _factory.Build(spawnData.enemyPrefab);
-                            _entityFactory.BuildEntity(go.GetInstanceID(),
-                                                       go.GetComponent<IEntityDescriptorHolder>()
-                                                         .BuildDescriptorType());
+                            var go = _gameobjectFactory.Build(spawnData.enemyPrefab);
+                            _entityFactory.BuildEntity<EnemyEntityDescriptor>(go.GetInstanceID(),
+                                                       go.GetComponentsInChildren<IComponent>());
+
                             var transform = go.transform;
                             var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
 
@@ -56,23 +61,15 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             }
         }
 
-        protected override void Add(EnemySpawningNode node)
-        {
-            _enemiestoSpawn = node.spawnerComponent.enemySpawnData;
-        }
-
-        protected override void Remove(EnemySpawningNode node)
-        {}
-
         public void Step(ref DamageInfo token, Enum condition)
         {
             _numberOfEnemyToSpawn++;
         }
 
         EnemySpawnData[]                    _enemiestoSpawn;
-        Svelto.Factories.IGameObjectFactory _factory;
+        Svelto.Factories.IGameObjectFactory _gameobjectFactory;
         IEntityFactory                      _entityFactory;
         WaitForSecondsEnumerator            _waitForSecondsEnumerator = new WaitForSecondsEnumerator(1);
         int                                 _numberOfEnemyToSpawn;
-    }
+         }
 }

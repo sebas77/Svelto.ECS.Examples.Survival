@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PrintTime : MonoBehaviour {
     UnityEngine.UI.Text text;

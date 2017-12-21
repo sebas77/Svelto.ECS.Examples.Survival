@@ -1,7 +1,6 @@
 //#define DONT_TRY_THIS_AT_HOME
 
 using Svelto.Context;
-using Svelto.ECS.NodeSchedulers;
 using UnityEngine;
 
 //Main is the Application Composition Root.
@@ -24,11 +23,6 @@ namespace Svelto.ECS.Example.Parallelism
         void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
             var tasksCount = NumberOfEntities.value;
-#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-            var boidDescriptor = new BoidEntityDescriptor(new[]{ new Boid() });
-#else
-            var boidDescriptor = new BoidEntityDescriptor();
-#endif
 #if DONT_TRY_THIS_AT_HOME
             for (int i = 0; i < tasksCount; i++)
             {
@@ -36,20 +30,25 @@ namespace Svelto.ECS.Example.Parallelism
                 crazyness.AddComponent<UnityWay>();
             }
 #else
-            IEnginesRoot enginesRoot;
-            IEntityFactory entityFactory = (enginesRoot = new EnginesRoot(new UnitySumbmissionNodeScheduler())) as IEntityFactory;
+            EnginesRoot enginesRoot = new EnginesRoot(new Svelto.ECS.Schedulers.UnitySumbmissionEntityViewScheduler());
+            IEntityFactory entityFactory = enginesRoot.GenerateEntityFactory();
 
             var boidsEngine = new BoidsEngine();
             enginesRoot.AddEngine(boidsEngine);
+
             _contextNotifier.AddFrameworkDestructionListener(boidsEngine);
 
             for (int i = 0; i < tasksCount; i++)
-                entityFactory.BuildEntity(i, boidDescriptor);
-
-            entityFactory.BuildEntity(0, new GenericEntityDescriptor<PrintTimeNode>(contextHolder.GetComponentInChildren<PrintIteration>()));
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
+                entityFactory.BuildEntity< BoidEntityDescriptor>(i, new Boid());
+#else
+                entityFactory.BuildEntity<BoidEntityDescriptor>(i);
+#endif
+            entityFactory.BuildEntity<GUITextEntityDescriptor>(0, 
+                contextHolder.GetComponentsInChildren<PrintIteration>());
 #endif
         }
-
+        
         void ICompositionRoot.OnContextInitialized()
         {
         }
@@ -62,6 +61,9 @@ namespace Svelto.ECS.Example.Parallelism
 
         IContextNotifer _contextNotifier;
     }
+
+    class GUITextEntityDescriptor:GenericEntityDescriptor<PrintTimeEntityView>
+    {}
 
     //A GameObject containing UnityContext must be present in the scene
     //All the monobehaviours present in the scene statically that need

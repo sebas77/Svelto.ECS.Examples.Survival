@@ -22,13 +22,8 @@ namespace Svelto.ECS.Example.Survive.Components.Enemies
         CapsuleCollider capsuleCollider { get; }
     }
 
-    public interface IEnemySpawnerComponent: IComponent
-    {
-        EnemySpawnData[] enemySpawnData { get; }
-    }
-    
     [Serializable]
-    public struct EnemySpawnData
+    public class EnemySpawnData
     {
         public GameObject enemyPrefab;
         public Transform[] spawnPoints;

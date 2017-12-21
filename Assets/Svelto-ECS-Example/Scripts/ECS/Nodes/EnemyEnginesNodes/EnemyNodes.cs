@@ -1,9 +1,9 @@
 using Svelto.ECS.Example.Survive.Components.Base;
 using Svelto.ECS.Example.Survive.Components.Enemies;
 
-namespace Svelto.ECS.Example.Survive.Nodes.Enemies
+namespace Svelto.ECS.Example.Survive.EntityViews.Enemies
 {
-    public class EnemyNode: NodeWithID
+    public class EnemyEntityView: EntityView
     {
         public IEnemyAttackComponent      attackComponent;
         public IEnemyAttackDataComponent  attackDamageComponent;
@@ -15,12 +15,7 @@ namespace Svelto.ECS.Example.Survive.Nodes.Enemies
         public ITransformComponent        transformComponent;
     }
 
-    public class EnemySpawningNode : NodeWithID
-    {
-        public IEnemySpawnerComponent     spawnerComponent;
-    }
-
-    public class EnemyTargetNode: NodeWithID
+    public class EnemyTargetEntityView: EntityView
     {
         public IPositionComponent         targetPositionComponent;
     }

@@ -1,36 +1,36 @@
 using UnityEngine;
 using System.Collections;
 using Svelto.Tasks;
-using Svelto.ECS.Example.Survive.Nodes.Gun;
+using Svelto.ECS.Example.Survive.EntityViews.Gun;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
-    public class PlayerGunShootingFXsEngine : SingleNodeEngine<GunNode>, IQueryableNodeEngine
+    public class PlayerGunShootingFXsEngine : SingleEntityViewEngine<GunEntityView>, IQueryingEntityViewEngine
     {
-        public IEngineNodeDB nodesDB { set; private get; }
+        public IEngineEntityViewDB entityViewsDB { set; private get; }
 
-        public PlayerGunShootingFXsEngine()
+        public void Ready()
         {
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumeratorProvider(DisableFXAfterTime);
         }
 
-        override protected void Add(GunNode playerGunNode)
+        protected override void Add(GunEntityView playerGunEntityView)
         {
-            _playerGunNode = playerGunNode;
-            playerGunNode.gunHitTargetComponent.targetHit.NotifyOnValueSet(Shoot);
-            _waitForSeconds = new WaitForSeconds(_playerGunNode.gunComponent.timeBetweenBullets * _playerGunNode.gunFXComponent.effectsDisplayTime);
+            _playerGunEntityView = playerGunEntityView;
+            playerGunEntityView.gunHitTargetComponent.targetHit.NotifyOnValueSet(Shoot);
+            _waitForSeconds = new WaitForSeconds(_playerGunEntityView.gunComponent.timeBetweenBullets * _playerGunEntityView.gunFXComponent.effectsDisplayTime);
         }
 
-        override protected  void Remove(GunNode playerGunNode)
+        protected override void Remove(GunEntityView playerGunEntityView)
         {
-            _playerGunNode = null;
+            _playerGunEntityView = null;
         }
 
         void Shoot(int ID, bool targetHasBeenHit)
         {
-            var playerGunNode = nodesDB.QueryNode<GunNode>(ID);
+            var playerGunEntityView = entityViewsDB.QueryEntityView<GunEntityView>(ID);
 
-            var gunFXComponent = playerGunNode.gunFXComponent;
+            var gunFXComponent = playerGunEntityView.gunFXComponent;
 
             // Play the gun shot audioclip.
             gunFXComponent.audio.Play ();
@@ -42,7 +42,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             gunFXComponent.particles.Stop();
             gunFXComponent.particles.Play();
 
-            var gunComponent = playerGunNode.gunComponent;
+            var gunComponent = playerGunEntityView.gunComponent;
 
             var shootRay = gunComponent.shootRay;
 
@@ -76,14 +76,14 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         void DisableEffects ()
         {
-            var fxComponent = _playerGunNode.gunFXComponent;
+            var fxComponent = _playerGunEntityView.gunFXComponent;
             // Disable the line renderer and the light.
             fxComponent.line.enabled = false;
             fxComponent.light.enabled = false;
         }
 
         ITaskRoutine   _taskRoutine;
-        GunNode        _playerGunNode;
+        GunEntityView        _playerGunEntityView;
         WaitForSeconds _waitForSeconds;
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PrintIteration : MonoBehaviour, IPrintStuffComponent
 {

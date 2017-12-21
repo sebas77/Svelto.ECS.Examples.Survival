@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Components.Damageable

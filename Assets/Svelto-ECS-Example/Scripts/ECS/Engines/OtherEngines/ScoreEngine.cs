@@ -1,9 +1,9 @@
-using Svelto.ECS.Example.Survive.Nodes.HUD;
+using Svelto.ECS.Example.Survive.EntityViews.HUD;
 using Svelto.ECS.Example.Survive.Observers.HUD;
 
 namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
-    public class ScoreEngine : SingleNodeEngine<HUDNode>
+    public class ScoreEngine : SingleEntityViewEngine<HUDEntityView>
     {
         public ScoreEngine(ScoreOnEnemyKilledObserver scoreOnEnemyKilledObserver)
         {
@@ -15,28 +15,28 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             switch (item)
             {
                 case ScoreActions.bunnyKilled:
-                    _guiNode.scoreComponent.score += 10;
+                    _guiEntityView.scoreComponent.score += 10;
                     break;
                 case ScoreActions.bearKilled:
-                    _guiNode.scoreComponent.score += 20;
+                    _guiEntityView.scoreComponent.score += 20;
                     break;
                 case ScoreActions.HellephantKilled:
-                    _guiNode.scoreComponent.score += 30;
+                    _guiEntityView.scoreComponent.score += 30;
                     break;
             }
         }
 
-        protected override void Add(HUDNode node)
+        protected override void Add(HUDEntityView EntityView)
         {
-            _guiNode = node;
+            _guiEntityView = EntityView;
         }
 
-        protected override void Remove(HUDNode node)
+        protected override void Remove(HUDEntityView EntityView)
         {
-            _guiNode = null;
+            _guiEntityView = null;
         }
 
-        HUDNode _guiNode;
+        HUDEntityView _guiEntityView;
     }
 }
 

@@ -1,30 +1,30 @@
-using Svelto.ECS.Example.Survive.Nodes.Player;
+using Svelto.ECS.Example.Survive.EntityViews.Player;
 using UnityStandardAssets.CrossPlatformInput;
 using System;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player
 {
-    public class PlayerAnimationEngine : SingleNodeEngine<PlayerNode>, IStep<PlayerDamageInfo>
+    public class PlayerAnimationEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<PlayerDamageInfo>
     {
         public PlayerAnimationEngine()
         {
             TaskRunner.Instance.RunOnSchedule(Tasks.StandardSchedulers.physicScheduler, new Tasks.TimedLoopActionEnumerator(PhysicsTick));
         }
 
-        protected override void Add(PlayerNode playerNode)
+        protected override void Add(PlayerEntityView playerEntityView)
         {
-            _playerNode = playerNode;
+            _playerEntityView = playerEntityView;
         }
 
-        protected override void Remove(PlayerNode playerNode)
+        protected override void Remove(PlayerEntityView playerEntityView)
         {
-            _playerNode = null;
+            _playerEntityView = null;
         }
 
         public void PhysicsTick(float deltaSec)
         {
-            if (_playerNode == null) return;
+            if (_playerEntityView == null) return;
             // Store the input axes.
             float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
             float v = CrossPlatformInputManager.GetAxisRaw("Vertical");
@@ -33,12 +33,12 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
             bool walking = h != 0f || v != 0f;
 
             // Tell the animator whether or not the player is walking.
-            _playerNode.animationComponent.animation.SetBool("IsWalking", walking);
+            _playerEntityView.animationComponent.animation.SetBool("IsWalking", walking);
         }
 
         void TriggerDeathAnimation(int targetID)
         {
-            _playerNode.animationComponent.animation.SetTrigger("Die");
+            _playerEntityView.animationComponent.animation.SetTrigger("Die");
         }
 
         public void Step(ref PlayerDamageInfo token, Enum condition)
@@ -46,6 +46,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
             TriggerDeathAnimation(token.entityDamaged);
         }
 
-        PlayerNode _playerNode;
+        PlayerEntityView _playerEntityView;
     }
 }

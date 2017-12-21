@@ -1,11 +1,10 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
 
-namespace Svelto.ECS.Example.Survive.Nodes.DamageableEntities
+namespace Svelto.ECS.Example.Survive.EntityViews.DamageableEntities
 {
-    public class HealthNode: NodeWithID
+    public class HealthEntityView: EntityView
     {
-        public IHealthComponent         healthComponent;
-
-        public IRemoveEntityComponent   removeEntityComponent;
+        public IHealthComponent healthComponent;
+        public IRemoveEntityComponent removeEntityComponent;
     }
 }

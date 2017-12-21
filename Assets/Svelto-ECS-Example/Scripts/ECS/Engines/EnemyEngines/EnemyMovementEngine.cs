@@ -1,51 +1,54 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.EntityViews.Enemies;
 using System;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemyMovementEngine : SingleNodeEngine<EnemyTargetNode>, IQueryableNodeEngine, IStep<DamageInfo>
+    public class EnemyMovementEngine : SingleEntityViewEngine<EnemyTargetEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
     {
-        public IEngineNodeDB nodesDB { set; private get; }
+        public IEngineEntityViewDB entityViewsDB { set; private get; }
+
+        public void Ready()
+        {}
 
         public EnemyMovementEngine()
         {
             TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
-        protected override void Add(EnemyTargetNode node)
+        protected override void Add(EnemyTargetEntityView EntityView)
         {
-            _targetNode = node;
+            _targetEntityView = EntityView;
         }
 
-        protected override void Remove(EnemyTargetNode node)
+        protected override void Remove(EnemyTargetEntityView EntityView)
         {
-            _targetNode = null;
+            _targetEntityView = null;
         }
 
         void Tick(float deltaSec)
         {
-            if (_targetNode == null)
+            if (_targetEntityView == null)
                 return;
             
-            var enemies = nodesDB.QueryNodes<EnemyNode>();
+            var enemies = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
             for (var i = 0; i < enemies.Count; i++)
             {
                 var component = enemies[i].movementComponent;
 
                 if (component.navMesh.isActiveAndEnabled)
-                    component.navMesh.SetDestination(_targetNode.targetPositionComponent.position);
+                    component.navMesh.SetDestination(_targetEntityView.targetPositionComponent.position);
             }
         }
 
         void StopEnemyOnDeath(int targetID)
         {
-            EnemyNode node = nodesDB.QueryNode<EnemyNode>(targetID);
+            EnemyEntityView EntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
 
-            node.movementComponent.navMesh.enabled = false;
-            var capsuleCollider = node.movementComponent.capsuleCollider;
+            EntityView.movementComponent.navMesh.enabled = false;
+            var capsuleCollider = EntityView.movementComponent.capsuleCollider;
             capsuleCollider.isTrigger = true;
             capsuleCollider.GetComponent<Rigidbody>().isKinematic = true;
         }
@@ -55,6 +58,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             StopEnemyOnDeath(token.entityDamaged);
         }
 
-        EnemyTargetNode   _targetNode;
+        EnemyTargetEntityView   _targetEntityView;
     }
 }
