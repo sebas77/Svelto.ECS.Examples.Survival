@@ -8,19 +8,13 @@ using Svelto.ECS.Example.Survive.EntityDescriptors.Enemies;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemySpawnerEngine : IEngine, IStep<DamageInfo>
+    public class EnemySpawnerEngine : IEngine, IStep<DamageInfo>, Svelto.Context.IWaitForFrameworkInitialization
     {
         public EnemySpawnerEngine(Factories.IGameObjectFactory gameobjectFactory, IEntityFactory entityFactory)
         {
             _gameobjectFactory = gameobjectFactory;
             _entityFactory = entityFactory;
             _numberOfEnemyToSpawn = 15;
-            
-            var json = File.ReadAllText("EnemySpawningData.json");
-            
-            _enemiestoSpawn = JsonHelper.getJsonArray<EnemySpawnData>(json);
-
-            TaskRunner.Instance.Run(IntervaledTick);
         }
 
         IEnumerator IntervaledTick()
@@ -46,16 +40,16 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                                                        go.GetComponentsInChildren<IComponent>());
 
                             var transform = go.transform;
-                            var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
+                            var spawnInfo = spawnData.spawnPoints[spawnPointIndex]; if (spawnInfo == null) yield break;
 
                             transform.position = spawnInfo.position;
                             transform.rotation = spawnInfo.rotation;
 
                             spawnData.timeLeft = spawnData.spawnTime;
+                            _numberOfEnemyToSpawn--;
                         }
 
                         spawnData.timeLeft -= 1.0f;
-                        _numberOfEnemyToSpawn--;
                     }
                 }
             }
@@ -66,10 +60,19 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             _numberOfEnemyToSpawn++;
         }
 
+        public void OnFrameworkInitialized()
+        {
+            var json = File.ReadAllText("EnemySpawningData.json");
+
+            _enemiestoSpawn = JsonHelper.getJsonArray<EnemySpawnData>(json);
+
+            TaskRunner.Instance.Run(IntervaledTick);
+        }
+
         EnemySpawnData[]                    _enemiestoSpawn;
         Svelto.Factories.IGameObjectFactory _gameobjectFactory;
         IEntityFactory                      _entityFactory;
         WaitForSecondsEnumerator            _waitForSecondsEnumerator = new WaitForSecondsEnumerator(1);
         int                                 _numberOfEnemyToSpawn;
-         }
+    }
 }

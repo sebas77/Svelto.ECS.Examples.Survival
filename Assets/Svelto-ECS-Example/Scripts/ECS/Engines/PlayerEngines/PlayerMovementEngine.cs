@@ -8,7 +8,7 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player
 {
-    public class PlayerMovementEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<PlayerDamageInfo>
+    public class PlayerMovementEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<TargetDamageInfo>
     {
         public PlayerMovementEngine()
         {
@@ -86,7 +86,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
             _playerEntityView.rigidBodyComponent.rigidbody.isKinematic = true;
         }
 
-        public void Step(ref PlayerDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, Enum condition)
         {
             StopMovementOnDeath(token.entityDamaged);
         }

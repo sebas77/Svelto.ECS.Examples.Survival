@@ -6,6 +6,10 @@ using UnityEngine;
 
 public class SpawningData : MonoBehaviour
 {
+    private void Awake()
+    {
+        GameObject.DontDestroyOnLoad(this.gameObject);
+    }
     public void SerializeData()
     {
         var data = GetComponents<EnemySpawnDataSource>();
@@ -21,7 +25,6 @@ public class SpawningData : MonoBehaviour
         File.WriteAllText("EnemySpawningData.json", json);
     }
 }
-
 
 static class JsonHelper
 {

@@ -9,7 +9,6 @@ Library
 Temp
 Exe
 UWP
-*.meta
 /.vs/Svelto.ECS.Example/v14/.suo
 /.vs/Svelto.ECS.Example/v15/.suo
 /.vs/Svelto.ECS.Example/v15/Server/sqlite3/db.lock
@@ -36,3 +35,5 @@ UWP
 /Svelto.ECS.Vanilla/dotnet171213.vsp
 /Svelto.ECS.Vanilla/dotnet171213.vspx
 /Svelto.ECS.Vanilla/dotnet2.psess
+/Executable
+/obj

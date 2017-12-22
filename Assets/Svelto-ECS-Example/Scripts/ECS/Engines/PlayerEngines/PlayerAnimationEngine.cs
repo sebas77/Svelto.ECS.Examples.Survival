@@ -5,7 +5,7 @@ using Svelto.ECS.Example.Survive.Components.Damageable;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player
 {
-    public class PlayerAnimationEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<PlayerDamageInfo>
+    public class PlayerAnimationEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<TargetDamageInfo>
     {
         public PlayerAnimationEngine()
         {
@@ -41,7 +41,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
             _playerEntityView.animationComponent.animation.SetTrigger("Die");
         }
 
-        public void Step(ref PlayerDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, Enum condition)
         {
             TriggerDeathAnimation(token.entityDamaged);
         }

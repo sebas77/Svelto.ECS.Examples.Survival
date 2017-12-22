@@ -21,13 +21,13 @@ namespace Svelto.ECS.Example.Survive.Components.Damageable
         }
     }
 
-    public struct PlayerDamageInfo: IDamageInfo
+    public struct TargetDamageInfo: IDamageInfo
     {
         public int damagePerShot { get; private set; }
         public Vector3 damagePoint { get; private set; }
         public int entityDamaged { get; private set; }
         
-        public PlayerDamageInfo(int damage, Vector3 point, int entity) : this()
+        public TargetDamageInfo(int damage, Vector3 point, int entity) : this()
         {
             damagePerShot = damage;
             damagePoint = point;

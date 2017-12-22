@@ -1,6 +1,6 @@
 ﻿using Svelto.ECS;
 
-class PrintTimeEntityView:EntityView
+class PrintTimeEntityView:EntityView<PrintTimeEntityView>
 {
     public IPrintStuffComponent component = null;
 }

@@ -20,6 +20,7 @@ namespace Svelto.ECS.Example.Survive
     {
         public Main()
         {
+            _contextNotifier = new ContextNotifier();
             SetupEnginesAndEntities();
         }
 
@@ -107,7 +108,7 @@ namespace Svelto.ECS.Example.Survive
             AddEngine(playerShootingEngine);
             AddEngine(playerHealthEngine);
             AddEngine(new PlayerGunShootingFXsEngine());
-
+            _contextNotifier.AddFrameworkInitializationListener(enemySpawnerEngine);
             AddEngine(enemySpawnerEngine);
             AddEngine(enemyAttackEngine);
             AddEngine(enemyMovementEngine);
@@ -140,13 +141,22 @@ namespace Svelto.ECS.Example.Survive
         }
 
         void ICompositionRoot.OnContextInitialized()
-        { }
+        {
+            _contextNotifier.NotifyFrameworkInitialized();
+        }
 
         void ICompositionRoot.OnContextDestroyed()
-        { }
+        {
+            _contextNotifier.NotifyFrameworkDeinitialized();
 
-        EnginesRoot _enginesRoot;
+            _enginesRoot.Dispose();
+
+            TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks();
+        }
+
+        EnginesRoot    _enginesRoot;
         IEntityFactory _entityFactory;
+        ContextNotifier _contextNotifier;
     }
 
     //A GameObject containing UnityContext must be present in the scene

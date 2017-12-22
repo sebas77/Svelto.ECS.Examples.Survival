@@ -1,7 +1,6 @@
 using Svelto.ECS.Example.Survive.Components.Base;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Svelto.ECS.Example.Survive.Implementors.Player
 {
@@ -26,14 +25,13 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         }
 
         /// <summary>
-        /// I decided to leave this one for compatibility, probably some ugly animation callback.
+        /// I have no clue how this animation even is called, I spent 30 minutes 
+        /// to figure out how to look up for an AnimationEvent. Eventually
+        /// I gave up. Don't remove it, unity is looking for this function
+        /// magically.
         /// </summary>
         public void RestartLevel()
-        {
-            TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks(); //Tasks like not ending loops must be cleared manually with this function
-
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
+        {}
 
         int                 _currentHealth;
         AudioSource         _playerAudio;                                    // Reference to the AudioSource component.

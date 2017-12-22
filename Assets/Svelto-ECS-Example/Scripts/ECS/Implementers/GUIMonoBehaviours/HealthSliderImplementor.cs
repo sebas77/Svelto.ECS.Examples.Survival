@@ -6,13 +6,11 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
 {
     public class HealthSliderImplementor : MonoBehaviour, IHealthSliderComponent, IImplementor
     {
-        Slider IHealthSliderComponent.healthSlider { get { return _slider; } }
+        public Slider healthSlider { get; private set; }
 
         void Awake()
         {
-            _slider = GetComponent<Slider>();
+            healthSlider = GetComponent<Slider>();
         }
-
-        Slider _slider;
     }
 }

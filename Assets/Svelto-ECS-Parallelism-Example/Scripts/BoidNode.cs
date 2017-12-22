@@ -10,9 +10,9 @@ namespace Svelto.ECS.Example.Parallelism
         public int ID { get; set; }
     }
 #else
-    public class BoidEntityView : EntityView
+    public class BoidEntityView : EntityView<BoidEntityView>
     {
-        public IBoidComponent EntityView;
+        public IBoidComponent entityView;
     }
 #endif
 }

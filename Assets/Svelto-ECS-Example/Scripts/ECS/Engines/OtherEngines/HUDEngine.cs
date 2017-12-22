@@ -1,18 +1,18 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.HUD;
+using Svelto.Tasks.Enumerators;
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
-    public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<PlayerDamageInfo>
+    public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<TargetDamageInfo>
     {
         public IEngineEntityViewDB entityViewsDB { set; private get; }
 
         public void Ready()
-        {}
-
-        public HUDEngine()
         {
             TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
@@ -37,7 +37,7 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * deltaSec);
         }
 
-        void OnDamageEvent(ref PlayerDamageInfo damaged)
+        void OnDamageEvent(ref TargetDamageInfo damaged)
         {
             var damageComponent = _guiEntityView.damageImageComponent;
             var damageImage = damageComponent.damageImage;
@@ -49,20 +49,33 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
 
         void OnDeadEvent()
         {
-            _guiEntityView.HUDAnimator.hudAnimator.SetTrigger("GameOver");
+            RestartLevelAfterFewSeconds().Run();
         }
 
-        public void Step(ref PlayerDamageInfo token, Enum condition)
+        IEnumerator RestartLevelAfterFewSeconds()
+        {
+            _waitForSeconds.Reset(5);
+            yield return _waitForSeconds;
+
+            _guiEntityView.HUDAnimator.hudAnimator.SetTrigger("GameOver");
+
+            _waitForSeconds.Reset(2);
+            yield return _waitForSeconds;
+
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        public void Step(ref TargetDamageInfo token, Enum condition)
         {
             if ((DamageCondition)condition == DamageCondition.damage)
                 OnDamageEvent(ref token);
             else
             if ((DamageCondition)condition == DamageCondition.dead)
                 OnDeadEvent();
-                
         }
 
-        HUDEntityView         _guiEntityView;
+        HUDEntityView            _guiEntityView;
+        WaitForSecondsEnumerator _waitForSeconds;
     }
 }
 

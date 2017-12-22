@@ -77,16 +77,20 @@ namespace Svelto.ECS.Example.Parallelism
 //why all the tasks are prepared before hand. In this step, we prepare just one task that runs the main operations 
 //that must be executed on the entities.         
             int count = 0;
-#if FOURTH_TIER_EXAMPLE
-            BoidEntityView[] _EntityViews;
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
+            DataStructures.FasterReadOnlyList<BoidEntityView> _entityViews;
+#endif
+#if FOURTH_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
+            BoidEntityView[] _entityViews;
 #endif
             do
             {
-#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-                count = _EntityViews.Count;
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
+                _entityViews = entityViewsDB.QueryEntityViews<BoidEntityView>();
+                count = _entityViews.Count;
 #endif
-#if FOURTH_TIER_EXAMPLE
-                _EntityViews = entityViewsDB.QueryEntityViewsAsArray<BoidEntityView>(out count);           
+#if FOURTH_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
+                _entityViews = entityViewsDB.QueryEntityViewsAsArray<BoidEntityView>(out count);           
 #endif
                 yield return null;
             } while (count == 0);
@@ -100,9 +104,9 @@ namespace Svelto.ECS.Example.Parallelism
             _syncRunner = new SyncRunner(true);
 
             for (int i = 0; i < numberOfThreads; i++)
-                _multiParallelTask.Add(new BoidEnumerator(_EntityViews, countn * i, countn));
+                _multiParallelTask.Add(new BoidEnumerator(_entityViews, countn * i, countn));
 #elif FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE || FOURTH_TIER_EXAMPLE
-            _boidEnumerator = new BoidEnumerator(_EntityViews, 0, count);
+            _boidEnumerator = new BoidEnumerator(_entityViews, 0, count);
 #endif
             _testEnumerator = new TestEnumerator(_printEntityView);
 
@@ -163,34 +167,23 @@ namespace Svelto.ECS.Example.Parallelism
         /// </summary>
         class BoidEnumerator : IEnumerator
         {
-            private int _countn;
-            private int _start;
-#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-            private DataStructures.FasterList<BoidEntityView> _EntityViews;
-#else
-            BoidEntityView[] _EntityViews;
-#endif
-
             public object Current  {   get { return null;  }  }
-#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-            public BoidEnumerator(DataStructures.FasterList<BoidEntityView> EntityViews, int start, int countn)
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
+            public BoidEnumerator(DataStructures.FasterReadOnlyList<BoidEntityView> entityViews, int start, int countn)
             {
 #else
-            public BoidEnumerator(BoidEntityView[] EntityViews, int start, int countn)
+            public BoidEnumerator(BoidEntityView[] entityViews, int start, int countn)
             {
 #endif
-                _EntityViews = EntityViews;
+                _entityViews = entityViews;
                 _start = start;
                 _countn = countn;
             }
 
             public bool MoveNext()
             {
-#if THIRD_TIER_EXAMPLE
-                var entities = _EntityViews.ToArrayFast();
-#else
-                var entities = _EntityViews;
-#endif
+                var entities = _entityViews;
+
                 Vector3 realTarget = new Vector3();
                 realTarget.Set(1,2,3);
 
@@ -201,7 +194,7 @@ namespace Svelto.ECS.Example.Parallelism
                     for (int j = 0; j < 4; j++)
                     {
 #if SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-                        IBoidComponent boidEntityView = entities[index].EntityView;
+                        IBoidComponent boidEntityView = entities[index].entityView;
 
                         var position = boidEntityView.position;
 
@@ -223,12 +216,12 @@ namespace Svelto.ECS.Example.Parallelism
                         entities[index].position.z = z * sqrdmagnitude;
 #endif
 #if FIRST_TIER_EXAMPLE
-                        var position = entities[index].EntityView.position;
+                        var position = entities[index].entityView.position;
 
                         var direction = realTarget - position;
                         var sqrdmagnitude = direction.sqrMagnitude;
 
-                        entities[index].EntityView.position = direction / (sqrdmagnitude);
+                        entities[index].entityView.position = direction / (sqrdmagnitude);
 #endif
                     }
                 }
@@ -243,15 +236,20 @@ namespace Svelto.ECS.Example.Parallelism
 
             public void Reset()
             { }
+
+            private int _countn;
+            private int _start;
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
+            private DataStructures.FasterReadOnlyList<BoidEntityView> _entityViews;
+#else
+            BoidEntityView[] _entityViews;
+#endif
+
         }
 #if TURBO_EXAMPLE
         SyncRunner _syncRunner;
 #else
         BoidEnumerator _boidEnumerator;
-#endif
-
-#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-        DataStructures.FasterList<BoidEntityView> _EntityViews = new DataStructures.FasterList<BoidEntityView>();
 #endif
         static int _totalCount;
 

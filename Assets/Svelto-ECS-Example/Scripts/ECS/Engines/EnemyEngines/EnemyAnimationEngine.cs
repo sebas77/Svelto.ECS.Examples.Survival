@@ -6,7 +6,7 @@ using Svelto.ECS.Example.Survive.Components.Damageable;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemyAnimationEngine : IEngine, IQueryingEntityViewEngine, IStep<DamageInfo>, IStep<PlayerDamageInfo>
+    public class EnemyAnimationEngine : IEngine, IQueryingEntityViewEngine, IStep<DamageInfo>, IStep<TargetDamageInfo>
     {
         public IEngineEntityViewDB entityViewsDB { set; private get; }
 
@@ -21,7 +21,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             EntityView.vfxComponent.hitParticles.Play();
         }
 
-        void OnTargetDead(int targetID)
+        void TriggerTargetDeathAnimation(int targetID)
         {
             var EntityViews = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
@@ -59,10 +59,10 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                 EntityDamaged(token);
         }
 
-        public void Step(ref PlayerDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, Enum condition)
         {
             if ((DamageCondition)condition == DamageCondition.dead)
-                OnTargetDead(token.entityDamaged);
+                TriggerTargetDeathAnimation(token.entityDamaged);
         }
     }
 }

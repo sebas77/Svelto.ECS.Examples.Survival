@@ -30,20 +30,27 @@ namespace Svelto.ECS.Example.Parallelism
                 crazyness.AddComponent<UnityWay>();
             }
 #else
-            EnginesRoot enginesRoot = new EnginesRoot(new Svelto.ECS.Schedulers.UnitySumbmissionEntityViewScheduler());
-            IEntityFactory entityFactory = enginesRoot.GenerateEntityFactory();
+            _enginesRoot = new EnginesRoot(new Schedulers.UnitySumbmissionEntityViewScheduler());
+            IEntityFactory entityFactory = _enginesRoot.GenerateEntityFactory();
 
             var boidsEngine = new BoidsEngine();
-            enginesRoot.AddEngine(boidsEngine);
+            _enginesRoot.AddEngine(boidsEngine);
 
             _contextNotifier.AddFrameworkDestructionListener(boidsEngine);
 
+            var implementorArray = new object[1];
+
             for (int i = 0; i < tasksCount; i++)
+            {
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-                entityFactory.BuildEntity< BoidEntityDescriptor>(i, new Boid());
+                implementorArray[0] = new Boid();
+                entityFactory.BuildEntity<BoidEntityDescriptor>(i, implementorArray);
+
 #else
                 entityFactory.BuildEntity<BoidEntityDescriptor>(i);
 #endif
+            }
+
             entityFactory.BuildEntity<GUITextEntityDescriptor>(0, 
                 contextHolder.GetComponentsInChildren<PrintIteration>());
 #endif
@@ -60,6 +67,7 @@ namespace Svelto.ECS.Example.Parallelism
         }
 
         IContextNotifer _contextNotifier;
+        EnginesRoot _enginesRoot;
     }
 
     class GUITextEntityDescriptor:GenericEntityDescriptor<PrintTimeEntityView>

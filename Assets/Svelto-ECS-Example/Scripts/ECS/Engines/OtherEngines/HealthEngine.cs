@@ -1,10 +1,12 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.DamageableEntities;
 using System;
+using System.Collections;
+using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Health
 {
-    public class HealthEngine : IQueryingEntityViewEngine, IStep<DamageInfo>, IStep<PlayerDamageInfo>
+    public class HealthEngine : IQueryingEntityViewEngine, IStep<DamageInfo>, IStep<TargetDamageInfo>
     {
         public void Ready()
         { }
@@ -17,7 +19,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Health
 
         public IEngineEntityViewDB entityViewsDB { set; private get; }
 
-        public void Step(ref PlayerDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, Enum condition)
         {
             TriggerDamage(ref token);
         }
@@ -29,24 +31,30 @@ namespace Svelto.ECS.Example.Survive.Engines.Health
 
         void TriggerDamage<T>(ref T damage) where T:IDamageInfo
         {
-            var EntityView = entityViewsDB.QueryEntityView<HealthEntityView>(damage.entityDamaged);
-            var healthComponent = EntityView.healthComponent;
+            var entityView = entityViewsDB.QueryEntityView<HealthEntityView>(damage.entityDamaged);
+            var healthComponent = entityView.healthComponent;
 
             healthComponent.currentHealth -= damage.damagePerShot;
 
             if (healthComponent.currentHealth <= 0)
             {
-                var entityTemplate = EntityView.removeEntityComponent.entityDescriptor;
-                _entityfunctions.RemoveEntity(damage.entityDamaged, entityTemplate);
-
                 _damageSequence.Next(this, ref damage, DamageCondition.dead);
-                
+
+                RemoveEntityAtTheEndOfTheFrame(damage, entityView).Run();
             }
             else
                 _damageSequence.Next(this, ref damage, DamageCondition.damage);
         }
 
-        Sequencer _damageSequence;
+        private IEnumerator RemoveEntityAtTheEndOfTheFrame<T>(T damage, HealthEntityView entityView) where T : IDamageInfo
+        {
+            yield return _endOfFrame;
+
+            _entityfunctions.RemoveEntity(damage.entityDamaged, entityView.removeEntityComponent);
+        }
+
+        Sequencer        _damageSequence;
         IEntityFunctions _entityfunctions;
+        WaitForEndOfFrame _endOfFrame = new WaitForEndOfFrame();
     }
 }

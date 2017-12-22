@@ -62,7 +62,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                     {
                         attackDamageComponent.timer = 0.0f;
 
-                        var damageInfo = new PlayerDamageInfo(attackDamageComponent.damage, Vector3.zero, _targetEntityView.ID);
+                        var damageInfo = new TargetDamageInfo(attackDamageComponent.damage, Vector3.zero, _targetEntityView.ID);
 
                         _targetDamageSequence.Next(this, ref damageInfo);
                     }
