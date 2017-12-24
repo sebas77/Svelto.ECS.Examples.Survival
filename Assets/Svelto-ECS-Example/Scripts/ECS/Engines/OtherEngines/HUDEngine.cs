@@ -75,7 +75,7 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
         }
 
         HUDEntityView            _guiEntityView;
-        WaitForSecondsEnumerator _waitForSeconds;
+        WaitForSecondsEnumerator _waitForSeconds = new WaitForSecondsEnumerator(5);
     }
 }
 

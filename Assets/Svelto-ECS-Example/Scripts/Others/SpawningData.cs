@@ -6,9 +6,13 @@ using UnityEngine;
 
 public class SpawningData : MonoBehaviour
 {
+    [ExecuteInEditMode]
     private void Awake()
     {
-        GameObject.DontDestroyOnLoad(this.gameObject);
+        if (Application.isPlaying)
+            GameObject.DontDestroyOnLoad(this.gameObject);
+        else
+            SerializeData();
     }
     public void SerializeData()
     {

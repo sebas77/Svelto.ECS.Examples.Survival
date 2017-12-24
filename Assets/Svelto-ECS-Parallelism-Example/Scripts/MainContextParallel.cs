@@ -57,8 +57,7 @@ namespace Svelto.ECS.Example.Parallelism
         }
         
         void ICompositionRoot.OnContextInitialized()
-        {
-        }
+        {}
 
         void ICompositionRoot.OnContextDestroyed()
         {

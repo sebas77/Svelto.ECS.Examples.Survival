@@ -75,7 +75,7 @@ PlayerSettings:
   deferSystemGesturesMode: 0
   hideHomeButton: 0
   submitAnalytics: 1
-  usePlayerLog: 0
+  usePlayerLog: 1
   bakeCollisionMeshes: 0
   forceSingleInstance: 1
   resizableWindow: 1
@@ -578,7 +578,7 @@ PlayerSettings:
   webGLUseWasm: 0
   webGLCompressionFormat: 1
   scriptingDefineSymbols:
-    1: CROSS_PLATFORM_INPUT;FOURTH_TIER_EXAMPLE;TURBO_EXAMPLE
+    1: CROSS_PLATFORM_INPUT;FIRST_TIER_EXAMPLE;PROFILER
     2: CROSS_PLATFORM_INPUT
     4: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     7: CROSS_PLATFORM_INPUT;MOBILE_INPUT
@@ -596,10 +596,10 @@ PlayerSettings:
     iOS: 0
   incrementalIl2cppBuild: {}
   additionalIl2CppArgs: 
-  scriptingRuntimeVersion: 0
+  scriptingRuntimeVersion: 1
   apiCompatibilityLevelPerPlatform:
-    Metro: 1
-    Standalone: 1
+    Metro: 3
+    Standalone: 3
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: 201404-MiniShooter
@@ -701,7 +701,7 @@ PlayerSettings:
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled: {}
   facebookSdkVersion: 7.9.1
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 3
   cloudProjectId: 
   projectName: 
   organizationId: 

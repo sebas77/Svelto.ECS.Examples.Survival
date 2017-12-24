@@ -3,7 +3,7 @@ using Svelto.ECS.Example.Survive.Components.Enemies;
 
 namespace Svelto.ECS.Example.Survive.EntityViews.Enemies
 {
-    public class EnemyEntityView: EntityView<EnemyEntityView>
+    public class EnemyEntityView:EntityView
     {
         public IEnemyAttackComponent      attackComponent;
         public IEnemyAttackDataComponent  attackDamageComponent;
@@ -15,7 +15,7 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Enemies
         public ITransformComponent        transformComponent;
     }
 
-    public class EnemyTargetEntityView: EntityView<EnemyTargetEntityView>
+    public class EnemyTargetEntityView : EntityView
     {
         public IPositionComponent         targetPositionComponent;
     }

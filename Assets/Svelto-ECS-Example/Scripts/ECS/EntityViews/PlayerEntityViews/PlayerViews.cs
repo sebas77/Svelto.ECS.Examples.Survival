@@ -4,7 +4,7 @@ using Svelto.ECS.Example.Survive.Components.Player;
 
 namespace Svelto.ECS.Example.Survive.EntityViews.Player
 {
-    public class PlayerEntityView : EntityView<PlayerEntityView>
+    public class PlayerEntityView : EntityView
     {
         public ISpeedComponent         speedComponent;
         public IRigidBodyComponent     rigidBodyComponent;
@@ -12,7 +12,7 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Player
         public IAnimationComponent     animationComponent;
     }
 
-    public class PlayerTargetEntityView : EntityView<PlayerTargetEntityView>
+    public class PlayerTargetEntityView : EntityView
     {
         public ITargetTypeComponent     targetTypeComponent;
     }
@@ -20,7 +20,7 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Player
 
 namespace Svelto.ECS.Example.Survive.EntityViews.Gun
 {
-    public class GunEntityView : EntityView<GunEntityView>
+    public class GunEntityView : EntityView
     {
         public IGunAttributesComponent   gunComponent;
         public IGunFXComponent           gunFXComponent;
