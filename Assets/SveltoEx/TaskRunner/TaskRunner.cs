@@ -109,12 +109,12 @@ public class TaskRunner
         _instance._taskPool = new PausableTaskPool();
 
 #if TASKS_PROFILER_ENABLED && UNITY_EDITOR
-        var debugTasksObject = GameObject.Find("Svelto.Tasks.Profiler");
+        var debugTasksObject = UnityEngine.GameObject.Find("Svelto.Tasks.Profiler");
         if (debugTasksObject == null)
         {
-            debugTasksObject = new GameObject("Svelto.Tasks.Profiler");
+            debugTasksObject = new UnityEngine.GameObject("Svelto.Tasks.Profiler");
             debugTasksObject.gameObject.AddComponent<Svelto.Tasks.Profiler.TasksProfilerBehaviour>();
-            Object.DontDestroyOnLoad(debugTasksObject);
+            UnityEngine.Object.DontDestroyOnLoad(debugTasksObject);
         }
 #endif
     }

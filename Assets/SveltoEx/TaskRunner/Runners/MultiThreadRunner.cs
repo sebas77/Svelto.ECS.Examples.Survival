@@ -151,7 +151,7 @@ namespace Svelto.Tasks
                     try
                     {
 #if TASKS_PROFILER_ENABLED
-                        bool result = Profiler.TaskProfiler.MonitorUpdateDuration(enumerator, _threadID);
+                        bool result = Profiler.TaskProfiler.MonitorUpdateDuration(enumerator, _name);
 #else
                         bool result = enumerator.MoveNext();
 #endif

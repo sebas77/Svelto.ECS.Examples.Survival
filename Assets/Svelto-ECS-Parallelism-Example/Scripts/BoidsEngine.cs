@@ -1,4 +1,5 @@
-﻿using Svelto.Tasks;
+﻿#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE || FOURTH_TIER_EXAMPLE
+using Svelto.Tasks;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -6,11 +7,11 @@ using UnityEngine;
 namespace Svelto.ECS.Example.Parallelism
 {
     class BoidsEngine :
-MultiNodesEngine<BoidNode, PrintTimeNode>
-#if FOURTH_TIER_EXAMPLE
- ,IStructNodeEngine<BoidNode>
-#endif
-,ICallBackOnAddEngine, Context.IWaitForFrameworkDestruction
+            MultiNodesEngine<BoidNode, PrintTimeNode>
+            #if FOURTH_TIER_EXAMPLE
+             ,IStructNodeEngine<BoidNode>
+            #endif
+            ,ICallBackOnAddEngine, Context.IWaitForFrameworkDestruction
     {
 #if TURBO_EXAMPLE
         public const uint NUM_OF_THREADS = 8; //must be divisible by 4 for this exercise as I am not handling reminders
@@ -289,3 +290,4 @@ MultiNodesEngine<BoidNode, PrintTimeNode>
         PrintTimeNode _printNode;
     }
 }
+#endif

@@ -23,12 +23,9 @@ namespace Svelto.ECS.Example.Parallelism
 
         void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE || FOURTH_TIER_EXAMPLE
             var tasksCount = NumberOfEntities.value;
-#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-            var boidDescriptor = new BoidEntityDescriptor(new[]{ new Boid() });
-#else
-            var boidDescriptor = new BoidEntityDescriptor();
-#endif
+
 #if DONT_TRY_THIS_AT_HOME
             for (int i = 0; i < tasksCount; i++)
             {
@@ -43,10 +40,26 @@ namespace Svelto.ECS.Example.Parallelism
             enginesRoot.AddEngine(boidsEngine);
             _contextNotifier.AddFrameworkDestructionListener(boidsEngine);
 
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
+
             for (int i = 0; i < tasksCount; i++)
+            {
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
+                var boidDescriptor = new BoidEntityDescriptor(new[] { new Boid() });
+#else
+                var boidDescriptor = new BoidEntityDescriptor();
+#endif
                 entityFactory.BuildEntity(i, boidDescriptor);
+            }
+
+            watch.Stop();
+
+            Utility.Console.Log(watch.ElapsedMilliseconds.ToString());
 
             entityFactory.BuildEntity(0, new GenericEntityDescriptor<PrintTimeNode>(contextHolder.GetComponentInChildren<PrintIteration>()));
+#endif
 #endif
         }
 

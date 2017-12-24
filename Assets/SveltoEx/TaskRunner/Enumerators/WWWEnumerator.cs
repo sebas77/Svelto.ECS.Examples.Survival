@@ -58,7 +58,7 @@ namespace Svelto.Tasks
         {
             _www = www;
             _www.timeout = timeOut;
-#if UNITY_2017_2
+#if UNITY_2017_2_OR_NEWER
             _www.SendWebRequest();
 #else
             _www.Send();
