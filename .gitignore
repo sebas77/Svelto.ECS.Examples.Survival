@@ -37,3 +37,6 @@ UWP
 /Svelto.ECS.Vanilla/dotnet2.psess
 /Executable
 /obj
+/UWPNET
+/Assets/WSATestCertificate.pfx.meta
+/Svelto.ECS.Example.sln.DotSettings.user

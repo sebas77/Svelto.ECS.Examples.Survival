@@ -1,4 +1,5 @@
-﻿using Svelto.Tasks;
+﻿#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE || FOURTH_TIER_EXAMPLE
+using Svelto.Tasks;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -120,7 +121,7 @@ namespace Svelto.ECS.Example.Parallelism
 
         public void OnFrameworkDestroyed()
         {
-#if TURBO_EXAMPLE && UNITY_EDITOR 
+#if TURBO_EXAMPLE && UNITY_EDITOR
 //not needed on an actual client, but unity doesn't stop other threads when the execution is stopped
             _multiParallelTask.ClearAndKill();
 #endif
@@ -260,3 +261,4 @@ namespace Svelto.ECS.Example.Parallelism
         PrintTimeEntityView _printEntityView;
     }
 }
+#endif

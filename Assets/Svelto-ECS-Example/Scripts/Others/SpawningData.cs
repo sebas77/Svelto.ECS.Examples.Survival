@@ -4,18 +4,21 @@ using Svelto.ECS.Example.Survive.Components.Enemies;
 using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class SpawningData : MonoBehaviour
 {
-    [ExecuteInEditMode]
-    private void Awake()
+    static private bool serializedOnce;
+
+    void Awake()
     {
-        if (Application.isPlaying)
-            GameObject.DontDestroyOnLoad(this.gameObject);
-        else
+        if (serializedOnce == false)
+        {
             SerializeData();
+        }
     }
     public void SerializeData()
     {
+        serializedOnce = true;
         var data = GetComponents<EnemySpawnDataSource>();
         EnemySpawnData[] spawningdata = new EnemySpawnData[data.Length];
 
@@ -26,7 +29,7 @@ public class SpawningData : MonoBehaviour
 
         Utility.Console.Log(json);
 
-        File.WriteAllText("EnemySpawningData.json", json);
+        File.WriteAllText(Application.persistentDataPath+ "/EnemySpawningData.json", json);
     }
 }
 

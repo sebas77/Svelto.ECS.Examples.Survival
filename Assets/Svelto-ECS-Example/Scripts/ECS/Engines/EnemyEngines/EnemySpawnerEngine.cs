@@ -5,6 +5,7 @@ using Svelto.Tasks.Enumerators;
 using System;
 using System.IO;
 using Svelto.ECS.Example.Survive.EntityDescriptors.Enemies;
+using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
@@ -62,7 +63,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
         public void OnFrameworkInitialized()
         {
-            var json = File.ReadAllText("EnemySpawningData.json");
+            var json = File.ReadAllText(Application.persistentDataPath +"/EnemySpawningData.json");
 
             _enemiestoSpawn = JsonHelper.getJsonArray<EnemySpawnData>(json);
 

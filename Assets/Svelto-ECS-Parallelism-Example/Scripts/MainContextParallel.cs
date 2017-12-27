@@ -22,6 +22,7 @@ namespace Svelto.ECS.Example.Parallelism
 
         void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE || FOURTH_TIER_EXAMPLE
             var tasksCount = NumberOfEntities.value;
 #if DONT_TRY_THIS_AT_HOME
             for (int i = 0; i < tasksCount; i++)
@@ -37,9 +38,11 @@ namespace Svelto.ECS.Example.Parallelism
             _enginesRoot.AddEngine(boidsEngine);
 
             _contextNotifier.AddFrameworkDestructionListener(boidsEngine);
-
+#if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
             var implementorArray = new object[1];
-
+#endif
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             for (int i = 0; i < tasksCount; i++)
             {
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
@@ -50,12 +53,15 @@ namespace Svelto.ECS.Example.Parallelism
                 entityFactory.BuildEntity<BoidEntityDescriptor>(i);
 #endif
             }
+            watch.Stop();
+            Utility.Console.Log(watch.ElapsedMilliseconds.ToString());
 
             entityFactory.BuildEntity<GUITextEntityDescriptor>(0, 
                 contextHolder.GetComponentsInChildren<PrintIteration>());
 #endif
+#endif
         }
-        
+
         void ICompositionRoot.OnContextInitialized()
         {}
 
