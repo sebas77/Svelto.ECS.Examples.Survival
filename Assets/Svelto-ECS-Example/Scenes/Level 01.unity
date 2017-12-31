@@ -3973,8 +3973,8 @@ GameObject:
   - component: {fileID: 1139190132}
   - component: {fileID: 1139190135}
   - component: {fileID: 1139190137}
-  - component: {fileID: 1139190138}
   - component: {fileID: 1139190136}
+  - component: {fileID: 1139190138}
   m_Layer: 5
   m_Name: HUDCanvas
   m_TagString: Untagged
