@@ -5,7 +5,7 @@ I used the Survival Shooter Unity Demo to show how an ECS framework could work i
 
 Most of the source code has been rewritten to work with the ECS framework. You should disregard the SveltEx folder, which has been added just for convenience. I have used some extra features from my framework, but I won't keep this folder up to date. Check my other repositories to find the most updated version.
 
-The Survival Demo and the Parallelism demo are tested with unity 5.6 and 2017.3, so I cannot guarantee that it always work, but it should work with all the versions from 5.3 and above.
+The Survival Demo and the Parallelism demo are tested with unity 5.6 and 2017.3, so I cannot guarantee that it always works, but it should work with all the versions from 5.3 and above.
 
 New Parallelism Example is explained here: http://www.sebaslab.com/svelto-ecs-svelto-tasks-new-example-plus-whats-coming-and-optimization-related-thoughts/ the article complements the comments in the code.
 
