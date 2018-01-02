@@ -1,7 +1,8 @@
 #if UNITY_5 || UNITY_5_3_OR_NEWER
-
+using System;
 using Svelto.DataStructures;
 using Svelto.Tasks.Internal;
+using UnityEngine;
 
 namespace Svelto.Tasks
 {
@@ -9,14 +10,20 @@ namespace Svelto.Tasks
     {
         public bool paused { set; get; }
         public bool isStopping { get { return flushingOperation.stopped; } }
-
-        public abstract void DisposeRunner();
+        
         public int  numberOfRunningTasks { get { return info.count; } }
 
         protected abstract UnityCoroutineRunner.RunningTasksInfo info { get; }
         protected abstract ThreadSafeQueue<IPausableTask> newTaskRoutines { get; }
         protected abstract UnityCoroutineRunner.FlushingOperation flushingOperation { get; }
-        
+
+        protected GameObject _gameObject { get; private set; }
+
+        public MonoRunner(string name)
+        {
+            _gameObject = UnityCoroutineRunner.InitializeGameobject(name);
+        }
+
         /// <summary>
         /// TaskRunner doesn't stop executing tasks between scenes
         /// it's the final user responsibility to stop the tasks if needed
@@ -67,8 +74,13 @@ namespace Svelto.Tasks
 
         public void Dispose()
         {
+            if (_gameObject != null)
+            {
+                UnityEngine.Object.Destroy(_gameObject);
+                _gameObject = null;
+            }
             StopAllCoroutines();
-        }
+        }        
     }
 }
 #endif

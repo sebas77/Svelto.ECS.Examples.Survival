@@ -7,12 +7,11 @@ namespace Svelto.Tasks
     public class LateMonoRunner : MonoRunner
     {
         public LateMonoRunner(string name)
+            : base(name)
         {
-            var go = UnityCoroutineRunner.InitializeGameobject(name);
-
             var coroutines = new FasterList<IPausableTask>(NUMBER_OF_INITIAL_COROUTINE);
-            var runnerBehaviour = go.AddComponent<RunnerBehaviourLate>();
-            var runnerBehaviourForUnityCoroutine = go.AddComponent<RunnerBehaviour>();
+            var runnerBehaviour = _gameObject.AddComponent<RunnerBehaviourLate>();
+            var runnerBehaviourForUnityCoroutine = _gameObject.AddComponent<RunnerBehaviour>();
 
             _info = new UnityCoroutineRunner.RunningTasksInfo() { runnerName = name };
 

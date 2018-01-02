@@ -7,12 +7,12 @@ namespace Svelto.Tasks
     public class PhysicMonoRunner : MonoRunner
     {
         public PhysicMonoRunner(string name)
+            : base(name)
         {
-            var go = UnityCoroutineRunner.InitializeGameobject(name);
             var coroutines = new FasterList<IPausableTask>(NUMBER_OF_INITIAL_COROUTINE);
 
-            var runnerBehaviour = go.AddComponent<RunnerBehaviourPhysic>();
-            var runnerBehaviourForUnityCoroutine = go.AddComponent<RunnerBehaviour>();
+            var runnerBehaviour = _gameObject.AddComponent<RunnerBehaviourPhysic>();
+            var runnerBehaviourForUnityCoroutine = _gameObject.AddComponent<RunnerBehaviour>();
 
             _info = new UnityCoroutineRunner.RunningTasksInfo() { runnerName = name };
 
@@ -21,6 +21,7 @@ namespace Svelto.Tasks
                  UnityCoroutineRunner.StandardTasksFlushing,
                  runnerBehaviourForUnityCoroutine, StartCoroutine));
         }
+
 
         protected override UnityCoroutineRunner.RunningTasksInfo info
         { get { return _info; } }

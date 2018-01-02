@@ -10,14 +10,13 @@ namespace Svelto.Tasks
     public class StaggeredMonoRunner : MonoRunner
     {
         public StaggeredMonoRunner(string name, int maxTasksPerFrame)
+            : base(name)
         {
             _flushingOperation = new FlushingOperationStaggered(maxTasksPerFrame);
 
-            var go = UnityCoroutineRunner.InitializeGameobject(name);
-
             var coroutines = new FasterList<IPausableTask>(NUMBER_OF_INITIAL_COROUTINE);
-            var runnerBehaviour = go.AddComponent<RunnerBehaviourUpdate>();
-            var runnerBehaviourForUnityCoroutine = go.AddComponent<RunnerBehaviour>();
+            var runnerBehaviour = _gameObject.AddComponent<RunnerBehaviourUpdate>();
+            var runnerBehaviourForUnityCoroutine = _gameObject.AddComponent<RunnerBehaviour>();
 
             _info = new UnityCoroutineRunner.RunningTasksInfo() { runnerName = name };
 
