@@ -28,15 +28,8 @@ namespace Svelto.Tasks.Internal
         internal static GameObject InitializeGameobject(string name)
         {
             var taskRunnerName = "TaskRunner.".FastConcat(name);
-            var go = GameObject.Find(taskRunnerName);
 
-            if (go != null)
-            {
-                // Destroy the old object before making a new one
-                Object.DestroyImmediate(go);
-            }
-
-            go = new GameObject(taskRunnerName);
+            var go = new GameObject(taskRunnerName);
 #if UNITY_EDITOR
             if (Application.isPlaying)
 #endif
