@@ -9,7 +9,8 @@ namespace Svelto.Tasks
     {
         public bool paused { set; get; }
         public bool isStopping { get { return flushingOperation.stopped; } }
-        
+
+        public abstract void DisposeRunner();
         public int  numberOfRunningTasks { get { return info.count; } }
 
         protected abstract UnityCoroutineRunner.RunningTasksInfo info { get; }
