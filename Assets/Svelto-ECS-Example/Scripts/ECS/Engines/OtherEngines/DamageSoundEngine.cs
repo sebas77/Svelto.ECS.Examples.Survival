@@ -6,7 +6,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Sound.Damage
 {
     public class DamageSoundEngine : IQueryingEntityViewEngine, IStep<TargetDamageInfo>
     {
-        public IEngineEntityViewDB entityViewsDB { set; private get; }
+        public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Ready()
         {}

@@ -17,7 +17,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Health
             _entityfunctions = entityFunctions;
         }
 
-        public IEngineEntityViewDB entityViewsDB { set; private get; }
+        public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Step(ref TargetDamageInfo token, Enum condition)
         {

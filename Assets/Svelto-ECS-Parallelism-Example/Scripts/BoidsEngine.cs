@@ -10,7 +10,7 @@ namespace Svelto.ECS.Example.Parallelism
                         IQueryingEntityViewEngine,
                         Context.IWaitForFrameworkDestruction
     {
-        public IEngineEntityViewDB entityViewsDB { get; set; }
+        public IEntityViewsDB entityViewsDB { get; set; }
         
 #if TURBO_EXAMPLE
         public const uint NUM_OF_THREADS = 8; //must be divisible by 4 for this exercise as I am not handling reminders

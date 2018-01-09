@@ -8,7 +8,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
     public class EnemyAnimationEngine : IEngine, IQueryingEntityViewEngine, IStep<DamageInfo>, IStep<TargetDamageInfo>
     {
-        public IEngineEntityViewDB entityViewsDB { set; private get; }
+        public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Ready()
         {}

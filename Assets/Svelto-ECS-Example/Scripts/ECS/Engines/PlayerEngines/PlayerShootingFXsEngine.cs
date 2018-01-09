@@ -7,7 +7,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
     public class PlayerGunShootingFXsEngine : SingleEntityViewEngine<GunEntityView>, IQueryingEntityViewEngine
     {
-        public IEngineEntityViewDB entityViewsDB { set; private get; }
+        public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Ready()
         {

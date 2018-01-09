@@ -31,7 +31,7 @@ namespace Svelto.ECS.Example.Parallelism
                 crazyness.AddComponent<UnityWay>();
             }
 #else
-            _enginesRoot = new EnginesRoot(new Schedulers.UnitySumbmissionEntityViewScheduler());
+            _enginesRoot = new EnginesRoot(new Schedulers.Unity.UnitySumbmissionEntityViewScheduler());
             IEntityFactory entityFactory = _enginesRoot.GenerateEntityFactory();
 
             var boidsEngine = new BoidsEngine();

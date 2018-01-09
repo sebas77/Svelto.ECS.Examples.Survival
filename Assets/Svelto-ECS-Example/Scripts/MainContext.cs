@@ -10,7 +10,7 @@ using Svelto.Context;
 using UnityEngine;
 using Steps = System.Collections.Generic.Dictionary<Svelto.ECS.IEngine, System.Collections.Generic.Dictionary<System.Enum, Svelto.ECS.IStep[]>>;
 using System.Collections.Generic;
-using Svelto.ECS.Schedulers;
+using Svelto.ECS.Schedulers.Unity;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where the framework can be initialised.
