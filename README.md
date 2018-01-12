@@ -11,4 +11,4 @@ New Parallelism Example is explained here: http://www.sebaslab.com/svelto-ecs-sv
 
 You can add Svelto-ECS framework from the original repository or syncing it from this one using the submodule approach. 
 
-**Note: This repository uses submodules. The folder Svelto.ECS is empty because you have to initialized the submodule.**
+**Note: This repository uses submodules. The Submodules are found inside the folder Assets\Plugins\ and they are Svelto.Common, Svelto.Tasks and Svelto.ECS. You must update every single submodule one by one. To read more about submodules, check this link: https://git-scm.com/docs/git-submodule or just google around. You need to update the submodules separately and not recursively.**
