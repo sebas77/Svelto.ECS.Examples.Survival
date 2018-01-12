@@ -1,66 +1,68 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.EntityViews.Enemies;
 using Svelto.Tasks;
-using System;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemyAttackEngine : MultiNodesEngine<EnemyNode, EnemyTargetNode>, IQueryableNodeEngine
+    public class EnemyAttackEngine : MultiEntityViewsEngine<EnemyEntityView, EnemyTargetEntityView>, IQueryingEntityViewEngine
     {
-        public IEngineNodeDB nodesDB { set; private get; }
+        public IEntityViewsDB entityViewsDB { set; private get; }
+
+        public void Ready()
+        {
+            TaskRunner.Instance.Run(new TimedLoopActionEnumerator(Tick));
+        }
 
         public EnemyAttackEngine(Sequencer enemyrDamageSequence)
         {
             _targetDamageSequence = enemyrDamageSequence;
-
-            TaskRunner.Instance.Run(new TimedLoopActionEnumerator(Tick));
         }
 
-        protected override void AddNode(EnemyNode obj)
+        protected override void Add(EnemyEntityView obj)
         {
-            EnemyNode enemyNode = (obj as EnemyNode);
+            EnemyEntityView enemyEntityView = (obj as EnemyEntityView);
 
-            enemyNode.targetTriggerComponent.entityInRange += CheckTarget;
+            enemyEntityView.targetTriggerComponent.entityInRange += CheckTarget;
         }
 
-        protected override void RemoveNode(EnemyNode obj)
+        protected override void Remove(EnemyEntityView obj)
         {
-            EnemyNode enemyNode = (obj as EnemyNode);
+            EnemyEntityView enemyEntityView = (obj as EnemyEntityView);
 
-                enemyNode.targetTriggerComponent.entityInRange -= CheckTarget;
+            enemyEntityView.targetTriggerComponent.entityInRange -= CheckTarget;
         }
 
-        protected override void AddNode(EnemyTargetNode obj)
+        protected override void Add(EnemyTargetEntityView obj)
         {
-            _targetNode = obj as EnemyTargetNode;
+            _targetEntityView = obj as EnemyTargetEntityView;
         }
 
-        protected override void RemoveNode(EnemyTargetNode obj)
+        protected override void Remove(EnemyTargetEntityView obj)
         {
-            _targetNode = null;
+            _targetEntityView = null;
         }
 
         void Tick(float deltaSec)
         {
-            if (_targetNode == null) return;
+            if (_targetEntityView == null) return;
 
-            var enemiesAttackList = nodesDB.QueryNodes<EnemyNode>();
+            var enemiesAttackList = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
             for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0 ; --enemyIndex)
             {
-                var enemyAttackNode = enemiesAttackList[enemyIndex];
+                var enemyAttackEntityView = enemiesAttackList[enemyIndex];
 
-                if (enemyAttackNode.attackComponent.targetInRange == true)
+                if (enemyAttackEntityView.attackComponent.targetInRange == true)
                 {
-                    var attackDamageComponent = enemyAttackNode.attackDamageComponent;
+                    var attackDamageComponent = enemyAttackEntityView.attackDamageComponent;
 					    attackDamageComponent.timer += deltaSec;
 
                     if (attackDamageComponent.timer >= attackDamageComponent.attackInterval)
                     {
                         attackDamageComponent.timer = 0.0f;
 
-                        var damageInfo = new PlayerDamageInfo(attackDamageComponent.damage, Vector3.zero, _targetNode.ID);
+                        var damageInfo = new TargetDamageInfo(attackDamageComponent.damage, Vector3.zero, _targetEntityView.ID);
 
                         _targetDamageSequence.Next(this, ref damageInfo);
                     }
@@ -70,13 +72,13 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
         void CheckTarget(int targetID, int enemyID, bool inRange)
         {
-            if (_targetNode == null)
+            if (_targetEntityView == null)
                 return;
 
-            if (targetID == _targetNode.ID)
+            if (targetID == _targetEntityView.ID)
             {
-                var enemyNode = nodesDB.QueryNode<EnemyNode>(enemyID);
-                var component = enemyNode.targetTriggerComponent;
+                var enemyEntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(enemyID);
+                var component = enemyEntityView.targetTriggerComponent;
 
                 if (inRange)
                     component.targetInRange = true;
@@ -85,7 +87,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             }
         }
 
-        EnemyTargetNode _targetNode;
+        EnemyTargetEntityView _targetEntityView;
         Sequencer _targetDamageSequence;
     }
 }

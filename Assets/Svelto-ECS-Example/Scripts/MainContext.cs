@@ -10,7 +10,7 @@ using Svelto.Context;
 using UnityEngine;
 using Steps = System.Collections.Generic.Dictionary<Svelto.ECS.IEngine, System.Collections.Generic.Dictionary<System.Enum, Svelto.ECS.IStep[]>>;
 using System.Collections.Generic;
-using Svelto.ECS.NodeSchedulers;
+using Svelto.ECS.Schedulers.Unity;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where the framework can be initialised.
@@ -20,31 +20,46 @@ namespace Svelto.ECS.Example.Survive
     {
         public Main()
         {
-            SetupEnginesAndComponents();
+            _contextNotifier = new ContextNotifier();
+            SetupEnginesAndEntities();
         }
 
-        void SetupEnginesAndComponents()
+        void SetupEnginesAndEntities()
         {
-            _entityFactory = _enginesRoot = new EnginesRoot(new UnitySumbmissionNodeScheduler());
+            //The Engines Root is the core of Svelto.ECS. You must NEVER inject the EngineRoot
+            //as it is, however you may inject it as IEntityFactory. In fact, you can build entity
+            //inside other engines or factories as well.
+            //the UnitySumbmissionEntityViewScheduler is the scheduler that is used by the Root to know
+            //when to inject the EntityViews. You shouldn't use a custom one unless you know what you 
+            //are doing, so let's assume it's part of the pattern right now.
+            _enginesRoot = new EnginesRoot(new UnitySumbmissionEntityViewScheduler());
+            _entityFactory = _enginesRoot.GenerateEntityFactory();
+            var entityFunctions = _enginesRoot.GenerateEntityFunctions();
 
             GameObjectFactory factory = new GameObjectFactory();
-    
+
             var enemyKilledObservable = new EnemyKilledObservable();
             var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver(enemyKilledObservable);
 
             Sequencer playerDamageSequence = new Sequencer();
             Sequencer enemyDamageSequence = new Sequencer();
 
-            var enemyAnimationEngine = new EnemyAnimationEngine();
-            var playerHealthEngine = new HealthEngine(playerDamageSequence);
-            var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
-            var hudEngine = new HUDEngine();
-            var damageSoundEngine = new DamageSoundEngine();
+            //Player related engines
+            var playerHealthEngine = new HealthEngine(entityFunctions, playerDamageSequence);
             var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence);
             var playerMovementEngine = new PlayerMovementEngine();
             var playerAnimationEngine = new PlayerAnimationEngine();
+
+            //Enemy related engines
+            var enemyAnimationEngine = new EnemyAnimationEngine();
+            var enemyHealthEngine = new HealthEngine(entityFunctions, enemyDamageSequence);
             var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence);
             var enemyMovementEngine = new EnemyMovementEngine();
+
+            //hud and sound engines
+            var hudEngine = new HUDEngine();
+            var damageSoundEngine = new DamageSoundEngine();
+            EnemySpawnerEngine enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
 
             playerDamageSequence.SetSequence(
                 new Steps() //sequence of steps
@@ -82,7 +97,7 @@ namespace Svelto.ECS.Example.Survive
                         new Dictionary<System.Enum, IStep[]>()
                         { 
                             {  DamageCondition.damage, new IStep[] { enemyAnimationEngine }  },
-                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, enemyAnimationEngine, playerShootingEngine }  },
+                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine }  },
                         }  
                     }  
                 }
@@ -93,8 +108,8 @@ namespace Svelto.ECS.Example.Survive
             AddEngine(playerShootingEngine);
             AddEngine(playerHealthEngine);
             AddEngine(new PlayerGunShootingFXsEngine());
-
-            AddEngine(new EnemySpawnerEngine(factory, _entityFactory));
+            _contextNotifier.AddFrameworkInitializationListener(enemySpawnerEngine);
+            AddEngine(enemySpawnerEngine);
             AddEngine(enemyAttackEngine);
             AddEngine(enemyMovementEngine);
             AddEngine(enemyAnimationEngine);
@@ -115,18 +130,33 @@ namespace Svelto.ECS.Example.Survive
             IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
 
             for (int i = 0; i < entities.Length; i++)
-                _entityFactory.BuildEntity((entities[i] as MonoBehaviour).gameObject.GetInstanceID(), entities[i].BuildDescriptorType());
+            {
+                var entityDescriptorHolder = entities[i];
+                var entityDescriptor = entityDescriptorHolder.RetrieveDescriptor();
+                _entityFactory.BuildEntity
+                    (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(), 
+                    entityDescriptor,
+                    (entityDescriptorHolder as MonoBehaviour).GetComponentsInChildren<IImplementor>());
+            }
         }
 
         void ICompositionRoot.OnContextInitialized()
-        { }
+        {
+            _contextNotifier.NotifyFrameworkInitialized();
+        }
 
         void ICompositionRoot.OnContextDestroyed()
-        { }
+        {
+            _contextNotifier.NotifyFrameworkDeinitialized();
 
-        EnginesRoot _enginesRoot;
+            _enginesRoot.Dispose();
+
+            TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks();
+        }
+
+        EnginesRoot    _enginesRoot;
         IEntityFactory _entityFactory;
-
+        ContextNotifier _contextNotifier;
     }
 
     //A GameObject containing UnityContext must be present in the scene

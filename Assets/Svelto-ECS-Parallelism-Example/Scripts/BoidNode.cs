@@ -3,16 +3,16 @@
 namespace Svelto.ECS.Example.Parallelism
 {
 #if FOURTH_TIER_EXAMPLE
-    public struct BoidNode : IStructNodeWithID
+    public struct BoidEntityView : IEntityStruct
     {
         public Vector3 position;
 
         public int ID { get; set; }
     }
 #else
-    public class BoidNode : NodeWithID
+    public class BoidEntityView : EntityView
     {
-        public IBoidComponent node;
+        public IBoidComponent entityView;
     }
 #endif
 }

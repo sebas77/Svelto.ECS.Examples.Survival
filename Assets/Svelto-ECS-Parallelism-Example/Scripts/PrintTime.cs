@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿
 using UnityEngine;
 
 public class PrintTime : MonoBehaviour {
@@ -6,7 +6,7 @@ public class PrintTime : MonoBehaviour {
     
     // Use this for initialization
     void Start () {
-        text = GetComponent<UnityEngine.UI.Text>();
+        text = GetComponent<UnityEngine.UI.Text>(); 
 #if UNITY_EDITOR
         text.text = "this value has a different meaning in the Editor, look at the stats or profiler window instead";
         text.alignment = TextAnchor.MiddleLeft; text.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -28,6 +28,6 @@ public class PrintTime : MonoBehaviour {
     }
 
     int _currentTime; int _frames;
-    Stopwatch sw = new Stopwatch();
+    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 #endif
 }

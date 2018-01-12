@@ -1,59 +1,62 @@
 using System;
 using UnityEngine;
-using Svelto.ECS.Example.Survive.Nodes.Player;
+using Svelto.ECS.Example.Survive.EntityViews.Player;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.Observables.Enemies;
-using Svelto.ECS.Example.Survive.Nodes.Gun;
+using Svelto.ECS.Example.Survive.EntityViews.Gun;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
-    public class PlayerGunShootingEngine : MultiNodesEngine<GunNode, PlayerNode>, IQueryableNodeEngine, IStep<DamageInfo>
+    public class PlayerGunShootingEngine : MultiEntityViewsEngine<GunEntityView, PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
     {
-        public IEngineNodeDB nodesDB { set; private get; }
+        public IEntityViewsDB entityViewsDB { set; private get; }
+
+        public void Ready()
+        {
+            TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
+        }
 
         public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence)
         {
             _enemyKilledObservable = enemyKilledObservable;
             _enemyDamageSequence = damageSequence;
-
-            TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
         }
 
-        protected override void AddNode(GunNode node)
+        protected override void Add(GunEntityView EntityView)
         {
-            _playerGunNode = node;
+            _playerGunEntityView = EntityView;
         }
 
-        protected override void RemoveNode(GunNode node)
+        protected override void Remove(GunEntityView EntityView)
         {}
 
-        protected override void AddNode(PlayerNode node)
+        protected override void Add(PlayerEntityView EntityView)
         {}
 
-        protected override void RemoveNode(PlayerNode node)
+        protected override void Remove(PlayerEntityView EntityView)
         {
             //the gun is never removed (because the level reloads on death), 
             //so remove on playerdeath
-            _playerGunNode = null; 
+            _playerGunEntityView = null; 
         }
 
         void Tick(float deltaSec)
         {
-            if (_playerGunNode == null) return;
+            if (_playerGunEntityView == null) return;
 
-            var playerGunComponent = _playerGunNode.gunComponent;
+            var playerGunComponent = _playerGunEntityView.gunComponent;
 
             playerGunComponent.timer += deltaSec;
 
-            if (Input.GetButton("Fire1") && playerGunComponent.timer >= _playerGunNode.gunComponent.timeBetweenBullets && Time.timeScale != 0)
+            if (Input.GetButton("Fire1") && playerGunComponent.timer >= _playerGunEntityView.gunComponent.timeBetweenBullets && Time.timeScale != 0)
                 Shoot();
         }
 
         void Shoot()
         {
             RaycastHit shootHit;
-            var playerGunComponent = _playerGunNode.gunComponent;
-            var playerGunHitComponent = _playerGunNode.gunHitTargetComponent;
+            var playerGunComponent = _playerGunEntityView.gunComponent;
+            var playerGunHitComponent = _playerGunEntityView.gunHitTargetComponent;
 
             playerGunComponent.timer = 0;
 
@@ -62,9 +65,9 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             {
                 var hitGO = shootHit.collider.gameObject;
 
-                PlayerTargetNode targetComponent = null;
+                PlayerTargetEntityView targetComponent = null;
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (hitGO.layer == ENEMY_LAYER && nodesDB.TryQueryNode(hitGO.GetInstanceID(), out targetComponent))
+                if (hitGO.layer == ENEMY_LAYER && entityViewsDB.TryQueryEntityView(hitGO.GetInstanceID(), out targetComponent))
                 {
                     var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, shootHit.point, hitGO.GetInstanceID());
                     _enemyDamageSequence.Next(this, ref damageInfo);
@@ -81,7 +84,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         void OnTargetDead(int targetID)
         {
-            var playerTarget = nodesDB.QueryNode<PlayerTargetNode>(targetID);
+            var playerTarget = entityViewsDB.QueryEntityView<PlayerTargetEntityView>(targetID);
             var targetType = playerTarget.targetTypeComponent.targetType;
 
             _enemyKilledObservable.Dispatch(ref targetType);
@@ -92,7 +95,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             OnTargetDead(token.entityDamaged);
         }
 
-        GunNode                 _playerGunNode;
+        GunEntityView                 _playerGunEntityView;
 
         readonly EnemyKilledObservable   _enemyKilledObservable;
         readonly Sequencer               _enemyDamageSequence;

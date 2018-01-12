@@ -1,37 +1,40 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using Svelto.ECS.Example.Survive.Nodes.Enemies;
+using Svelto.ECS.Example.Survive.EntityViews.Enemies;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemyAnimationEngine : IEngine, IQueryableNodeEngine, IStep<DamageInfo>, IStep<PlayerDamageInfo>
+    public class EnemyAnimationEngine : IEngine, IQueryingEntityViewEngine, IStep<DamageInfo>, IStep<TargetDamageInfo>
     {
-        public IEngineNodeDB nodesDB { set; private get; }
+        public IEntityViewsDB entityViewsDB { set; private get; }
+
+        public void Ready()
+        {}
 
         void EntityDamaged(DamageInfo damageInfo)
         {
-            var node = nodesDB.QueryNode<EnemyNode>(damageInfo.entityDamaged);
+            var EntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamaged);
 
-            node.vfxComponent.hitParticles.transform.position = damageInfo.damagePoint;
-            node.vfxComponent.hitParticles.Play();
+            EntityView.vfxComponent.hitParticles.transform.position = damageInfo.damagePoint;
+            EntityView.vfxComponent.hitParticles.Play();
         }
 
-        void OnTargetDead(int targetID)
+        void TriggerTargetDeathAnimation(int targetID)
         {
-            var nodes = nodesDB.QueryNodes<EnemyNode>();
+            var EntityViews = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
-            for (int i = 0; i < nodes.Count; i++)
-                nodes[i].animationComponent.animation.SetTrigger("PlayerDead");
+            for (int i = 0; i < EntityViews.Count; i++)
+                EntityViews[i].animationComponent.animation.SetTrigger("PlayerDead");
         }
 
         void TriggerDeathAnimation(int targetID)
         {
-            var node = nodesDB.QueryNode<EnemyNode>(targetID);
-            node.animationComponent.animation.SetTrigger("Dead");
+            var EntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
+            EntityView.animationComponent.animation.SetTrigger("Dead");
 
-            TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Sink(node.transformComponent.transform, node.movementComponent.sinkSpeed)).Start();
+            TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Sink(EntityView.transformComponent.transform, EntityView.movementComponent.sinkSpeed)).Start();
         }
 
         IEnumerator Sink(Transform transform, float sinkSpeed)
@@ -56,10 +59,10 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                 EntityDamaged(token);
         }
 
-        public void Step(ref PlayerDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, Enum condition)
         {
             if ((DamageCondition)condition == DamageCondition.dead)
-                OnTargetDead(token.entityDamaged);
+                TriggerTargetDeathAnimation(token.entityDamaged);
         }
     }
 }

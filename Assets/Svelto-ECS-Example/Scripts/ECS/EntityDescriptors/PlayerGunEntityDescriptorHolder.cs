@@ -1,30 +1,12 @@
 ﻿using UnityEngine;
-using Svelto.ECS.Example.Survive.Nodes.Gun;
+using Svelto.ECS.Example.Survive.EntityViews.Gun;
 
 namespace Svelto.ECS.Example.Survive.EntityDescriptors.Player
 {
-    class PlayerGunEntityDescriptor : EntityDescriptor
-    {
-        static readonly INodeBuilder[] _nodesToBuild;
-
-        static PlayerGunEntityDescriptor()
-		{
-			_nodesToBuild = new INodeBuilder[]
-			{
-				new NodeBuilder<GunNode>(),
-			};
-		}
-
-		public PlayerGunEntityDescriptor(IComponent[] componentsImplementor):base(_nodesToBuild, componentsImplementor)
-		{}
-	}
+	public class PlayerGunEntityDescriptor : GenericEntityDescriptor<GunEntityView>
+    {}
 
     [DisallowMultipleComponent]
-	public class PlayerGunEntityDescriptorHolder:MonoBehaviour, IEntityDescriptorHolder
-	{
-		public EntityDescriptor BuildDescriptorType(object[] extraImplentors = null)
-		{
-			return new PlayerGunEntityDescriptor(GetComponentsInChildren<IComponent>());
-		}
-	}
+	public class PlayerGunEntityDescriptorHolder:GenericEntityDescriptorHolder<PlayerGunEntityDescriptor>
+	{}
 }

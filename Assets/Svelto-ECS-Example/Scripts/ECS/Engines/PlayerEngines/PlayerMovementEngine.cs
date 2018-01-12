@@ -1,34 +1,42 @@
 using UnityEngine;
-using Svelto.ECS.Example.Survive.Nodes.Player;
+using Svelto.ECS.Example.Survive.EntityViews.Player;
 using UnityStandardAssets.CrossPlatformInput;
 using System;
+using System.Collections;
 using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player
 {
-    public class PlayerMovementEngine : SingleNodeEngine<PlayerNode>, IStep<PlayerDamageInfo>
+    public class PlayerMovementEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<TargetDamageInfo>
     {
         public PlayerMovementEngine()
-        { 
-            TaskRunner.Instance.RunOnSchedule(Tasks.StandardSchedulers.physicScheduler, new Tasks.TimedLoopActionEnumerator(PhysicsTick));
+        {
+            PhysicsTick().RunOnSchedule(StandardSchedulers.physicScheduler);
         }
 
-        override protected void Add(PlayerNode obj)
+        protected override void Add(PlayerEntityView obj)
         {
-            _playerNode = obj as PlayerNode;
+            _playerEntityView = obj as PlayerEntityView;
         }
 
-        override protected void Remove(PlayerNode obj)
+        protected override void Remove(PlayerEntityView obj)
         {
-            _playerNode = null;
+            _playerEntityView = null;
         }
 
-        void PhysicsTick(float deltaSec)
+        IEnumerator PhysicsTick()
         {
-            if (_playerNode == null) return;
+            while (true)
+            {
+                if (_playerEntityView != null)
+                {
+                    Movement();
+                    Turning();
+                }
 
-            Movement();
-            Turning();
+                yield return null; //don't forget to yield or you will enter in an infinite loop!
+            }
         }
 
         void Movement()
@@ -42,10 +50,10 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
             movement.Set(h, 0f, v);
 
             // Normalise the movement vector and make it proportional to the speed per second.
-            movement = movement.normalized * _playerNode.speedComponent.speed * Time.deltaTime;
+            movement = movement.normalized * _playerEntityView.speedComponent.speed * Time.deltaTime;
 
             // Move the player to it's current position plus the movement.
-            _playerNode.rigidBodyComponent.rigidbody.MovePosition(_playerNode.positionComponent.position + movement);
+            _playerEntityView.rigidBodyComponent.rigidbody.MovePosition(_playerEntityView.positionComponent.position + movement);
         }
 
         void Turning()
@@ -60,7 +68,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
             if (Physics.Raycast(camRay, out floorHit, camRayLength, floorMask))
             {
                 // Create a vector from the player to the point on the floor the raycast from the mouse hit.
-                Vector3 playerToMouse = floorHit.point - _playerNode.positionComponent.position;
+                Vector3 playerToMouse = floorHit.point - _playerEntityView.positionComponent.position;
 
                 // Ensure the vector is entirely along the floor plane.
                 playerToMouse.y = 0f;
@@ -69,21 +77,21 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
                 Quaternion newRotatation = Quaternion.LookRotation(playerToMouse);
 
                 // Set the player's rotation to this new rotation.
-                _playerNode.rigidBodyComponent.rigidbody.MoveRotation(newRotatation);
+                _playerEntityView.rigidBodyComponent.rigidbody.MoveRotation(newRotatation);
             }
         }
 
         void StopMovementOnDeath(int ID)
         {
-            _playerNode.rigidBodyComponent.rigidbody.isKinematic = true;
+            _playerEntityView.rigidBodyComponent.rigidbody.isKinematic = true;
         }
 
-        public void Step(ref PlayerDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, Enum condition)
         {
             StopMovementOnDeath(token.entityDamaged);
         }
 
-        PlayerNode      _playerNode;
+        PlayerEntityView      _playerEntityView;
 
         readonly int floorMask = LayerMask.GetMask("Floor");    // A layer mask so that a ray can be cast just at gameobjects on the floor layer.
         const float camRayLength = 100f;                        // The length of the ray from the camera into the scene.

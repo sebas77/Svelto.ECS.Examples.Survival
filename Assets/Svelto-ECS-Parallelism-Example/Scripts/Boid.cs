@@ -7,9 +7,7 @@ namespace Svelto.ECS.Example.Parallelism
     public class Boid : IBoidComponent
     {
         public Vector3 position { set; get; }
-
         public Quaternion rotation { set; get; }
-
         public Vector3 velocity { set; get; }
     }
 }

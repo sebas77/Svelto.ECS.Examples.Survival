@@ -1,0 +1,3 @@
+[submodule "Assets/Plugins/Svelto-ECS"]
+	path = Assets/Plugins/Svelto-ECS
+	url = https://github.com/sebas77/Svelto.ECS.git
