@@ -11,4 +11,4 @@ New Parallelism Example is explained here: http://www.sebaslab.com/svelto-ecs-sv
 
 You can add Svelto-ECS framework from the original repository or syncing it from this one using the submodule approach. 
 
-*Note: In this demo I extensively use explicit interface implementations. While I like them because they make the code clearer to read, I later found out that explicit implemented methods are marked as virtual. This could potentially impact the performance of the application, so it's better avoid it. It would be too much work to change the example code, so you have been warned.*
+**Note: This repository uses submodules. The folder Svelto.ECS is empty because you have to initialized the submodule.**
