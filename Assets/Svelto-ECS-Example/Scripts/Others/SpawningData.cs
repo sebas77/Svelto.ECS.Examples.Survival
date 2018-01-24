@@ -20,10 +20,10 @@ public class SpawningData : MonoBehaviour
     {
         serializedOnce = true;
         var data = GetComponents<EnemySpawnDataSource>();
-        EnemySpawnData[] spawningdata = new EnemySpawnData[data.Length];
+        JSonEnemySpawnData[] spawningdata = new JSonEnemySpawnData[data.Length];
 
         for (int i = 0; i < data.Length; i++)
-            spawningdata[i] = data[i].spawnData;
+            spawningdata[i] = new JSonEnemySpawnData(data[i].spawnData);
 
         var json = JsonHelper.arrayToJson(spawningdata);
 

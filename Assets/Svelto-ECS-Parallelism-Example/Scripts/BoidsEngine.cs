@@ -18,6 +18,8 @@ namespace Svelto.ECS.Example.Parallelism
 
         IEnumerator Update()
         {
+            var syncRunner = new SyncRunner();
+            
             while (true)
             {
 #if TURBO_EXAMPLE
@@ -43,7 +45,7 @@ namespace Svelto.ECS.Example.Parallelism
                 //note: RunOnSchedule (and ThreadSafeRunOnSchedule) allows to continue
                 //the operation on another runner without stalling the current one.
                 //yielding it allows the current operation to wait for the result.
-                yield return _boidEnumerator.ThreadSafeRunOnSchedule(StandardSchedulers.syncScheduler);
+                yield return _boidEnumerator.ThreadSafeRunOnSchedule(syncRunner);
 #endif
                 //run the cached enumerator on the next coroutine phase, yield until it's done. 
                 //The thread will spin until is done. Yielding an enumerator on the same
