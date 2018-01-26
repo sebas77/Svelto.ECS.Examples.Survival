@@ -578,7 +578,7 @@ PlayerSettings:
   webGLUseWasm: 0
   webGLCompressionFormat: 1
   scriptingDefineSymbols:
-    1: CROSS_PLATFORM_INPUT;PROFILER;FIRST_TIER_EXAMPLE
+    1: CROSS_PLATFORM_INPUT;PROFILER;FOURTH_TIER_EXAMPLE;TURBO_EXAMPLE
     2: CROSS_PLATFORM_INPUT
     4: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     7: CROSS_PLATFORM_INPUT;MOBILE_INPUT
@@ -599,7 +599,7 @@ PlayerSettings:
   scriptingRuntimeVersion: 0
   apiCompatibilityLevelPerPlatform:
     Metro: 3
-    Standalone: 3
+    Standalone: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: 201404-MiniShooter
@@ -701,7 +701,7 @@ PlayerSettings:
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled: {}
   facebookSdkVersion: 7.9.1
-  apiCompatibilityLevel: 3
+  apiCompatibilityLevel: 2
   cloudProjectId: 
   projectName: 
   organizationId: 
