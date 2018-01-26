@@ -1,4 +1,4 @@
-# Svelto-ECS-Example
+# Svelto.ECS.Examples.Survival
 Code example for Svelto ECS (https://github.com/sebas77/Svelto-ECS)
 
 I used the Survival Shooter Unity Demo to show how an ECS framework could work inside Unity. I am not sure about the license of this demo, so use it only for learning purposes.
@@ -11,4 +11,5 @@ New Parallelism Example is explained here: http://www.sebaslab.com/svelto-ecs-sv
 
 You can add Svelto-ECS framework from the original repository or syncing it from this one using the submodule approach. 
 
-**Note: This repository uses submodules. The Submodules are found inside the folder Assets\Plugins\ and they are Svelto.Common, Svelto.Tasks and Svelto.ECS. You must update every single submodule one by one. To read more about submodules, check this link: https://git-scm.com/docs/git-submodule or just google around. You need to update the submodules separately and not recursively.**
+**Note: The folders Svelto.ECS, Svelto.Tasks and Svelto.Common, where present, are submodules pointing to the relavite repositories. If you find them empty, you need to update them through the submodule command. Check some instructions here: https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki**
+

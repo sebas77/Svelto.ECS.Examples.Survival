@@ -13,14 +13,23 @@ using System.Collections.Generic;
 using Svelto.ECS.Schedulers.Unity;
 
 //Main is the Application Composition Root.
-//Composition Root is the place where the framework can be initialised.
+//Composition Root is the place where all the depencies are 
+//created and injected (I talk a lot about it in my articles)
+//A composition Root belongs to the Context, but
+//a Context can have more than a composition root.
+//For example a factory is a composition root.
+//An Application can also have more than a context
+//but this is more advanced and not part of this demo
 namespace Svelto.ECS.Example.Survive
 {
+    //IComposition root is part of Svelto.Context
+    //Svelto.Context is not formally part of Svelto.ECS, but
+    //it helpful to use on environment where a Context is not
+    //present, like in Unity.
     public class Main : ICompositionRoot
     {
         public Main()
         {
-            _contextNotifier = new ContextNotifier();
             SetupEnginesAndEntities();
         }
 
@@ -108,7 +117,6 @@ namespace Svelto.ECS.Example.Survive
             AddEngine(playerShootingEngine);
             AddEngine(playerHealthEngine);
             AddEngine(new PlayerGunShootingFXsEngine());
-            _contextNotifier.AddFrameworkInitializationListener(enemySpawnerEngine);
             AddEngine(enemySpawnerEngine);
             AddEngine(enemyAttackEngine);
             AddEngine(enemyMovementEngine);
@@ -141,14 +149,10 @@ namespace Svelto.ECS.Example.Survive
         }
 
         void ICompositionRoot.OnContextInitialized()
-        {
-            _contextNotifier.NotifyFrameworkInitialized();
-        }
+        {}
 
         void ICompositionRoot.OnContextDestroyed()
         {
-            _contextNotifier.NotifyFrameworkDeinitialized();
-
             _enginesRoot.Dispose();
 
             TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks();
@@ -156,8 +160,7 @@ namespace Svelto.ECS.Example.Survive
 
         EnginesRoot    _enginesRoot;
         IEntityFactory _entityFactory;
-        ContextNotifier _contextNotifier;
-    }
+ }
 
     //A GameObject containing UnityContext must be present in the scene
     //All the monobehaviours present in the scene statically that need
