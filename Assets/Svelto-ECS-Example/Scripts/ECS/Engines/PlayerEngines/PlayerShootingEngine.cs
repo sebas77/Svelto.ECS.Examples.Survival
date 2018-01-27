@@ -90,7 +90,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             _enemyKilledObservable.Dispatch(ref targetType);
         }
 
-        public void Step(ref DamageInfo token, Enum condition)
+        public void Step(ref DamageInfo token, int condition)
         {
             OnTargetDead(token.entityDamaged);
         }

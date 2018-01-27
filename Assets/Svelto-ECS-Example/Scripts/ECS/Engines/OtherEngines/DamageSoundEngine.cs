@@ -1,6 +1,5 @@
 using Svelto.ECS.Example.Survive.EntityViews.Sound;
 using Svelto.ECS.Example.Survive.Components.Damageable;
-using System;
 
 namespace Svelto.ECS.Example.Survive.Engines.Sound.Damage
 {
@@ -27,9 +26,9 @@ namespace Svelto.ECS.Example.Survive.Engines.Sound.Damage
            audioComponent.audioSource.PlayOneShot(audioComponent.damage);
         }
 
-        public void Step(ref TargetDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, int condition)
         {
-            if ((DamageCondition)condition == DamageCondition.damage)
+            if (condition == DamageCondition.damage)
                 TriggerDamageAudio(token.entityDamaged);
             else
                 TriggerDeathSound(token.entityDamaged);

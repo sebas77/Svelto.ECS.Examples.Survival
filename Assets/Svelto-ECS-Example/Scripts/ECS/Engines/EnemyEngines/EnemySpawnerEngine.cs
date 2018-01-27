@@ -72,7 +72,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             return enemiestoSpawn;
         }
 
-        public void Step(ref DamageInfo token, Enum condition)
+        public void Step(ref DamageInfo token, int condition)
         {
             _numberOfEnemyToSpawn++;
         }

@@ -19,12 +19,12 @@ namespace Svelto.ECS.Example.Survive.Engines.Health
 
         public IEntityViewsDB entityViewsDB { set; private get; }
 
-        public void Step(ref TargetDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, int condition)
         {
             TriggerDamage(ref token);
         }
 
-        public void Step(ref DamageInfo token, Enum condition)
+        public void Step(ref DamageInfo token, int condition)
         {
             TriggerDamage(ref token);
         }
@@ -46,7 +46,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Health
                 _damageSequence.Next(this, ref damage, DamageCondition.damage);
         }
 
-        private IEnumerator RemoveEntityAtTheEndOfTheFrame<T>(T damage, HealthEntityView entityView) where T : IDamageInfo
+        IEnumerator RemoveEntityAtTheEndOfTheFrame<T>(T damage, HealthEntityView entityView) where T : IDamageInfo
         {
             yield return _endOfFrame;
 

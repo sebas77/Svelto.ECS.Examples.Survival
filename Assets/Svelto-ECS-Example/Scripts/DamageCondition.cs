@@ -1,8 +1,8 @@
 namespace Svelto.ECS
 {
-    public enum DamageCondition
+    public static class DamageCondition
     {
-        damage,
-        dead
+        public const int damage = 0;
+        public const int dead = 1;
     }
 }

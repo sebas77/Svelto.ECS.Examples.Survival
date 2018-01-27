@@ -1,7 +1,6 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.HUD;
 using Svelto.Tasks.Enumerators;
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -65,12 +64,12 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        public void Step(ref TargetDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, int condition)
         {
-            if ((DamageCondition)condition == DamageCondition.damage)
+            if (condition == DamageCondition.damage)
                 OnDamageEvent(ref token);
             else
-            if ((DamageCondition)condition == DamageCondition.dead)
+            if (condition == DamageCondition.dead)
                 OnDeadEvent();
         }
 

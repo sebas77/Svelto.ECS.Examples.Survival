@@ -86,7 +86,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
             _playerEntityView.rigidBodyComponent.rigidbody.isKinematic = true;
         }
 
-        public void Step(ref TargetDamageInfo token, Enum condition)
+        public void Step(ref TargetDamageInfo token, int condition)
         {
             StopMovementOnDeath(token.entityDamaged);
         }

@@ -53,7 +53,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             capsuleCollider.GetComponent<Rigidbody>().isKinematic = true;
         }
 
-        public void Step(ref DamageInfo token, Enum condition)
+        public void Step(ref DamageInfo token, int condition)
         {
             StopEnemyOnDeath(token.entityDamaged);
         }
