@@ -1,14 +1,14 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(SpawningData))]
-public class SerializeDataInspector : Editor
+[CustomEditor(typeof(PrefabSerializer))]
+public class PrefabSerializerInspector : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        SpawningData myScript = (SpawningData)target;
+        PrefabSerializer myScript = (PrefabSerializer)target;
         if (GUILayout.Button("Export Json file"))
         {
             myScript.SerializeData();

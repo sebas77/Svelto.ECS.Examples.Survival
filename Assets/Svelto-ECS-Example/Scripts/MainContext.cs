@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Svelto.ECS.Example.Survive.Engines.Enemies;
 using Svelto.ECS.Example.Survive.Engines.Health;
 using Svelto.ECS.Example.Survive.Engines.HUD;
@@ -7,6 +9,12 @@ using Svelto.ECS.Example.Survive.Engines.Sound.Damage;
 using Svelto.ECS.Example.Survive.Observables.Enemies;
 using Svelto.ECS.Example.Survive.Observers.HUD;
 using Svelto.Context;
+using Svelto.ECS.Example.Survive.CameraImplementors;
+using Svelto.ECS.Example.Survive.Engines.Camera;
+using Svelto.ECS.Example.Survive.EntityDescriptors.Camera;
+using Svelto.ECS.Example.Survive.EntityDescriptors.Player;
+using Svelto.ECS.Example.Survive.Implementors.Player;
+using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 using Svelto.ECS.Schedulers.Unity;
 
@@ -152,6 +160,7 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(enemyAnimationEngine);
             _enginesRoot.AddEngine(enemyHealthEngine);
             //other engines
+            _enginesRoot.AddEngine(new CameraFollowTargetEngine());
             _enginesRoot.AddEngine(damageSoundEngine);
             _enginesRoot.AddEngine(hudEngine);
             _enginesRoot.AddEngine(new ScoreEngine(scoreOnEnemyKilledObserver));
@@ -163,6 +172,50 @@ namespace Svelto.ECS.Example.Survive
         /// </summary>
         /// <param name="contextHolder"></param>
         void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
+        {
+            var prefabsDictionary = new PrefabsDictionary(Application.persistentDataPath + "/prefabs.json");
+                
+            BuildEntitiesFromScene(contextHolder);
+            //Entities can also be created dynamically in run-time
+            //using the entityFactory; You can, if you wish, create
+            //starting entities here.
+            BuildPlayerEntities(prefabsDictionary);
+            BuildCameraEntity();
+        }
+
+        void BuildPlayerEntities(PrefabsDictionary prefabsDictionary)
+        {
+            //Building entities dynamically should be always preferred
+            //and MUST be used if an implementor doesn't need to be
+            //a Monobehaviour. You should strive to create implementors
+            //not as monobehaviours. Implementors as monobehaviours 
+            //are meant only to function as bridge between Svelto.ECS
+            //and Unity3D. Using implementor as monobehaviour
+            //just to read serialized data from the editor, is also
+            //a bad practice, use a Json file instead.
+            var player = prefabsDictionary.Istantiate("Player");
+            
+            List<IImplementor> implementors = new List<IImplementor>();
+            //fetching implementors as monobehaviours, used as bridge between
+            //Svelto.ECS and Unity3D
+            player.GetComponents(implementors);
+            //Add not monobehaviour implementors
+            implementors.Add(new PlayerInputImplementor());
+            
+            _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), implementors.ToArray());
+
+            var gun = player.GetComponentInChildren<PlayerGunEntityDescriptorHolder>();
+            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(),  gun.GetComponents<IImplementor>());
+        }
+
+        void BuildCameraEntity()
+        {
+            var implementor = Camera.main.gameObject.AddComponent<CameraImplementor>();
+
+            _entityFactory.BuildEntity<CameraEntityDescriptor>(Camera.main.GetInstanceID(), new object[] {implementor});
+        }
+
+        void BuildEntitiesFromScene(UnityContext contextHolder)
         {
             //An EntityDescriptorHolder is a special Svelto.ECS class created to exploit
             //GameObjects to dynamically retrieve the Entity information attached to it.
@@ -177,7 +230,7 @@ namespace Svelto.ECS.Example.Survive
                 var entityDescriptorHolder = entities[i];
                 var entityDescriptor = entityDescriptorHolder.RetrieveDescriptor();
                 _entityFactory.BuildEntity
-                    (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(), 
+                (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(),
                     entityDescriptor,
                     (entityDescriptorHolder as MonoBehaviour).GetComponentsInChildren<IImplementor>());
             }

@@ -10,7 +10,7 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         public AudioClip deathClip;                                 // The audio clip to play when the player dies.
         public AudioClip damageClip;                                 // The audio clip to play when the player dies.
 
-        int  IHealthComponent.currentHealth   { get { return _currentHealth; } set { _currentHealth = value; } }
+        public int  currentHealth   { get { return _currentHealth; } set { _currentHealth = value; } }
 
         AudioSource IDamageSoundComponent.audioSource   { get { return _playerAudio; } }
         AudioClip   IDamageSoundComponent.death         { get { return deathClip; } }

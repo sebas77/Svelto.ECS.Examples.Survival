@@ -15,40 +15,40 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
         void EntityDamaged(DamageInfo damageInfo)
         {
-            var EntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamaged);
+            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamaged);
 
-            EntityView.vfxComponent.hitParticles.transform.position = damageInfo.damagePoint;
-            EntityView.vfxComponent.hitParticles.Play();
+            entity.vfxComponent.hitParticles.transform.position = damageInfo.damagePoint;
+            entity.vfxComponent.hitParticles.Play();
         }
 
         void TriggerTargetDeathAnimation(int targetID)
         {
-            var EntityViews = entityViewsDB.QueryEntityViews<EnemyEntityView>();
+            var entity = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
-            for (int i = 0; i < EntityViews.Count; i++)
-                EntityViews[i].animationComponent.animation.SetTrigger("PlayerDead");
+            for (int i = 0; i < entity.Count; i++)
+                entity[i].animationComponent.animation.SetTrigger("PlayerDead");
         }
 
         void TriggerDeathAnimation(int targetID)
         {
-            var EntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
-            EntityView.animationComponent.animation.SetTrigger("Dead");
+            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
+            entity.animationComponent.animation.SetTrigger("Dead");
 
-            TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Sink(EntityView.transformComponent.transform, EntityView.movementComponent.sinkSpeed)).Start();
+            Sink(entity, entity.movementComponent.sinkSpeed).Run();
         }
 
-        IEnumerator Sink(Transform transform, float sinkSpeed)
+        IEnumerator Sink(EnemyEntityView entity, float sinkSpeed)
         {
             DateTime AfterTwoSec = DateTime.UtcNow.AddSeconds(2);
 
             while (DateTime.UtcNow < AfterTwoSec)
             {
-                transform.Translate(-Vector3.up * sinkSpeed * Time.deltaTime);
+                entity.transformComponent.position += (-Vector3.up * sinkSpeed * Time.deltaTime);
 
                 yield return null;
             }
 
-            UnityEngine.Object.Destroy(transform.gameObject);
+            entity.destroyComponent.destroyed.value = true;
         }
 
         public void Step(ref DamageInfo token, int condition)

@@ -14,12 +14,14 @@ namespace Svelto.ECS.Example.Survive.Components.Base
 
     public interface ITransformComponent: IComponent
     {
-        Transform transform { get; }
+        Vector3 position { get; set; }
     }
 
     public interface IRigidBodyComponent: IComponent
     {
-        Rigidbody rigidbody { get; }
+        Vector3 position { set; }
+        bool isKinematic { set; }
+        Quaternion rotation { set; }
     }
 
     public interface ISpeedComponent: IComponent

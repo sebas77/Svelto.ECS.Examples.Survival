@@ -13,6 +13,7 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Enemies
 
         public IAnimationComponent        animationComponent;
         public ITransformComponent        transformComponent;
+        public IDestroyComponent          destroyComponent;
     }
 
     public class EnemyTargetEntityView : EntityView

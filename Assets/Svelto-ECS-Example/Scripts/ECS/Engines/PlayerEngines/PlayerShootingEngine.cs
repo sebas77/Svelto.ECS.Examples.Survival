@@ -13,7 +13,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         public void Ready()
         {
-            TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
+            new Tasks.TimedLoopActionEnumerator(Tick).Run();
         }
 
         public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence)

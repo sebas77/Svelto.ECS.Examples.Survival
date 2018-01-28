@@ -1,7 +1,5 @@
 using UnityEngine;
 using Svelto.ECS.Example.Survive.EntityViews.Player;
-using UnityStandardAssets.CrossPlatformInput;
-using System;
 using System.Collections;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.Tasks;
@@ -17,7 +15,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
 
         protected override void Add(PlayerEntityView obj)
         {
-            _playerEntityView = obj as PlayerEntityView;
+            _playerEntityView = obj;
         }
 
         protected override void Remove(PlayerEntityView obj)
@@ -28,7 +26,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
         IEnumerator PhysicsTick()
         {
             while (true)
-            {
+            {   //this is not a defensive if. Engines are meant to handle every case
+                //including no entities added or left
                 if (_playerEntityView != null)
                 {
                     Movement();
@@ -42,25 +41,20 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
         void Movement()
         {
             // Store the input axes.
-            float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
-            float v = CrossPlatformInputManager.GetAxisRaw("Vertical");
-
-            Vector3 movement = new Vector3();
-
-            movement.Set(h, 0f, v);
-
+            Vector3 movement = _playerEntityView.inputComponent.input;
+            
             // Normalise the movement vector and make it proportional to the speed per second.
             movement = movement.normalized * _playerEntityView.speedComponent.speed * Time.deltaTime;
 
             // Move the player to it's current position plus the movement.
-            _playerEntityView.rigidBodyComponent.rigidbody.MovePosition(_playerEntityView.positionComponent.position + movement);
+            _playerEntityView.rigidBodyComponent.position = _playerEntityView.positionComponent.position + movement;
         }
 
         void Turning()
         {
             // Create a ray from the mouse cursor on screen in the direction of the camera.
-            Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
+            Ray camRay = _playerEntityView.inputComponent.camRay;
+            
             // Create a RaycastHit variable to store information about what was hit by the ray.
             RaycastHit floorHit;
 
@@ -77,13 +71,13 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
                 Quaternion newRotatation = Quaternion.LookRotation(playerToMouse);
 
                 // Set the player's rotation to this new rotation.
-                _playerEntityView.rigidBodyComponent.rigidbody.MoveRotation(newRotatation);
+                _playerEntityView.rigidBodyComponent.rotation = newRotatation;
             }
         }
 
         void StopMovementOnDeath(int ID)
         {
-            _playerEntityView.rigidBodyComponent.rigidbody.isKinematic = true;
+            _playerEntityView.rigidBodyComponent.isKinematic = true;
         }
 
         public void Step(ref TargetDamageInfo token, int condition)

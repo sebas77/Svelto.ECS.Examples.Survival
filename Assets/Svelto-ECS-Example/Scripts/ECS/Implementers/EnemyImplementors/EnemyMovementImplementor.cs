@@ -18,15 +18,18 @@ namespace Svelto.ECS.Example.Survive.Implementors.Enemies
         UnityEngine.AI.NavMeshAgent IEnemyMovementComponent.navMesh { get { return _nav; } }
 
         float IEnemyMovementComponent.sinkSpeed { get { return sinkSpeed; } }
-        Transform ITransformComponent.transform { get { return _transform; }}
-
-        public Action removeEntity { get { return _removeAction; } set { _removeAction = value;  }  }
 
         void Awake ()
         {
             _nav = GetComponent <UnityEngine.AI.NavMeshAgent> ();
             _capsuleCollider = GetComponent<CapsuleCollider>();
             _transform = transform;
+        }
+
+        public Vector3 position
+        {
+            get { return _transform.position; }
+            set { _transform.position = value; }
         }
     }
 }

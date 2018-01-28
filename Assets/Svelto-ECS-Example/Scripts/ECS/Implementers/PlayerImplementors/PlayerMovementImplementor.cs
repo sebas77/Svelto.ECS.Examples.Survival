@@ -1,4 +1,5 @@
 using Svelto.ECS.Example.Survive.Components.Base;
+using Svelto.ECS.Example.Survive.Components.Camera;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Implementors.Player
@@ -7,6 +8,7 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         IRigidBodyComponent,
         IPositionComponent,
         IAnimationComponent,
+        ICameraTargetComponent,
         ISpeedComponent
     {
         public float speed = 6f;            // The speed that the player will move at.
@@ -15,10 +17,11 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         Rigidbody playerRigidbody;          // Reference to the player's rigidbody.
         Transform playerTransform;
 
-        Vector3     IPositionComponent.position { get { return playerTransform.position; } }
-        Rigidbody   IRigidBodyComponent.rigidbody { get { return playerRigidbody; } }
+        public bool isKinematic { set { playerRigidbody.isKinematic = value; } }
+        public Quaternion rotation { set {playerRigidbody.MoveRotation(value);} }
+
         float       ISpeedComponent.speed { get { return speed; } }
-        Animator    IAnimationComponent.animation { get { return anim; } }
+        public      Animator    animation { get { return anim; } }
 
         void Awake ()
         {
@@ -27,5 +30,7 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
             playerRigidbody = GetComponent<Rigidbody>();
             playerTransform = transform;
         }
+
+        public Vector3 position { get { return playerTransform.position; }  set {playerRigidbody.MovePosition(value);} }
     }
 }
