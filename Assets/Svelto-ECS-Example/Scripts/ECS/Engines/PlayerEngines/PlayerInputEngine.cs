@@ -34,6 +34,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
 
                 entityView.inputComponent.input = new Vector3(h, 0f, v);
                 entityView.inputComponent.camRay = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+                entityView.inputComponent.fire = Input.GetButton("Fire1");
                 
                 yield return null;
             }

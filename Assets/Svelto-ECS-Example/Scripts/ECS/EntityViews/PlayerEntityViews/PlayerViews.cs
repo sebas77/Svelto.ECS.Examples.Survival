@@ -18,6 +18,7 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Player
     {
         Vector3 input { get; set; }
         Ray camRay { get; set; }
+        bool fire { get; set; }
     }
 
     public class PlayerTargetEntityView : EntityView

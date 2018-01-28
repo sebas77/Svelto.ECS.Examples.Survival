@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Svelto.ECS.Example.Survive.EntityViews.Player;
 using Svelto.ECS.Example.Survive.Components.Damageable;
@@ -7,72 +8,73 @@ using Svelto.ECS.Example.Survive.EntityViews.Gun;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
-    public class PlayerGunShootingEngine : MultiEntityViewsEngine<GunEntityView, PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class PlayerGunShootingEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Ready()
         {
-            new Tasks.TimedLoopActionEnumerator(Tick).Run();
+            Tick().Run();
         }
 
-        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence)
+        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence, RayCaster rayCaster)
         {
             _enemyKilledObservable = enemyKilledObservable;
             _enemyDamageSequence = damageSequence;
+            _rayCaster = rayCaster;
         }
 
-        protected override void Add(GunEntityView EntityView)
+        IEnumerator Tick()
         {
-            _playerGunEntityView = EntityView;
+            var playerGunEntityView = entityViewsDB.QueryEntityViews<GunEntityView>()[0];
+            var playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0];
+
+            while (playerGunEntityView == null || playerEntityView == null)
+            {
+                yield return null;
+                
+                playerGunEntityView = entityViewsDB.QueryEntityViews<GunEntityView>()[0];
+                playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0];
+            }
+
+            var then = DateTime.Now;
+            
+            while (true)
+            {
+                var playerGunComponent = playerGunEntityView.gunComponent;
+
+                playerGunComponent.timer += (float)(DateTime.Now - then).TotalSeconds;
+                then = DateTime.Now;
+                
+                if (playerEntityView.inputComponent.fire &&
+                    playerGunComponent.timer >= playerGunEntityView.gunComponent.timeBetweenBullets &&
+                    Time.timeScale != 0)
+                    Shoot(playerGunEntityView);
+
+                yield return null;
+            }
         }
 
-        protected override void Remove(GunEntityView EntityView)
-        {}
-
-        protected override void Add(PlayerEntityView EntityView)
-        {}
-
-        protected override void Remove(PlayerEntityView EntityView)
+        void Shoot(GunEntityView playerGunEntityView)
         {
-            //the gun is never removed (because the level reloads on death), 
-            //so remove on playerdeath
-            _playerGunEntityView = null; 
-        }
-
-        void Tick(float deltaSec)
-        {
-            if (_playerGunEntityView == null) return;
-
-            var playerGunComponent = _playerGunEntityView.gunComponent;
-
-            playerGunComponent.timer += deltaSec;
-
-            if (Input.GetButton("Fire1") && playerGunComponent.timer >= _playerGunEntityView.gunComponent.timeBetweenBullets && Time.timeScale != 0)
-                Shoot();
-        }
-
-        void Shoot()
-        {
-            RaycastHit shootHit;
-            var playerGunComponent = _playerGunEntityView.gunComponent;
-            var playerGunHitComponent = _playerGunEntityView.gunHitTargetComponent;
+            var playerGunComponent = playerGunEntityView.gunComponent;
+            var playerGunHitComponent = playerGunEntityView.gunHitTargetComponent;
 
             playerGunComponent.timer = 0;
 
-            if (Physics.Raycast(playerGunComponent.shootRay, 
-                out shootHit, playerGunComponent.range, SHOOTABLE_MASK | ENEMY_MASK))
+            Vector3 point;
+            var entityHit = _rayCaster.CheckHit(playerGunComponent.shootRay, playerGunComponent.range, ENEMY_LAYER, SHOOTABLE_MASK | ENEMY_MASK, out point);
+            
+            if (entityHit != -1)
             {
-                var hitGO = shootHit.collider.gameObject;
-
-                PlayerTargetEntityView targetComponent = null;
+                PlayerTargetEntityView targetComponent;
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (hitGO.layer == ENEMY_LAYER && entityViewsDB.TryQueryEntityView(hitGO.GetInstanceID(), out targetComponent))
+                if (entityViewsDB.TryQueryEntityView(entityHit, out targetComponent))
                 {
-                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, shootHit.point, hitGO.GetInstanceID());
+                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, entityHit);
                     _enemyDamageSequence.Next(this, ref damageInfo);
 
-                    playerGunComponent.lastTargetPosition = shootHit.point;
+                    playerGunComponent.lastTargetPosition = point;
                     playerGunHitComponent.targetHit.value = true;
 
                     return;
@@ -95,14 +97,12 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             OnTargetDead(token.entityDamaged);
         }
 
-        GunEntityView                 _playerGunEntityView;
-
         readonly EnemyKilledObservable   _enemyKilledObservable;
         readonly Sequencer               _enemyDamageSequence;
+        readonly RayCaster               _rayCaster;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
         static readonly int ENEMY_MASK = LayerMask.GetMask("Enemies");
         static readonly int ENEMY_LAYER = LayerMask.NameToLayer("Enemies");
-        
     }
 }

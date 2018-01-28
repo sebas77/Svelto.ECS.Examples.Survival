@@ -7,5 +7,6 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
     {
         public Vector3 input { get; set; }
         public Ray camRay { get; set; }
+        public bool fire { get; set; }
     }
 }
