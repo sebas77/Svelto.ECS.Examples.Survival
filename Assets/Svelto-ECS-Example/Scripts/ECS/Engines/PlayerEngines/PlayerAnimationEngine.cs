@@ -5,35 +5,24 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player
 {
-    public class PlayerAnimationEngine : IQueryingEntityViewEngine, IStep<TargetDamageInfo>
+    public class PlayerAnimationEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<TargetDamageInfo>
     {
-        
-        public IEntityViewsDB entityViewsDB { get; set; }
-        public void Ready()
+        public PlayerAnimationEngine()
         {
-            PhysicsTick().RunOnSchedule(StandardSchedulers.physicScheduler);
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicsTick()).SetScheduler(StandardSchedulers.physicScheduler);
         }
         
         IEnumerator PhysicsTick()
         {
-            var playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0];
-
-            while (playerEntityView == null)
-            {
-                yield return null;
-                
-                playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0];
-            }
-            
             while (true)
             {
-                var input = playerEntityView.inputComponent.input;
+                var input = _playerEntityView.inputComponent.input;
 
                 // Create a boolean that is true if either of the input axes is non-zero.
                 bool walking = input.x != 0f || input.z != 0f;
 
                 // Tell the animator whether or not the player is walking.
-                playerEntityView.animationComponent.setBool("IsWalking", walking);
+                _playerEntityView.animationComponent.setBool("IsWalking", walking);
 
                 yield return null;
             }
@@ -41,14 +30,27 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
 
         void TriggerDeathAnimation(int targetID)
         {
-            var playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0];
-            
-            playerEntityView.animationComponent.setTrigger("Die");
+            _playerEntityView.animationComponent.setTrigger("Die");
         }
 
         public void Step(ref TargetDamageInfo token, int condition)
         {
             TriggerDeathAnimation(token.entityDamaged);
         }
+
+        protected override void Add(PlayerEntityView entityView)
+        {
+            _playerEntityView = entityView;
+            _taskRoutine.Start();
+        }
+
+        protected override void Remove(PlayerEntityView entityView)
+        {
+            _taskRoutine.Stop();
+            _playerEntityView = null;
+        }
+        
+        PlayerEntityView _playerEntityView;
+        readonly ITaskRoutine _taskRoutine;
     }
 }

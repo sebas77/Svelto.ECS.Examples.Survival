@@ -1,10 +1,9 @@
-using Svelto.ECS.Example.Survive.Components.Enemies;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using System.Collections;
 using Svelto.Tasks.Enumerators;
-using System;
 using System.IO;
 using Svelto.ECS.Example.Survive.EntityDescriptors.Enemies;
+using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
@@ -40,7 +39,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                         if (spawnData.timeLeft <= 0.0f)
                         {
                             // Find a random index between zero and one less than the number of spawn points.
-                            int spawnPointIndex = UnityEngine.Random.Range(0, spawnData.spawnPoints.Length);
+                            int spawnPointIndex = Random.Range(0, spawnData.spawnPoints.Length);
 
                             // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
                             var go = _gameobjectFactory.Build(spawnData.enemyPrefab);

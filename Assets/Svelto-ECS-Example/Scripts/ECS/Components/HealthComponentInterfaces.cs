@@ -38,7 +38,6 @@ namespace Svelto.ECS.Example.Survive.Components.Damageable
     public interface IDamageInfo
     {
         int damagePerShot { get; }
-        Vector3 damagePoint { get; }
         int entityDamaged { get; }
     }
 }

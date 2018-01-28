@@ -11,10 +11,4 @@ namespace Svelto.ECS.Example.Survive.Components.Player
         Bear,
         Hellephant
     }
-
-	public enum PlayerDamagedType
-	{
-		Hurt,
-		Killed,
-	}
 }

@@ -1,55 +1,68 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using Svelto.ECS.Example.Survive.EntityViews.Player;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.Observables.Enemies;
 using Svelto.ECS.Example.Survive.EntityViews.Gun;
+using Svelto.ECS.Example.Survive.Others;
+using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 {
-    public class PlayerGunShootingEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class PlayerGunShootingEngine : MultiEntityViewsEngine<GunEntityView, PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Ready()
         {
-            Tick().Run();
+            _taskRoutine.Start();
         }
-
-        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence, RayCaster rayCaster)
+        
+        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence, IRayCaster rayCaster, ITime time)
         {
             _enemyKilledObservable = enemyKilledObservable;
             _enemyDamageSequence = damageSequence;
             _rayCaster = rayCaster;
+            _time = time;
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Tick())
+                .SetScheduler(StandardSchedulers.physicScheduler);
+        }
+
+        protected override void Add(GunEntityView entityView)
+        {
+            _playerGunEntityView = entityView;
+        }
+
+        protected override void Remove(GunEntityView entityView)
+        {
+            _taskRoutine.Stop();
+            _playerGunEntityView = null;
+        }
+
+        protected override void Add(PlayerEntityView entityView)
+        {
+            _playerEntityView = entityView;
+        }
+
+        protected override void Remove(PlayerEntityView entityView)
+        {
+            _taskRoutine.Stop();
+            _playerEntityView = null;
         }
 
         IEnumerator Tick()
         {
-            var playerGunEntityView = entityViewsDB.QueryEntityViews<GunEntityView>()[0];
-            var playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0];
-
-            while (playerGunEntityView == null || playerEntityView == null)
-            {
-                yield return null;
-                
-                playerGunEntityView = entityViewsDB.QueryEntityViews<GunEntityView>()[0];
-                playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0];
-            }
-
-            var then = DateTime.Now;
+            while (_playerEntityView == null || _playerGunEntityView == null) yield return null;
             
             while (true)
             {
-                var playerGunComponent = playerGunEntityView.gunComponent;
+                var playerGunComponent = _playerGunEntityView.gunComponent;
 
-                playerGunComponent.timer += (float)(DateTime.Now - then).TotalSeconds;
-                then = DateTime.Now;
+                playerGunComponent.timer += _time.deltaTime;
                 
-                if (playerEntityView.inputComponent.fire &&
-                    playerGunComponent.timer >= playerGunEntityView.gunComponent.timeBetweenBullets &&
-                    Time.timeScale != 0)
-                    Shoot(playerGunEntityView);
+                if (_playerEntityView.inputComponent.fire &&
+                    playerGunComponent.timer >= _playerGunEntityView.gunComponent.timeBetweenBullets)
+                    Shoot(_playerGunEntityView);
 
                 yield return null;
             }
@@ -99,10 +112,14 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         readonly EnemyKilledObservable   _enemyKilledObservable;
         readonly Sequencer               _enemyDamageSequence;
-        readonly RayCaster               _rayCaster;
+        readonly IRayCaster              _rayCaster;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
         static readonly int ENEMY_MASK = LayerMask.GetMask("Enemies");
         static readonly int ENEMY_LAYER = LayerMask.NameToLayer("Enemies");
+        ITime _time;
+        PlayerEntityView _playerEntityView;
+        GunEntityView _playerGunEntityView;
+        ITaskRoutine _taskRoutine;
     }
 }

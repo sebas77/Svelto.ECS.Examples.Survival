@@ -21,7 +21,6 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         public Quaternion rotation { set {playerRigidbody.MoveRotation(value);} }
 
         float       ISpeedComponent.speed { get { return speed; } }
-        public      Animator    animation { get { return anim; } }
         
         public void setBool(string name, bool value)
         {

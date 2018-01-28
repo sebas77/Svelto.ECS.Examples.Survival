@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Svelto.ECS.Example.Survive.Engines.Enemies;
 using Svelto.ECS.Example.Survive.Engines.Health;
@@ -17,6 +16,7 @@ using Svelto.ECS.Example.Survive.Implementors.Player;
 using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 using Svelto.ECS.Schedulers.Unity;
+using Svelto.Tasks;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where all the depencies are 
@@ -88,16 +88,20 @@ namespace Svelto.ECS.Example.Survive
             //Player related engines. ALL the dependecies must be solved at this point
             //through constructor injection.
             var playerHealthEngine = new HealthEngine(entityFunctions, playerDamageSequence);
-            var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence, new RayCaster());
-            var playerMovementEngine = new PlayerMovementEngine();
+            IRayCaster rayCaster = new RayCaster();
+            var time = new Others.Time();
+            var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence, rayCaster, time);
+            var playerMovementEngine = new PlayerMovementEngine(rayCaster);
             var playerAnimationEngine = new PlayerAnimationEngine();
             //Enemy related engines
+            
             var enemyAnimationEngine = new EnemyAnimationEngine();
             var enemyHealthEngine = new HealthEngine(entityFunctions, enemyDamageSequence);
-            var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence);
+            var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence, time);
             var enemyMovementEngine = new EnemyMovementEngine();
             //hud and sound engines
-            var hudEngine = new HUDEngine();
+            
+            var hudEngine = new HUDEngine(time);
             var damageSoundEngine = new DamageSoundEngine();
             var enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
 
@@ -161,7 +165,7 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(enemyAnimationEngine);
             _enginesRoot.AddEngine(enemyHealthEngine);
             //other engines
-            _enginesRoot.AddEngine(new CameraFollowTargetEngine());
+            _enginesRoot.AddEngine(new CameraFollowTargetEngine(time));
             _enginesRoot.AddEngine(damageSoundEngine);
             _enginesRoot.AddEngine(hudEngine);
             _enginesRoot.AddEngine(new ScoreEngine(scoreOnEnemyKilledObserver));
@@ -208,7 +212,7 @@ namespace Svelto.ECS.Example.Survive
             //unluckily the gun is parented in the original prefab, so there is no easy way to create it
             //explicitly, I have to create if from the existing gameobject.
             var gun = player.GetComponentInChildren<PlayerShootingImplementor>();
-            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(),  new object[] {gun});
+            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(), new object[] {gun});
         }
 
         void BuildCameraEntity()

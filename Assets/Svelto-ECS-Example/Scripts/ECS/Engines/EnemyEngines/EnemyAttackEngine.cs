@@ -1,5 +1,8 @@
+using System.Collections;
+using System.ComponentModel.Design;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.Enemies;
+using Svelto.ECS.Example.Survive.Others;
 using Svelto.Tasks;
 using UnityEngine;
 
@@ -10,66 +13,73 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
         public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Ready()
-        {
-            TaskRunner.Instance.Run(new TimedLoopActionEnumerator(Tick));
-        }
+        {}
 
-        public EnemyAttackEngine(Sequencer enemyrDamageSequence)
+        public EnemyAttackEngine(Sequencer enemyrDamageSequence, ITime time)
         {
             _targetDamageSequence = enemyrDamageSequence;
+            _time = time;
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(CheckIfHittingEnemyTarget()).SetScheduler(StandardSchedulers.physicScheduler);
         }
 
-        protected override void Add(EnemyEntityView obj)
+        protected override void Add(EnemyEntityView entity)
         {
-            EnemyEntityView enemyEntityView = (obj as EnemyEntityView);
-
-            enemyEntityView.targetTriggerComponent.entityInRange += CheckTarget;
+            entity.targetTriggerComponent.entityInRange += CheckTarget;
         }
 
-        protected override void Remove(EnemyEntityView obj)
+        protected override void Remove(EnemyEntityView entity)
         {
-            EnemyEntityView enemyEntityView = (obj as EnemyEntityView);
-
-            enemyEntityView.targetTriggerComponent.entityInRange -= CheckTarget;
+            entity.targetTriggerComponent.entityInRange -= CheckTarget;
         }
 
-        protected override void Add(EnemyTargetEntityView obj)
+        protected override void Add(EnemyTargetEntityView entity)
         {
-            _targetEntityView = obj as EnemyTargetEntityView;
+            _targetEntityView = entity;
+            _taskRoutine.Start();
         }
 
         protected override void Remove(EnemyTargetEntityView obj)
         {
+            _taskRoutine.Stop();
             _targetEntityView = null;
         }
 
-        void Tick(float deltaSec)
+        IEnumerator CheckIfHittingEnemyTarget()
         {
-            if (_targetEntityView == null) return;
-
-            var enemiesAttackList = entityViewsDB.QueryEntityViews<EnemyEntityView>();
-
-            for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0 ; --enemyIndex)
+            while (true)
             {
-                var enemyAttackEntityView = enemiesAttackList[enemyIndex];
+                var enemiesAttackList = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
-                if (enemyAttackEntityView.attackComponent.targetInRange == true)
+                for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0; --enemyIndex)
                 {
-                    var attackDamageComponent = enemyAttackEntityView.attackDamageComponent;
-					    attackDamageComponent.timer += deltaSec;
-
-                    if (attackDamageComponent.timer >= attackDamageComponent.attackInterval)
+                    var enemyAttackEntityView = enemiesAttackList[enemyIndex];
+                    if (enemyAttackEntityView.attackComponent.targetInRange == true)
                     {
-                        attackDamageComponent.timer = 0.0f;
+                        var attackDamageComponent = enemyAttackEntityView.attackDamageComponent;
+                        attackDamageComponent.timer += _time.deltaTime;
 
-                        var damageInfo = new TargetDamageInfo(attackDamageComponent.damage, Vector3.zero, _targetEntityView.ID);
+                        if (attackDamageComponent.timer >= attackDamageComponent.attackInterval)
+                        {
+                            attackDamageComponent.timer = 0.0f;
 
-                        _targetDamageSequence.Next(this, ref damageInfo);
+                            var damageInfo = new TargetDamageInfo(attackDamageComponent.damage, Vector3.zero,
+                                _targetEntityView.ID);
+
+                            _targetDamageSequence.Next(this, ref damageInfo);
+                        }
                     }
                 }
+
+                yield return null;
             }
         }
 
+        /// <summary>
+        /// Logic for when the Unity OnTrigger is enable
+        /// </summary>
+        /// <param name="targetID"></param>
+        /// <param name="enemyID"></param>
+        /// <param name="inRange"></param>
         void CheckTarget(int targetID, int enemyID, bool inRange)
         {
             if (_targetEntityView == null)
@@ -89,5 +99,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
         EnemyTargetEntityView _targetEntityView;
         Sequencer _targetDamageSequence;
+        ITime _time;
+        ITaskRoutine _taskRoutine;
     }
 }

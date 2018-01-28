@@ -1,45 +1,43 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.Enemies;
-using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Enemies
 {
-    public class EnemyMovementEngine : SingleEntityViewEngine<EnemyTargetEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class EnemyMovementEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
         public void Ready()
-        {}
-
-        public EnemyMovementEngine()
         {
-            TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
+            Tick().Run();
         }
 
-        protected override void Add(EnemyTargetEntityView EntityView)
+        IEnumerator Tick()
         {
-            _targetEntityView = EntityView;
-        }
-
-        protected override void Remove(EnemyTargetEntityView EntityView)
-        {
-            _targetEntityView = null;
-        }
-
-        void Tick(float deltaSec)
-        {
-            if (_targetEntityView == null)
-                return;
-            
-            var enemies = entityViewsDB.QueryEntityViews<EnemyEntityView>();
-
-            for (var i = 0; i < enemies.Count; i++)
+            while (true)
             {
-                var component = enemies[i].movementComponent;
+                var enemyTargetEntityViews = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>();
 
-                if (component.navMesh.isActiveAndEnabled)
-                    component.navMesh.SetDestination(_targetEntityView.targetPositionComponent.position);
+                if (enemyTargetEntityViews.Count > 0)
+                {
+                    var targetEntityView = enemyTargetEntityViews[0];
+
+                    if (targetEntityView == null) yield break;
+
+                    var enemies = entityViewsDB.QueryEntityViews<EnemyEntityView>();
+
+                    for (var i = 0; i < enemies.Count; i++)
+                    {
+                        var component = enemies[i].movementComponent;
+
+                        if (component.navMesh.isActiveAndEnabled)
+                            component.navMesh.SetDestination(targetEntityView.targetPositionComponent.position);
+                    }
+                }
+
+                yield return null;
             }
         }
 
@@ -57,7 +55,5 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
         {
             StopEnemyOnDeath(token.entityDamaged);
         }
-
-        EnemyTargetEntityView   _targetEntityView;
     }
 }

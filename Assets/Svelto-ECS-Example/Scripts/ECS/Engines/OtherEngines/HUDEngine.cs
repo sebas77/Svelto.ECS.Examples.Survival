@@ -2,6 +2,7 @@ using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.HUD;
 using Svelto.Tasks.Enumerators;
 using System.Collections;
+using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,14 +12,18 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
-        public void Ready()
+        public HUDEngine(ITime time)
         {
-            TaskRunner.Instance.Run(new Tasks.TimedLoopActionEnumerator(Tick));
+            _time = time;
         }
+
+        public void Ready()
+        {}
 
         protected override void Add(HUDEntityView EntityView)
         {
             _guiEntityView = EntityView;
+            Tick().Run();
         }
 
         protected override void Remove(HUDEntityView EntityView)
@@ -26,14 +31,19 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             _guiEntityView = null;
         }
 
-        void Tick(float deltaSec)
+        IEnumerator Tick()
         {
-            if (_guiEntityView == null) return;
+            while (true)
+            {
+                var damageComponent = _guiEntityView.damageImageComponent;
+                var damageImage = damageComponent.damageImage;
 
-            var damageComponent = _guiEntityView.damageImageComponent;
-            var damageImage = damageComponent.damageImage;
+                damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * _time.deltaTime);
 
-            damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * deltaSec);
+                yield return null;
+                
+                if (_guiEntityView == null) yield break;
+            }
         }
 
         void OnDamageEvent(ref TargetDamageInfo damaged)
@@ -73,8 +83,9 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
                 OnDeadEvent();
         }
 
-        HUDEntityView            _guiEntityView;
-        WaitForSecondsEnumerator _waitForSeconds = new WaitForSecondsEnumerator(5);
+        HUDEntityView                      _guiEntityView;
+        readonly WaitForSecondsEnumerator  _waitForSeconds = new WaitForSecondsEnumerator(5);
+        readonly ITime                     _time;
     }
 }
 

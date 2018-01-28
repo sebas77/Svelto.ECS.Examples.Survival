@@ -11,9 +11,17 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         public void Ready()
         {
+            //In this case a taskroutine is used because we want to have control over when it starts
+            //and we want to reuse it.
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumeratorProvider(DisableFXAfterTime);
         }
 
+        /// <summary>
+        /// Using the Add/Remove method to hold a local reference of an entity
+        /// is not necessary. Do it only if you find covenient, otherwise
+        /// querying is always cleaner.
+        /// </summary>
+        /// <param name="playerGunEntityView"></param>
         protected override void Add(GunEntityView playerGunEntityView)
         {
             _playerGunEntityView = playerGunEntityView;
@@ -43,7 +51,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             gunFXComponent.particles.Play();
 
             var gunComponent = playerGunEntityView.gunComponent;
-
             var shootRay = gunComponent.shootRay;
 
             // Enable the line renderer and set it's first position to be the end of the gun.
@@ -83,7 +90,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         }
 
         ITaskRoutine   _taskRoutine;
-        GunEntityView        _playerGunEntityView;
+        GunEntityView  _playerGunEntityView;
         WaitForSeconds _waitForSeconds;
     }
 }
