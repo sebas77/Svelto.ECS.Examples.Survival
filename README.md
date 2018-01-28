@@ -7,7 +7,5 @@ Most of the source code has been rewritten to work with the ECS framework. You s
 
 The Survival Demo and the Parallelism demo are tested with unity 5.6 and 2017.3, so I cannot guarantee that it always works, but it should work with all the versions from 5.3 and above.
 
-You can add Svelto-ECS framework from the original repository or syncing it from this one using the submodule approach. 
-
 **Note: The folders Svelto.ECS, Svelto.Tasks and Svelto.Common, where present, are submodules pointing to the relavite repositories. If you find them empty, you need to update them through the submodule command. Check some instructions here: https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki**
 
