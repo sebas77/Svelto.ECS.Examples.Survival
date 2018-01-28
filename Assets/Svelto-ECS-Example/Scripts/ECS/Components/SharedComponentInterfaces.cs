@@ -4,7 +4,8 @@ namespace Svelto.ECS.Example.Survive.Components.Base
 {
     public interface IAnimationComponent: IComponent
     {
-        Animator animation { get; }
+        void setBool(string name, bool value);
+        void setTrigger(string name);
     }
 
     public interface IPositionComponent: IComponent

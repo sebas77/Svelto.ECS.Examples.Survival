@@ -17,8 +17,6 @@ namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 
         int   IHealthComponent.currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
 
-        Animator IAnimationComponent.animation { get { return _anim; } }
-
         ParticleSystem IEnemyVFXComponent.hitParticles { get { return _hitParticles; } }
 
         AudioSource IDamageSoundComponent.audioSource { get { return _enemyAudio; } }
@@ -26,6 +24,16 @@ namespace Svelto.ECS.Example.Survive.Implementors.Enemies
         AudioClip IDamageSoundComponent.damage { get { return damageClip; } }
 
         PlayerTargetType ITargetTypeComponent.targetType { get { return targetType; } }
+        
+        public void setBool(string name, bool value)
+        {
+            _anim.SetBool(name, value);
+        }
+
+        public void setTrigger(string name)
+        {
+            _anim.SetTrigger(name);
+        }
 
         void Awake ()
         {
@@ -51,6 +59,5 @@ namespace Svelto.ECS.Example.Survive.Implementors.Enemies
         AudioSource     _enemyAudio;           // Reference to the audio source.
         ParticleSystem  _hitParticles;         // Reference to the particle system that plays when the enemy is damaged.
         int             _currentHealth;        // The current health the enemy has.
-        
     }
 }

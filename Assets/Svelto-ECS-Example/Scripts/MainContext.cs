@@ -152,6 +152,7 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(playerAnimationEngine);
             _enginesRoot.AddEngine(playerShootingEngine);
             _enginesRoot.AddEngine(playerHealthEngine);
+            _enginesRoot.AddEngine(new PlayerInputEngine());
             _enginesRoot.AddEngine(new PlayerGunShootingFXsEngine());
             //enemy engines
             _enginesRoot.AddEngine(enemySpawnerEngine);
@@ -204,8 +205,10 @@ namespace Svelto.ECS.Example.Survive
             
             _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), implementors.ToArray());
 
-            var gun = player.GetComponentInChildren<PlayerGunEntityDescriptorHolder>();
-            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(),  gun.GetComponents<IImplementor>());
+            //unluckily the gun is parented in the original prefab, so there is no easy way to create it
+            //explicitly, I have to create if from the existing gameobject.
+            var gun = player.GetComponentInChildren<PlayerShootingImplementor>();
+            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(),  new object[] {gun});
         }
 
         void BuildCameraEntity()

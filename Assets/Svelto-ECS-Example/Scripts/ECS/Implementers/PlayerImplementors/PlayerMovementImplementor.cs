@@ -22,6 +22,16 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
 
         float       ISpeedComponent.speed { get { return speed; } }
         public      Animator    animation { get { return anim; } }
+        
+        public void setBool(string name, bool value)
+        {
+            anim.SetBool(name, value);
+        }
+
+        public void setTrigger(string name)
+        {
+            anim.SetTrigger(name);
+        }
 
         void Awake ()
         {

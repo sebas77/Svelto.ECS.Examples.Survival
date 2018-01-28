@@ -26,13 +26,13 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             var entity = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
             for (int i = 0; i < entity.Count; i++)
-                entity[i].animationComponent.animation.SetTrigger("PlayerDead");
+                entity[i].animationComponent.setTrigger("PlayerDead");
         }
 
         void TriggerDeathAnimation(int targetID)
         {
             var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
-            entity.animationComponent.animation.SetTrigger("Dead");
+            entity.animationComponent.setTrigger("Dead");
 
             Sink(entity, entity.movementComponent.sinkSpeed).Run();
         }

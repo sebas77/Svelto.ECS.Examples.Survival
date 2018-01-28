@@ -1,6 +1,5 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.DamageableEntities;
-using System;
 using System.Collections;
 using UnityEngine;
 

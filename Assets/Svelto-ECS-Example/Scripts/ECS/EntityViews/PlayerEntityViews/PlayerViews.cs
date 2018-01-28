@@ -16,8 +16,8 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Player
 
     public interface IPlayerInputComponent
     {
-        Vector3 input { get; }
-        Ray camRay { get; }
+        Vector3 input { get; set; }
+        Ray camRay { get; set; }
     }
 
     public class PlayerTargetEntityView : EntityView
