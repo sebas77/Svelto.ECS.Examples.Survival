@@ -5,5 +5,7 @@ I used the Survival Shooter Unity Demo to show how an ECS framework could work i
 
 Most of the source code has been rewritten to work with Svelto.ECS framework. The Survival Demo is tested with unity 5.6 and 2017.3, so I cannot guarantee that it always works, but it should work with all the versions from 5.3 and above.
 
+To know more about Svelto.ECS, please check my blog: http://www.sebaslab.com/
+
 **Note: The folders Svelto.ECS, Svelto.Tasks and Svelto.Common, where present, are submodules pointing to the relavite repositories. If you find them empty, you need to update them through the submodule command. Check some instructions here: https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki**
 
