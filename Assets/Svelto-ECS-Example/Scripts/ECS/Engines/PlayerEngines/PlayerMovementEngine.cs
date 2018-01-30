@@ -1,16 +1,18 @@
-using UnityEngine;
 using Svelto.ECS.Example.Survive.EntityViews.Player;
 using System.Collections;
 using Svelto.ECS.Example.Survive.Components.Damageable;
+using Svelto.ECS.Example.Survive.Others;
 using Svelto.Tasks;
+using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Player
 {
     public class PlayerMovementEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<DamageInfo>
     {
-        public PlayerMovementEngine(IRayCaster raycaster)
+        public PlayerMovementEngine(IRayCaster raycaster, ITime time)
         {
             _rayCaster = raycaster;
+            _time = time;
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicsTick()).SetScheduler(StandardSchedulers.physicScheduler);
         }
 
@@ -46,16 +48,16 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
         /// the class Input.
         /// </summary>
         /// <param name="playerEntityView"></param>
-        static void Movement(PlayerEntityView playerEntityView)
+        void Movement(PlayerEntityView playerEntityView)
         {
             // Store the input axes.
             Vector3 movement = playerEntityView.inputComponent.input;
             
             // Normalise the movement vector and make it proportional to the speed per second.
-            movement = movement.normalized * playerEntityView.speedComponent.speed * Time.deltaTime;
+            movement = movement.normalized * playerEntityView.speedComponent.movementSpeed * _time.deltaTime;
 
             // Move the player to it's current position plus the movement.
-            playerEntityView.rigidBodyComponent.position = playerEntityView.positionComponent.position + movement;
+            playerEntityView.transformComponent.position = playerEntityView.positionComponent.position + movement;
         }
 
         void Turning()
@@ -77,7 +79,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
                 Quaternion newRotatation = Quaternion.LookRotation(playerToMouse);
 
                 // Set the player's rotation to this new rotation.
-                _playerEntityView.rigidBodyComponent.rotation = newRotatation;
+                _playerEntityView.transformComponent.rotation = newRotatation;
             }
         }
 
@@ -97,5 +99,6 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
         IRayCaster _rayCaster;
         PlayerEntityView _playerEntityView;
         ITaskRoutine _taskRoutine;
+        ITime _time;
     }
 }

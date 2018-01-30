@@ -4,14 +4,12 @@ using Svelto.ECS.Example.Survive.Components.Enemies;
 
 namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 {
-    public class EnemyTriggerImplementor : MonoBehaviour, IImplementor, IEnemyTriggerComponent, IEnemyAttackComponent
+    public class EnemyTriggerImplementor : MonoBehaviour, IImplementor, IEnemyTriggerComponent, IEnemyTargetComponent
     {
-        public GameObject ID { get { return gameObject; } }
-
         public event Action<int, int, bool> entityInRange;
 
         bool IEnemyTriggerComponent.targetInRange { set { _targetInRange = value; } }
-        bool IEnemyAttackComponent.targetInRange { get { return _targetInRange; } }
+        bool IEnemyTargetComponent.targetInRange { get { return _targetInRange; } }
 
         void OnTriggerEnter(Collider other)
         {

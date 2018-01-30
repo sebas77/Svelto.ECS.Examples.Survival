@@ -35,6 +35,9 @@ GameObject:
   - component: {fileID: 114145328434921470}
   - component: {fileID: 114583534575790542}
   - component: {fileID: 114436949135912762}
+  - component: {fileID: 114986459234672174}
+  - component: {fileID: 114525980358813746}
+  - component: {fileID: 114072997758032170}
   m_Layer: 10
   m_Name: ZomBunny
   m_TagString: Untagged
@@ -7263,6 +7266,18 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 100002}
   m_IsPrefabParent: 1
+--- !u!114 &114072997758032170
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc8154b7fcd24eddba7ffc52634c33d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetType: 0
 --- !u!114 &114145328434921470
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7274,7 +7289,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d7fcaab086bd3a4bbd9ab8a037fa8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sinkSpeed: 2.5
 --- !u!114 &114289030804403324
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7313,7 +7327,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathClip: {fileID: 8300000, guid: 1d3bfb9269f136947bf8ac164cace1ff, type: 3}
   damageClip: {fileID: 8300000, guid: 02e6208ec76314158a9f548f51fe9f11, type: 3}
-  targetType: 0
+--- !u!114 &114525980358813746
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa521bc633274e7eb8e2ff07dedb0c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SinkSpeed: 2.5
 --- !u!114 &114583534575790542
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7325,3 +7350,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ff5c645416db24cb1bf2a3f8b43b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114986459234672174
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31b61ba1e11e476c97498f4db3419070, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 19800000}

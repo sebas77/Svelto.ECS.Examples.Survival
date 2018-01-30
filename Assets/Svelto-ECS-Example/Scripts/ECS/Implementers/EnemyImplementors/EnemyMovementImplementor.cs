@@ -5,25 +5,25 @@ using Svelto.ECS.Example.Survive.Components.Base;
 
 namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 {
-    public class EnemyMovementImplementor : MonoBehaviour, IImplementor, IEnemyMovementComponent, ITransformComponent
+    public class EnemyMovementImplementor : MonoBehaviour, IImplementor, IEnemyMovementComponent, ITransformComponent, IRigidBodyComponent
     {
-        public float sinkSpeed = 2.5f;              // The speed at which the enemy sinks through the floor when dead.
-
         UnityEngine.AI.NavMeshAgent    _nav;                       // Reference to the nav mesh agent.
         CapsuleCollider _capsuleCollider;           // Reference to the capsule collider.
         Transform       _transform;
         Action          _removeAction;
+        Rigidbody       _rigidBody;
 
-        CapsuleCollider IEnemyMovementComponent.capsuleCollider { get { return _capsuleCollider; } }
-        UnityEngine.AI.NavMeshAgent IEnemyMovementComponent.navMesh { get { return _nav; } }
-
-        float IEnemyMovementComponent.sinkSpeed { get { return sinkSpeed; } }
+        public bool navMeshEnabled { set { _nav.enabled = value; } }
+        public bool isNavMeshActiveAndEnabled { get {return _nav.isActiveAndEnabled;} }
+        public Vector3 navMeshDestination { set { _nav.destination = value;} }
+        public bool setCapsuleAsTrigger { set {_capsuleCollider.isTrigger = value; } }
 
         void Awake ()
         {
             _nav = GetComponent <UnityEngine.AI.NavMeshAgent> ();
             _capsuleCollider = GetComponent<CapsuleCollider>();
             _transform = transform;
+            _rigidBody = GetComponent<Rigidbody>();
         }
 
         public Vector3 position
@@ -31,5 +31,12 @@ namespace Svelto.ECS.Example.Survive.Implementors.Enemies
             get { return _transform.position; }
             set { _transform.position = value; }
         }
+
+        public Quaternion rotation
+        {
+            set { _transform.rotation = value; }
+        }
+
+        public bool isKinematic { set {_rigidBody.isKinematic = value; } }
     }
 }

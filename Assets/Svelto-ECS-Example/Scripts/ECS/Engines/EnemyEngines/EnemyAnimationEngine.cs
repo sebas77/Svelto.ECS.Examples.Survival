@@ -26,15 +26,15 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             var entity = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
             for (int i = 0; i < entity.Count; i++)
-                entity[i].animationComponent.setTrigger("PlayerDead");
+                entity[i].animationComponent.trigger = "PlayerDead";
         }
 
         void TriggerDeathAnimation(int targetID)
         {
             var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
-            entity.animationComponent.setTrigger("Dead");
+            entity.animationComponent.trigger = "Dead";
 
-            Sink(entity, entity.movementComponent.sinkSpeed).Run();
+            Sink(entity, entity.sinkSpeedComponent.sinkAnimSpeed).Run();
         }
 
         IEnumerator Sink(EnemyEntityView entity, float sinkSpeed)
@@ -43,7 +43,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
             while (DateTime.UtcNow < afterTwoSec)
             {
-                entity.transformComponent.position += (-Vector3.up * sinkSpeed * Time.deltaTime);
+                entity.transformComponent.position += -Vector3.up * sinkSpeed * Time.deltaTime;
 
                 yield return null;
             }

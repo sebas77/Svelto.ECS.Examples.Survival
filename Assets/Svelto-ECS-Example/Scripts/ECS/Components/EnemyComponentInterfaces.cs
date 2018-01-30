@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 namespace Svelto.ECS.Example.Survive.Components.Enemies
 {
-    public interface IEnemyAttackComponent: IComponent
+    public interface IEnemyTargetComponent: IComponent
     {
         bool targetInRange { get; }
     }
@@ -18,9 +18,10 @@ namespace Svelto.ECS.Example.Survive.Components.Enemies
 
     public interface IEnemyMovementComponent: IComponent
     {
-        NavMeshAgent    navMesh         { get; }
-        float           sinkSpeed       { get; }
-        CapsuleCollider capsuleCollider { get; }
+        bool navMeshEnabled {  set; }
+        bool isNavMeshActiveAndEnabled { get; }
+        Vector3 navMeshDestination { set; }
+        bool setCapsuleAsTrigger { set; }
     }
 
     public interface IEnemyTriggerComponent: IComponent

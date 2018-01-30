@@ -17,5 +17,10 @@ namespace Svelto.ECS.Example.Survive.CameraImplementors
             get { return cameraTransform.position; }
             set { cameraTransform.position = value; }
         }
+
+        public Quaternion rotation
+        {
+            set { cameraTransform.rotation = value; }
+        }
     }
 }

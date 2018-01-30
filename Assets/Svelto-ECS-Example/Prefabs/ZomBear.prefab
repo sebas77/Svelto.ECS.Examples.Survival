@@ -19,6 +19,9 @@ GameObject:
   - component: {fileID: 114075194552338034}
   - component: {fileID: 114546494876484196}
   - component: {fileID: 114107447047363198}
+  - component: {fileID: 114364468882818022}
+  - component: {fileID: 114751863112630598}
+  - component: {fileID: 114231729484423412}
   m_Layer: 10
   m_Name: ZomBear
   m_TagString: Untagged
@@ -7274,7 +7277,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d7fcaab086bd3a4bbd9ab8a037fa8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sinkSpeed: 2.5
 --- !u!114 &114107447047363198
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7288,7 +7290,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathClip: {fileID: 8300000, guid: 62366b8d2c37a49dca550841c741317f, type: 3}
   damageClip: {fileID: 8300000, guid: 1d4840678e677424b8921716c72397ea, type: 3}
-  targetType: 0
+--- !u!114 &114231729484423412
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc8154b7fcd24eddba7ffc52634c33d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetType: 1
+--- !u!114 &114364468882818022
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31b61ba1e11e476c97498f4db3419070, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 19800002}
 --- !u!114 &114448320642286960
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7313,6 +7338,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ff5c645416db24cb1bf2a3f8b43b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114751863112630598
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa521bc633274e7eb8e2ff07dedb0c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SinkSpeed: 2.5
 --- !u!114 &114811553326144730
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -13,7 +13,12 @@ namespace Svelto.ECS.Example.Survive.Components.Base
     public interface IAnimationComponent: IComponent
     {
         void setBool(string name, bool value);
-        void setTrigger(string name);
+        string trigger { set; }
+    }
+
+    public interface IEnemySinkComponent : IComponent
+    {
+        float sinkAnimSpeed { get; }
     }
 
     public interface IPositionComponent: IComponent
@@ -24,6 +29,7 @@ namespace Svelto.ECS.Example.Survive.Components.Base
     public interface ITransformComponent: IComponent
     {
         Vector3 position { get; set; }
+        Quaternion rotation { set; }
     }
 
     //Avoid to return a third party class (in this
@@ -31,14 +37,12 @@ namespace Svelto.ECS.Example.Survive.Components.Base
     //setters and getters
     public interface IRigidBodyComponent: IComponent
     {
-        Vector3 position { set; }
         bool isKinematic { set; }
-        Quaternion rotation { set; }
     }
 
     public interface ISpeedComponent: IComponent
     {
-        float speed { get; }
+        float movementSpeed { get; }
     }
 
     public interface IDamageSoundComponent: IComponent

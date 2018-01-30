@@ -52,7 +52,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                 for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0; --enemyIndex)
                 {
                     var enemyAttackEntityView = enemiesAttackList[enemyIndex];
-                    if (enemyAttackEntityView.attackComponent.targetInRange == true)
+                    if (enemyAttackEntityView.TargetComponent.targetInRange == true)
                     {
                         var attackDamageComponent = enemyAttackEntityView.attackDamageComponent;
                         attackDamageComponent.timer += _time.deltaTime;

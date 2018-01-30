@@ -9,7 +9,8 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         IPositionComponent,
         IAnimationComponent,
         ICameraTargetComponent,
-        ISpeedComponent
+        ISpeedComponent,
+        ITransformComponent
     {
         public float speed = 6f;            // The speed that the player will move at.
 
@@ -20,17 +21,14 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         public bool isKinematic { set { playerRigidbody.isKinematic = value; } }
         public Quaternion rotation { set {playerRigidbody.MoveRotation(value);} }
 
-        float       ISpeedComponent.speed { get { return speed; } }
+        public float       movementSpeed { get { return speed; } }
         
         public void setBool(string name, bool value)
         {
             anim.SetBool(name, value);
         }
 
-        public void setTrigger(string name)
-        {
-            anim.SetTrigger(name);
-        }
+        public string trigger { set {anim.SetTrigger(value);} }
 
         void Awake ()
         {

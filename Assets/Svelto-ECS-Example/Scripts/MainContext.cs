@@ -91,7 +91,7 @@ namespace Svelto.ECS.Example.Survive
             IRayCaster rayCaster = new RayCaster();
             var time = new Others.Time();
             var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence, rayCaster, time);
-            var playerMovementEngine = new PlayerMovementEngine(rayCaster);
+            var playerMovementEngine = new PlayerMovementEngine(rayCaster, time);
             var playerAnimationEngine = new PlayerAnimationEngine();
             //Enemy related engines
             

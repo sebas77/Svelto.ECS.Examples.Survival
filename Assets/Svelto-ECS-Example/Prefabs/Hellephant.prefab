@@ -19,6 +19,9 @@ GameObject:
   - component: {fileID: 114432205145767808}
   - component: {fileID: 114491744935877456}
   - component: {fileID: 114213345132320286}
+  - component: {fileID: 114235789861668310}
+  - component: {fileID: 114065615883026690}
+  - component: {fileID: 114594475276058976}
   m_Layer: 10
   m_Name: Hellephant
   m_TagString: Untagged
@@ -7263,6 +7266,18 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 100000}
   m_IsPrefabParent: 1
+--- !u!114 &114065615883026690
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa521bc633274e7eb8e2ff07dedb0c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SinkSpeed: 2.5
 --- !u!114 &114213345132320286
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7276,7 +7291,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathClip: {fileID: 8300000, guid: 8c615fd0429f34edf85539d70279360d, type: 3}
   damageClip: {fileID: 8300000, guid: fce027b40770a44298a6f5a4233bfb04, type: 3}
-  targetType: 0
+--- !u!114 &114235789861668310
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31b61ba1e11e476c97498f4db3419070, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 19800002}
 --- !u!114 &114272253794579396
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7301,7 +7327,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d7fcaab086bd3a4bbd9ab8a037fa8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sinkSpeed: 2.5
 --- !u!114 &114491744935877456
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7313,6 +7338,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ff5c645416db24cb1bf2a3f8b43b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114594475276058976
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc8154b7fcd24eddba7ffc52634c33d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetType: 2
 --- !u!114 &114990192060338038
 MonoBehaviour:
   m_ObjectHideFlags: 1

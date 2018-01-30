@@ -12,6 +12,7 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Player
         public IPositionComponent      positionComponent;
         public IAnimationComponent     animationComponent;
         public IPlayerInputComponent   inputComponent;
+        public ITransformComponent     transformComponent;
     }
 
     public interface IPlayerInputComponent

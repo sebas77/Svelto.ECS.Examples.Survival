@@ -32,8 +32,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                     {
                         var component = enemies[i].movementComponent;
 
-                        if (component.navMesh.isActiveAndEnabled)
-                            component.navMesh.SetDestination(targetEntityView.targetPositionComponent.position);
+                        if (component.isNavMeshActiveAndEnabled)
+                            component.navMeshDestination = targetEntityView.targetPositionComponent.position;
                     }
                 }
 
@@ -43,12 +43,11 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
         void StopEnemyOnDeath(int targetID)
         {
-            EnemyEntityView EntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
+            EnemyEntityView entityView = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
 
-            EntityView.movementComponent.navMesh.enabled = false;
-            var capsuleCollider = EntityView.movementComponent.capsuleCollider;
-            capsuleCollider.isTrigger = true;
-            capsuleCollider.GetComponent<Rigidbody>().isKinematic = true;
+            entityView.movementComponent.navMeshEnabled = false;
+            entityView.movementComponent.setCapsuleAsTrigger = true;
+            entityView.rigidBodyComponent.isKinematic = true;
         }
 
         public void Step(ref DamageInfo token, int condition)
