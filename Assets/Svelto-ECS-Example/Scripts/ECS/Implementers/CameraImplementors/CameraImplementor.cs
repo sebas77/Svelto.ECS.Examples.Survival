@@ -9,7 +9,7 @@ namespace Svelto.ECS.Example.Survive.CameraImplementors
 
         void Awake()
         {
-            cameraTransform = this.transform;
+            cameraTransform = transform;
         }
 
         public Vector3 position

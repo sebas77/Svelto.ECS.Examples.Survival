@@ -41,33 +41,33 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             var gunFXComponent = playerGunEntityView.gunFXComponent;
 
             // Play the gun shot audioclip.
-            gunFXComponent.audio.Play ();
+            gunFXComponent.playAudio = true;
 
             // Enable the light.
-            gunFXComponent.light.enabled = true;
+            gunFXComponent.lightEnabled = true;
 
             // Stop the particles from playing if they were, then start the particles.
-            gunFXComponent.particles.Stop();
-            gunFXComponent.particles.Play();
+            gunFXComponent.play = false;
+            gunFXComponent.play = true;
 
             var gunComponent = playerGunEntityView.gunComponent;
             var shootRay = gunComponent.shootRay;
 
             // Enable the line renderer and set it's first position to be the end of the gun.
-            gunFXComponent.line.enabled = true;
-            gunFXComponent.line.SetPosition(0, shootRay.origin);
+            gunFXComponent.lineEnabled = true;
+            gunFXComponent.lineStartPosition = shootRay.origin;
 
             // Perform the raycast against gameobjects on the shootable layer and if it hits something...
             if (targetHasBeenHit == true)
             {
                 // Set the second position of the line renderer to the point the raycast hit.
-                gunFXComponent.line.SetPosition (1, gunComponent.lastTargetPosition);
+                gunFXComponent.lineEndPosition = gunComponent.lastTargetPosition;
             }
             // If the raycast didn't hit anything on the shootable layer...
             else
             {
                 // ... set the second position of the line renderer to the fullest extent of the gun's range.
-                 gunFXComponent.line.SetPosition(1, shootRay.origin + shootRay.direction * gunComponent.range);
+                 gunFXComponent.lineEndPosition = shootRay.origin + shootRay.direction * gunComponent.range;
             }
 
             _taskRoutine.Start();
@@ -85,8 +85,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         {
             var fxComponent = _playerGunEntityView.gunFXComponent;
             // Disable the line renderer and the light.
-            fxComponent.line.enabled = false;
-            fxComponent.light.enabled = false;
+            fxComponent.lineEnabled = false;
+            fxComponent.lightEnabled = false;
         }
 
         ITaskRoutine   _taskRoutine;

@@ -21,11 +21,11 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, ISequencer damageSequence, IRayCaster rayCaster, ITime time)
         {
             _enemyKilledObservable = enemyKilledObservable;
-            _enemyDamageSequence = damageSequence;
-            _rayCaster = rayCaster;
-            _time = time;
-            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Tick())
-                .SetScheduler(StandardSchedulers.physicScheduler);
+            _enemyDamageSequence   = damageSequence;
+            _rayCaster             = rayCaster;
+            _time                  = time;
+            _taskRoutine           = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Tick())
+                                               .SetScheduler(StandardSchedulers.physicScheduler);
         }
 
         protected override void Add(GunEntityView entityView)
@@ -70,13 +70,13 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
 
         void Shoot(GunEntityView playerGunEntityView)
         {
-            var playerGunComponent = playerGunEntityView.gunComponent;
+            var playerGunComponent    = playerGunEntityView.gunComponent;
             var playerGunHitComponent = playerGunEntityView.gunHitTargetComponent;
 
             playerGunComponent.timer = 0;
 
             Vector3 point;
-            var entityHit = _rayCaster.CheckHit(playerGunComponent.shootRay, playerGunComponent.range, ENEMY_LAYER, SHOOTABLE_MASK | ENEMY_MASK, out point);
+            var     entityHit = _rayCaster.CheckHit(playerGunComponent.shootRay, playerGunComponent.range, ENEMY_LAYER, SHOOTABLE_MASK | ENEMY_MASK, out point);
             
             if (entityHit != -1)
             {
@@ -100,7 +100,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         void OnTargetDead(int targetID)
         {
             var playerTarget = entityViewsDB.QueryEntityView<PlayerTargetEntityView>(targetID);
-            var targetType = playerTarget.targetTypeComponent.targetType;
+            var targetType   = playerTarget.targetTypeComponent.targetType;
 
             _enemyKilledObservable.Dispatch(ref targetType);
         }
@@ -110,16 +110,17 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             OnTargetDead(token.entityDamaged);
         }
 
-        readonly EnemyKilledObservable   _enemyKilledObservable;
-        readonly ISequencer               _enemyDamageSequence;
-        readonly IRayCaster              _rayCaster;
+        readonly EnemyKilledObservable _enemyKilledObservable;
+        readonly ISequencer            _enemyDamageSequence;
+        readonly IRayCaster            _rayCaster;
+        
+        ITime            _time;
+        PlayerEntityView _playerEntityView;
+        GunEntityView    _playerGunEntityView;
+        ITaskRoutine     _taskRoutine;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
-        static readonly int ENEMY_MASK = LayerMask.GetMask("Enemies");
-        static readonly int ENEMY_LAYER = LayerMask.NameToLayer("Enemies");
-        ITime _time;
-        PlayerEntityView _playerEntityView;
-        GunEntityView _playerGunEntityView;
-        ITaskRoutine _taskRoutine;
+        static readonly int ENEMY_MASK     = LayerMask.GetMask("Enemies");
+        static readonly int ENEMY_LAYER    = LayerMask.NameToLayer("Enemies");
     }
 }

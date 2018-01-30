@@ -6,7 +6,7 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
     public class AnimatorHUDImplementor: MonoBehaviour, IImplementor, IAnimatorHUDComponent
     {
         Animator animator;
-        Animator IAnimatorHUDComponent.hudAnimator { get { return animator; } }
+        public Animator hudAnimator { get { return animator; } }
 
         void Awake()
         {

@@ -38,7 +38,7 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
                 var damageComponent = _guiEntityView.damageImageComponent;
                 var damageImage = damageComponent.damageImage;
 
-                damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.flashSpeed * _time.deltaTime);
+                damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.speed * _time.deltaTime);
 
                 yield return null;
                 

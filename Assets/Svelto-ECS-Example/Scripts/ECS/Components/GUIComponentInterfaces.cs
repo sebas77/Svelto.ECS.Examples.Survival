@@ -11,7 +11,7 @@ namespace Svelto.ECS.Example.Survive.Components.HUD
     public interface IDamageHUDComponent: IComponent
     {
         Image damageImage { get; }
-        float flashSpeed { get; }
+        float speed { get; }
         Color flashColor { get; }
     }
 

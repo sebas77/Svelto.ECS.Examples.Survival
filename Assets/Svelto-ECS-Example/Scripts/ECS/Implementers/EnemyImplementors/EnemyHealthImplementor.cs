@@ -8,7 +8,7 @@ namespace Svelto.ECS.Example.Survive.Implementors.Enemies
     {
         public int startingHealth = 100;            // The amount of health the enemy starts the game with.
 
-        public int   currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
+        public int currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
 
         void Awake ()
         {    // Setting the current health when the enemy first spawns.
