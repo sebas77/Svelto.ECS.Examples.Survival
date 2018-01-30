@@ -3,7 +3,7 @@ using Svelto.ECS.Example.Survive.Components.Damageable;
 
 namespace Svelto.ECS.Example.Survive.Engines.Sound.Damage
 {
-    public class DamageSoundEngine : IQueryingEntityViewEngine, IStep<TargetDamageInfo>
+    public class DamageSoundEngine : IQueryingEntityViewEngine, IStep<IDamageInfo>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -26,7 +26,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Sound.Damage
            audioComponent.audioSource.PlayOneShot(audioComponent.damage);
         }
 
-        public void Step(ref TargetDamageInfo token, int condition)
+        public void Step(ref IDamageInfo token, int condition)
         {
             if (condition == DamageCondition.damage)
                 TriggerDamageAudio(token.entityDamaged);

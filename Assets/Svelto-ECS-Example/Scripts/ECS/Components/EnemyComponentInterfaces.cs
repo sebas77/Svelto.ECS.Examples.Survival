@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Svelto.ECS.Example.Survive.Components.Enemies
 {
@@ -17,7 +18,7 @@ namespace Svelto.ECS.Example.Survive.Components.Enemies
 
     public interface IEnemyMovementComponent: IComponent
     {
-        UnityEngine.AI.NavMeshAgent navMesh            { get; }
+        NavMeshAgent navMesh            { get; }
         float sinkSpeed                 { get; }
         CapsuleCollider capsuleCollider { get; }
     }

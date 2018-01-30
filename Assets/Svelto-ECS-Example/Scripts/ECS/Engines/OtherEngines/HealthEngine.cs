@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Engines.Health
 {
-    public class HealthEngine : IQueryingEntityViewEngine, IStep<DamageInfo>, IStep<TargetDamageInfo>
+    public class HealthEngine : IQueryingEntityViewEngine, IStep<IDamageInfo>
     {
         public void Ready()
         { }
@@ -18,12 +18,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Health
 
         public IEntityViewsDB entityViewsDB { set; private get; }
 
-        public void Step(ref TargetDamageInfo token, int condition)
-        {
-            TriggerDamage(ref token);
-        }
-
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref IDamageInfo token, int condition)
         {
             TriggerDamage(ref token);
         }

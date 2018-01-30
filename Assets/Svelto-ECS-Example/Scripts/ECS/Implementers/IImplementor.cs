@@ -1,6 +1,6 @@
 ﻿namespace Svelto.ECS.Example.Survive
 {
-    internal interface IImplementor
+    public interface IImplementor
     {
     }
 }

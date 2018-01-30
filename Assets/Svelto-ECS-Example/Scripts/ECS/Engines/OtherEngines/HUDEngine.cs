@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace Svelto.ECS.Example.Survive.Engines.HUD
 {
-    public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<TargetDamageInfo>
+    public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<IDamageInfo>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -46,7 +46,7 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             }
         }
 
-        void OnDamageEvent(ref TargetDamageInfo damaged)
+        void OnDamageEvent(TargetDamageInfo damaged)
         {
             var damageComponent = _guiEntityView.damageImageComponent;
             var damageImage = damageComponent.damageImage;
@@ -74,10 +74,12 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        public void Step(ref TargetDamageInfo token, int condition)
+        public void Step(ref IDamageInfo token, int condition)
         {
             if (condition == DamageCondition.damage)
-                OnDamageEvent(ref token);
+            {
+                OnDamageEvent((TargetDamageInfo)token);
+            }
             else
             if (condition == DamageCondition.dead)
                 OnDeadEvent();
