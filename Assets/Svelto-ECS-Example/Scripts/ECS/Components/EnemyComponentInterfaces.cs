@@ -11,15 +11,15 @@ namespace Svelto.ECS.Example.Survive.Components.Enemies
 
     public interface IEnemyAttackDataComponent: IComponent
     {
-        int   damage            { get; }
-        float attackInterval    { get; }
-        float timer             { get; set; }
+        int   damage         { get; }
+        float attackInterval { get; }
+        float timer          { get; set; }
     }
 
     public interface IEnemyMovementComponent: IComponent
     {
-        NavMeshAgent navMesh            { get; }
-        float sinkSpeed                 { get; }
+        NavMeshAgent    navMesh         { get; }
+        float           sinkSpeed       { get; }
         CapsuleCollider capsuleCollider { get; }
     }
 
@@ -32,6 +32,7 @@ namespace Svelto.ECS.Example.Survive.Components.Enemies
 
     public interface IEnemyVFXComponent: IComponent
     {
-        ParticleSystem hitParticles { get; }
+        Vector3             position { set; }
+        DispatchOnSet<bool> play     { get; }
     }
 }

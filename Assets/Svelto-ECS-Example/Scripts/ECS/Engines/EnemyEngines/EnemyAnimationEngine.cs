@@ -17,8 +17,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
         {
             var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamaged);
 
-            entity.vfxComponent.hitParticles.transform.position = damageInfo.damagePoint;
-            entity.vfxComponent.hitParticles.Play();
+            entity.vfxComponent.position = damageInfo.damagePoint;
+            entity.vfxComponent.play.value = true;
         }
 
         void TriggerTargetDeathAnimation(int targetID)
@@ -39,9 +39,9 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
         IEnumerator Sink(EnemyEntityView entity, float sinkSpeed)
         {
-            DateTime AfterTwoSec = DateTime.UtcNow.AddSeconds(2);
+            DateTime afterTwoSec = DateTime.UtcNow.AddSeconds(2);
 
-            while (DateTime.UtcNow < AfterTwoSec)
+            while (DateTime.UtcNow < afterTwoSec)
             {
                 entity.transformComponent.position += (-Vector3.up * sinkSpeed * Time.deltaTime);
 
