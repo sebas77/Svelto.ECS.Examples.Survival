@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 114811553326144730}
   - component: {fileID: 114075194552338034}
   - component: {fileID: 114546494876484196}
+  - component: {fileID: 114107447047363198}
   m_Layer: 10
   m_Name: ZomBear
   m_TagString: Untagged
@@ -7274,6 +7275,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sinkSpeed: 2.5
+--- !u!114 &114107447047363198
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9496655af362413bb65ca481e25470c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathClip: {fileID: 8300000, guid: 62366b8d2c37a49dca550841c741317f, type: 3}
+  damageClip: {fileID: 8300000, guid: 1d4840678e677424b8921716c72397ea, type: 3}
+  targetType: 0
 --- !u!114 &114448320642286960
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7310,6 +7325,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingHealth: 100
-  deathClip: {fileID: 8300000, guid: 62366b8d2c37a49dca550841c741317f, type: 3}
-  damageClip: {fileID: 8300000, guid: 1d4840678e677424b8921716c72397ea, type: 3}
-  targetType: 1

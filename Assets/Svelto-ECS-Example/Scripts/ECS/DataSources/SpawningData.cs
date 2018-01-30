@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Svelto.ECS.Example.Survive.Components.Enemies;
 using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 

@@ -1,8 +1,11 @@
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using System.Collections;
+using System.Collections.Generic;
 using Svelto.Tasks.Enumerators;
 using System.IO;
+using Svelto.ECS.Example.Survive.DataSources;
 using Svelto.ECS.Example.Survive.EntityDescriptors.Enemies;
+using Svelto.ECS.Example.Survive.Implementors.Enemies;
 using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 
@@ -43,8 +46,13 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
                             // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
                             var go = _gameobjectFactory.Build(spawnData.enemyPrefab);
+                            var data = go.GetComponent<EnemyAttackDataHolder>();
+                            
+                            List<IImplementor> implementors = new List<IImplementor>();
+                            go.GetComponentsInChildren(implementors);
+                            implementors.Add(new EnemyAttackImplementor(data.timeBetweenAttacks, data.attackDamage));
                             _entityFactory.BuildEntity<EnemyEntityDescriptor>(
-                                go.GetInstanceID(), go.GetComponentsInChildren<IImplementor>());
+                                go.GetInstanceID(), implementors.ToArray());
 
                             var transform = go.transform;
                             var spawnInfo = spawnData.spawnPoints[spawnPointIndex];

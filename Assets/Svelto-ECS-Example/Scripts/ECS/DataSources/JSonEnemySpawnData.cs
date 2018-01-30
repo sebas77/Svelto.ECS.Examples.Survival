@@ -30,15 +30,15 @@ namespace Svelto.ECS.Example.Survive.Others
     [Serializable]
     public class EnemySpawnData
     {
-        public GameObject enemyPrefab;
-        public Transform[] spawnPoints;
-        public float spawnTime;
+        public GameObject    enemyPrefab;
+        public Transform[]   spawnPoints;
+        public float         spawnTime;
     }
 
     [Serializable]
     public struct SpawningStruct
     {
-        public Vector3 position;
-        public Quaternion rotation;
+        public Vector3     position;
+        public Quaternion  rotation;
     }
 }

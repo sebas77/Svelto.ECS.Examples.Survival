@@ -76,12 +76,12 @@ namespace Svelto.ECS.Example.Survive
             //to be used in the relative context which promote separation of concerns.
             var enemyKilledObservable = new EnemyKilledObservable();
             var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver(enemyKilledObservable);
-            //the Sequencer is one of the 3 official ways available in Svelto.ECS 
+            //the ISequencer is one of the 3 official ways available in Svelto.ECS 
             //to communicate. They are mainly used for two specific cases:
             //1) specify a strict execution order between engines (engine logic
             //is executed horizontally instead than vertically, I will talk about this
             //in my articles). 2) filter a data token passed as parameter through
-            //engines. The Sequencer is also not the common way to communicate
+            //engines. The ISequencer is also not the common way to communicate
             //between engines
             Sequencer playerDamageSequence = new Sequencer();
             Sequencer enemyDamageSequence = new Sequencer();
@@ -105,7 +105,7 @@ namespace Svelto.ECS.Example.Survive
             var damageSoundEngine = new DamageSoundEngine();
             var enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
 
-            //The Sequencer implementaton is very simple, but allows to perform
+            //The ISequencer implementaton is very simple, but allows to perform
             //complex concatenation including loops and conditional branching.
             playerDamageSequence.SetSequence(
                 new Steps //sequence of steps, this is a dictionary!
@@ -143,8 +143,9 @@ namespace Svelto.ECS.Example.Survive
                         enemyHealthEngine, 
                         new To
                         { 
-                            {  DamageCondition.damage, new IStep[] { enemyAnimationEngine }  },
-                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine }  },
+                            {  DamageCondition.damage, new IStep[] { enemyAnimationEngine, damageSoundEngine }  },
+                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, 
+                                enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine, damageSoundEngine }  },
                         }  
                     }  
                 }

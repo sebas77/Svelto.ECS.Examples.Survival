@@ -34,6 +34,7 @@ GameObject:
   - component: {fileID: 114386821307197880}
   - component: {fileID: 114145328434921470}
   - component: {fileID: 114583534575790542}
+  - component: {fileID: 114436949135912762}
   m_Layer: 10
   m_Name: ZomBunny
   m_TagString: Untagged
@@ -7299,6 +7300,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingHealth: 100
+--- !u!114 &114436949135912762
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9496655af362413bb65ca481e25470c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   deathClip: {fileID: 8300000, guid: 1d3bfb9269f136947bf8ac164cace1ff, type: 3}
   damageClip: {fileID: 8300000, guid: 02e6208ec76314158a9f548f51fe9f11, type: 3}
   targetType: 0

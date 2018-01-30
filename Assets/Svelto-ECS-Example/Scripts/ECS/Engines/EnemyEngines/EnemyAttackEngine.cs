@@ -1,5 +1,4 @@
 using System.Collections;
-using System.ComponentModel.Design;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.ECS.Example.Survive.EntityViews.Enemies;
 using Svelto.ECS.Example.Survive.Others;
@@ -15,7 +14,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
         public void Ready()
         {}
 
-        public EnemyAttackEngine(Sequencer enemyrDamageSequence, ITime time)
+        public EnemyAttackEngine(ISequencer enemyrDamageSequence, ITime time)
         {
             _targetDamageSequence = enemyrDamageSequence;
             _time = time;
@@ -62,8 +61,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                         {
                             attackDamageComponent.timer = 0.0f;
 
-                            var damageInfo = new TargetDamageInfo(attackDamageComponent.damage, Vector3.zero,
-                                _targetEntityView.ID);
+                            var damageInfo = new DamageInfo(attackDamageComponent.damage, Vector3.zero,
+                                _targetEntityView.ID, EntityDamagedType.EnemyTarget);
 
                             _targetDamageSequence.Next(this, ref damageInfo);
                         }
@@ -98,8 +97,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
         }
 
         EnemyTargetEntityView _targetEntityView;
-        Sequencer _targetDamageSequence;
-        ITime _time;
-        ITaskRoutine _taskRoutine;
+        ISequencer             _targetDamageSequence;
+        ITime                 _time;
+        ITaskRoutine          _taskRoutine;
     }
 }
