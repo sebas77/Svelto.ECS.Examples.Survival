@@ -18,7 +18,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
             _taskRoutine.Start();
         }
         
-        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, Sequencer damageSequence, IRayCaster rayCaster, ITime time)
+        public PlayerGunShootingEngine(EnemyKilledObservable enemyKilledObservable, ISequencer damageSequence, IRayCaster rayCaster, ITime time)
         {
             _enemyKilledObservable = enemyKilledObservable;
             _enemyDamageSequence = damageSequence;
@@ -84,7 +84,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
                 //note how the GameObject GetInstanceID is used to identify the entity as well
                 if (entityViewsDB.TryQueryEntityView(entityHit, out targetComponent))
                 {
-                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, entityHit);
+                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, entityHit, EntityDamagedType.PlayerTarget);
                     _enemyDamageSequence.Next(this, ref damageInfo);
 
                     playerGunComponent.lastTargetPosition = point;
@@ -111,7 +111,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         }
 
         readonly EnemyKilledObservable   _enemyKilledObservable;
-        readonly Sequencer               _enemyDamageSequence;
+        readonly ISequencer               _enemyDamageSequence;
         readonly IRayCaster              _rayCaster;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");

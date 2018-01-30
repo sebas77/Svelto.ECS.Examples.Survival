@@ -7,38 +7,26 @@ namespace Svelto.ECS.Example.Survive.Components.Damageable
         int currentHealth { get; set; }
     }
 
-    public struct DamageInfo: IDamageInfo
+    public struct DamageInfo
     {
         public int damagePerShot { get; private set; }
         public Vector3 damagePoint { get; private set; }
         public int entityDamaged { get; private set; }
+        public EntityDamagedType entityType  { get; private set; }
         
-        public DamageInfo(int damage, Vector3 point, int entity) : this()
+        public DamageInfo(int damage, Vector3 point, int entity, EntityDamagedType edt) : this()
         {
             damagePerShot = damage;
             damagePoint = point;
             entityDamaged = entity;
+            entityType = edt;
         }
     }
 
-    public struct TargetDamageInfo: IDamageInfo
+    public enum EntityDamagedType
     {
-        public int damagePerShot { get; private set; }
-        public Vector3 damagePoint { get; private set; }
-        public int entityDamaged { get; private set; }
-        
-        public TargetDamageInfo(int damage, Vector3 point, int entity) : this()
-        {
-            damagePerShot = damage;
-            damagePoint = point;
-            entityDamaged = entity;
-        }
-    }
-
-    public interface IDamageInfo
-    {
-        int damagePerShot { get; }
-        int entityDamaged { get; }
+        EnemyTarget,
+        PlayerTarget
     }
 }
     
