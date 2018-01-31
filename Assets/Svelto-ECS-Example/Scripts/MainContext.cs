@@ -20,7 +20,7 @@ using Svelto.Tasks;
 
 //Main is the Application Composition Root.
 //Composition Root is the place where all the depencies are 
-//created and injected (I talk a lot about it in my articles)
+//created and injected (I talk a lot about this in my articles)
 //A composition Root belongs to the Context, but
 //a Context can have more than a composition root.
 //For example a factory is a composition root.
@@ -40,15 +40,65 @@ namespace Svelto.ECS.Example.Survive
         {
             SetupEnginesAndEntities();
         }
-
+/// <summary>
+/// Before to start a review of Svelto.ECS terminologies:
+/// - Entity:
+///     it must be a real and concrete entity that you can explain
+///     in terms of game design. The name of each entity should reflect
+///     a specific concept from the game design domain
+/// - IComponents:
+///     Components must be seen as data holders. There are implementing
+///     exceptions, but logically it must be still see as a group
+///     of readable or writeable data.
+///     In Svelto.ECS components are always interfaces declaring
+///     Setters and Getters of ValueTypes. DispatchOnSet
+///     and DispatchOnChange must not be seen as events, but
+///     as pushing of data instead of data polling, similar
+///     to the concept of DataBinding.
+/// - Implementors:
+///     Being components interfaces, they must be implemented through
+///     Implementors. The relation Implementors to Components
+///     is not 1:1 so that you can, if logic, group several
+///     components in one implementor. This allows to easily
+///     share data between components. Implementors also act
+///     as bridge between the platform and Svelto.ECS.
+///     Since Components can hold only value types, Implementors
+///     are the objects that can interact directly with the platform
+///     objects, I.E.: RigidBody, Transform and so on.
+///     Note: IComponents must hold only valuetypes for
+///     code design purposes and not optmization purposes.
+///     The reason is that all the logic must lie in the engines
+///     so Components cannot hold references to instances that can
+///     expose functions with logic.
+/// - Engines:
+///     Where all the logic lies. Engines operates on EntityViews
+/// - EntityViews:
+///     EntityViews maps EntityComponents. The Engines can't
+///     access directly to each entity (as a single set of components), but
+///     through a component sets defined by EntityView.
+///     They act as a component filters and expose only the entity components
+///     that the Engine is interested in.
+///     EntityViews are actually defined by the need of the Engine so they
+///     come together with the engine and in the same namespace of the engine.
+/// - EntityStructs:
+///     In order to write Data Oriented Cache Friendly code, Svelto.ECS
+///     also support EntityStructs. Please check other examples to
+///     understand how to use them. However know that this kind of
+///     optimizations is very limited to special circumstances
+///     so the flexibility of EntityViews is most of the times what you need.
+/// - EntityDescriptors:
+///     Gives a way to formalize your Entity in svelto.ECS, it also
+///     groups the EntityViews that must be generated once the
+///     Entity is built  
+/// </summary>
         void SetupEnginesAndEntities()
         {
             //The Engines Root is the core of Svelto.ECS. You must NEVER inject the EngineRoot
-            //as it is, however you may inject it as IEntityFactory. In fact, you can build entity
-            //inside other engines or factories as well.
-            //the UnitySumbmissionEntityViewScheduler is the scheduler that is used by the Root to know
+            //as it is, therefore the composition root must hold a reference or it will be 
+            //GCed.
+            //the UnitySumbmissionEntityViewScheduler is the scheduler that is used by the EnginesRoot to know
             //when to inject the EntityViews. You shouldn't use a custom one unless you know what you 
-            //are doing, so let's assume it's part of the pattern right now.
+            //are doing or you are not working with Unity.
             _enginesRoot = new EnginesRoot(new UnitySumbmissionEntityViewScheduler());
             //Engines root can never be held by anything else than the context itself to avoid leaks
             //That's why the EntityFactory and EntityFunctions are generated.
@@ -56,11 +106,11 @@ namespace Svelto.ECS.Example.Survive
             //to build new entities dynamically
             _entityFactory = _enginesRoot.GenerateEntityFactory();
             //The entity functions is a set of utility operations on Entities, including
-            //removing an entity.
+            //removing an entity. I couldn't find a better name so far.
             var entityFunctions = _enginesRoot.GenerateEntityFunctions();
-            //Allows to create GameObjects without using the Static
+            //GameObjectFactory Allows to create GameObjects without using the Static
             //method GameObject.Instantiate. While it seems a complication
-            //it's important to keep the engine testable and not
+            //it's important to keep the engines testable and not
             //coupled with hard dependencies references (read my articles to understand
             //how dependency injection works and why solving dependencies
             //with static classes and singletons is a terrible mistake)
