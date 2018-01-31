@@ -1,4 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.Base;
+using Svelto.ECS.Example.Survive.Components.Shared;
 
 namespace Svelto.ECS.Example.Survive.EntityViews.Camera
 {

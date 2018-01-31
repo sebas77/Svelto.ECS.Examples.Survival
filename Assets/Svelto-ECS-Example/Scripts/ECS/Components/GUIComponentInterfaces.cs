@@ -1,23 +1,17 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Svelto.ECS.Example.Survive.Components.HUD
 {
-    public interface IAnimatorHUDComponent: IComponent
-    {
-        Animator hudAnimator { get; }
-    }
-
     public interface IDamageHUDComponent: IComponent
     {
-        Image damageImage { get; }
         float speed { get; }
         Color flashColor { get; }
+        Color imageColor { set; get;  }
     }
 
     public interface IHealthSliderComponent: IComponent
     {
-        Slider healthSlider { get; }
+        int value { set; }
     }
 
     public interface IScoreComponent: IComponent

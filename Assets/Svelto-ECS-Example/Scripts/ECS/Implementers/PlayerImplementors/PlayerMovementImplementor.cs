@@ -1,4 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.Base;
+using Svelto.ECS.Example.Survive.Components.Shared;
 using Svelto.ECS.Example.Survive.Components.Camera;
 using UnityEngine;
 

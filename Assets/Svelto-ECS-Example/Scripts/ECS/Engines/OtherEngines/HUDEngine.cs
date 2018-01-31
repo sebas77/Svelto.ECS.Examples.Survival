@@ -36,9 +36,8 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             while (true)
             {
                 var damageComponent = _guiEntityView.damageImageComponent;
-                var damageImage = damageComponent.damageImage;
 
-                damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.speed * _time.deltaTime);
+                damageComponent.imageColor = Color.Lerp(damageComponent.imageColor, Color.clear, damageComponent.speed * _time.deltaTime);
 
                 yield return null;
                 
@@ -49,11 +48,10 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
         void OnDamageEvent(DamageInfo damaged)
         {
             var damageComponent = _guiEntityView.damageImageComponent;
-            var damageImage = damageComponent.damageImage;
+            
+            damageComponent.imageColor = damageComponent.flashColor;
 
-            damageImage.color = damageComponent.flashColor;
-
-            _guiEntityView.healthSliderComponent.healthSlider.value = entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamaged).healthComponent.currentHealth;
+            _guiEntityView.healthSliderComponent.value = entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamaged).healthComponent.currentHealth;
         }
 
         void OnDeadEvent()
@@ -66,7 +64,7 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             _waitForSeconds.Reset(5);
             yield return _waitForSeconds;
 
-            _guiEntityView.HUDAnimator.hudAnimator.SetTrigger("GameOver");
+            _guiEntityView.HUDAnimator.trigger = "GameOver";
 
             _waitForSeconds.Reset(2);
             yield return _waitForSeconds;

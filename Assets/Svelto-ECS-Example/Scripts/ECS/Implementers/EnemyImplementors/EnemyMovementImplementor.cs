@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using Svelto.ECS.Example.Survive.Components.Enemies;
-using Svelto.ECS.Example.Survive.Components.Base;
+using Svelto.ECS.Example.Survive.Components.Shared;
 
 namespace Svelto.ECS.Example.Survive.Implementors.Enemies
 {

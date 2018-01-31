@@ -12,5 +12,10 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
         {
             healthSlider = GetComponent<Slider>();
         }
+
+        public int value
+        {
+            set { healthSlider.value = value; }
+        }
     }
 }

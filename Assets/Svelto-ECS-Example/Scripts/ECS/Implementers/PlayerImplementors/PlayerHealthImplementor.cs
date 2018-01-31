@@ -1,25 +1,16 @@
-using Svelto.ECS.Example.Survive.Components.Base;
 using Svelto.ECS.Example.Survive.Components.Damageable;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Implementors.Player
 {
-    public class PlayerHealthImplementor : MonoBehaviour, IImplementor, IHealthComponent, IDamageSoundComponent
+    public class PlayerHealthImplementor : MonoBehaviour, IImplementor, IHealthComponent
     {
-        public int startingHealth = 100;                            // The amount of health the player starts the game with.
-        public AudioClip deathClip;                                 // The audio clip to play when the player dies.
-        public AudioClip damageClip;                                 // The audio clip to play when the player dies.
+        public int       startingHealth = 100; // The amount of health the player starts the game with.
 
-        public int  currentHealth   { get { return _currentHealth; } set { _currentHealth = value; } }
-
-        AudioSource IDamageSoundComponent.audioSource   { get { return _playerAudio; } }
-        AudioClip   IDamageSoundComponent.death         { get { return deathClip; } }
-        AudioClip   IDamageSoundComponent.damage        { get { return damageClip; } }
+        public int currentHealth { get { return _currentHealth; } set { _currentHealth = value; } }
 
         void Awake()
         {
-            _playerAudio = GetComponent<AudioSource> ();
-
             // Set the initial health of the player.
             _currentHealth = startingHealth;
         }
@@ -33,7 +24,6 @@ namespace Svelto.ECS.Example.Survive.Implementors.Player
         public void RestartLevel()
         {}
 
-        int                 _currentHealth;
-        AudioSource         _playerAudio;                                    // Reference to the AudioSource component.
+        int         _currentHealth;
     }
 }
