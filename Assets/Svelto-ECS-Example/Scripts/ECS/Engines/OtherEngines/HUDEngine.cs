@@ -47,16 +47,26 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
 
         void OnDamageEvent(DamageInfo damaged)
         {
-            var damageComponent = _guiEntityView.damageImageComponent;
-            
-            damageComponent.imageColor = damageComponent.flashColor;
-
-            _guiEntityView.healthSliderComponent.value = entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamaged).healthComponent.currentHealth;
+            UpdateSlider(damaged);
         }
 
         void OnDeadEvent()
         {
+            _guiEntityView.healthSliderComponent.value = 0;
+
             RestartLevelAfterFewSeconds().Run();
+        }
+
+        void UpdateSlider(DamageInfo damaged)
+        {
+            var damageComponent = _guiEntityView.damageImageComponent;
+
+            damageComponent.imageColor = damageComponent.flashColor;
+
+            var hudDamageEntityView =
+                entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamaged);
+         
+            _guiEntityView.healthSliderComponent.value = hudDamageEntityView.healthComponent.currentHealth;
         }
 
         IEnumerator RestartLevelAfterFewSeconds()

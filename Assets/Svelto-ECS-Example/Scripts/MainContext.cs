@@ -108,7 +108,7 @@ namespace Svelto.ECS.Example.Survive
             //The entity functions is a set of utility operations on Entities, including
             //removing an entity. I couldn't find a better name so far.
             var entityFunctions = _enginesRoot.GenerateEntityFunctions();
-            //GameObjectFactory Allows to create GameObjects without using the Static
+            //GameObjectFactory allows to create GameObjects without using the Static
             //method GameObject.Instantiate. While it seems a complication
             //it's important to keep the engines testable and not
             //coupled with hard dependencies references (read my articles to understand
@@ -120,10 +120,14 @@ namespace Svelto.ECS.Example.Survive
             //be used to communicate between engines in very specific cases
             //as it's not the preferred solution and to communicate beteween
             //engines and legacy code/third party code.
-            //Use them carefully.
+            //Use them carefully and sparsely.
             //Observers and Observables should be named according where they are 
             //used. Observer and Observable are decoupled to allow each object
             //to be used in the relative context which promote separation of concerns.
+            //The preferred way to communicate between engines is through
+            //the entity components themselves. DispatchOnSet and DispatchOnChange
+            //should be able to cover most of the communication problems
+            //between engines.
             var enemyKilledObservable = new EnemyKilledObservable();
             var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver(enemyKilledObservable);
             //the ISequencer is one of the 3 official ways available in Svelto.ECS 
@@ -135,26 +139,30 @@ namespace Svelto.ECS.Example.Survive
             //between engines
             Sequencer playerDamageSequence = new Sequencer();
             Sequencer enemyDamageSequence = new Sequencer();
+            
+            //wrap non testable unity static classes, so that 
+            //can be mocked if needed.
+            IRayCaster rayCaster = new RayCaster();
+            ITime      time      = new Others.Time();
+            
             //Player related engines. ALL the dependecies must be solved at this point
             //through constructor injection.
             var playerHealthEngine = new HealthEngine(entityFunctions, playerDamageSequence);
-            IRayCaster rayCaster = new RayCaster();
-            var time = new Others.Time();
             var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence, rayCaster, time);
             var playerMovementEngine = new PlayerMovementEngine(rayCaster, time);
             var playerAnimationEngine = new PlayerAnimationEngine();
-            //Enemy related engines
             
+            //Enemy related engines
             var enemyAnimationEngine = new EnemyAnimationEngine();
             var enemyHealthEngine = new HealthEngine(entityFunctions, enemyDamageSequence);
             var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence, time);
             var enemyMovementEngine = new EnemyMovementEngine();
-            //hud and sound engines
+            var enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
             
+            //hud and sound engines
             var hudEngine = new HUDEngine(time);
             var damageSoundEngine = new DamageSoundEngine();
-            var enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
-
+            
             //The ISequencer implementaton is very simple, but allows to perform
             //complex concatenation including loops and conditional branching.
             playerDamageSequence.SetSequence(
@@ -257,6 +265,7 @@ namespace Svelto.ECS.Example.Survive
             player.GetComponents(implementors);
             //Add not monobehaviour implementors
             implementors.Add(new PlayerInputImplementor());
+            implementors.Add(new PlayerHealthImplementor(100));
             
             _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), implementors.ToArray());
 
