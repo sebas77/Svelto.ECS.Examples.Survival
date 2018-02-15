@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Components.Damageable
+namespace Svelto.ECS.Example.Survive
 {
     public interface IHealthComponent : IComponent
     {

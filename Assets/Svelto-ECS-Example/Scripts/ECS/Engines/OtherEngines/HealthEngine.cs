@@ -1,9 +1,7 @@
-using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.EntityViews.DamageableEntities;
 using System.Collections;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Engines.Health
+namespace Svelto.ECS.Example.Survive
 {
     public class HealthEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {

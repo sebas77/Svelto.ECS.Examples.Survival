@@ -1,4 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.HUD;
+using Svelto.ECS.Example.Survive.HUD;
 using UnityEngine;
 using UnityEngine.UI;
 

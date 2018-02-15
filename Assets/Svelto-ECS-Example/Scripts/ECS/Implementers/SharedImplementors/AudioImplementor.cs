@@ -1,5 +1,4 @@
 using System;
-using Svelto.ECS.Example.Survive.Components.Shared;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Implementors

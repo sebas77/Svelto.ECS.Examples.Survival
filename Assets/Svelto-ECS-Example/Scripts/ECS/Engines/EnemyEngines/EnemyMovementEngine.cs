@@ -1,9 +1,6 @@
-using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.EntityViews.Enemies;
 using System.Collections;
-using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyMovementEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {

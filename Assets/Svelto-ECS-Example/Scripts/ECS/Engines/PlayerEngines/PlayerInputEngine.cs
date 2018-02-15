@@ -1,10 +1,9 @@
 ﻿using System.Collections;
-using Svelto.ECS.Example.Survive.EntityViews.Player;
 using Svelto.Tasks;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-namespace Svelto.ECS.Example.Survive.Engines.Player
+namespace Svelto.ECS.Example.Survive.Player
 {
     /// <summary>
     /// if you need to test input, you can mock this class

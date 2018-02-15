@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
-using Svelto.ECS.Example.Survive.Components.Enemies;
-using Svelto.ECS.Example.Survive.Components.Shared;
 
-namespace Svelto.ECS.Example.Survive.Implementors.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyMovementImplementor : MonoBehaviour, IImplementor, IEnemyMovementComponent, ITransformComponent, IRigidBodyComponent
     {

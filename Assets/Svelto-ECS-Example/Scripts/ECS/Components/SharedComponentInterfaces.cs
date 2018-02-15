@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Components.Shared
+namespace Svelto.ECS.Example.Survive
 {
     //in order to avoid referencing directly the
     //unity Animation class, we explicitly create

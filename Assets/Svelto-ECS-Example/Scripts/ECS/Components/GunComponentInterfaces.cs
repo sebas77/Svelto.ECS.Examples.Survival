@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Components.Gun
+namespace Svelto.ECS.Example.Survive.Player.Gun
 {
     public interface IGunAttributesComponent: IComponent
     {

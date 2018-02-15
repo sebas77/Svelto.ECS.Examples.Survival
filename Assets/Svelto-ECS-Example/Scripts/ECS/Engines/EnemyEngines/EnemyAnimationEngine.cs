@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-using UnityEngine;
-using Svelto.ECS.Example.Survive.EntityViews.Enemies;
-using Svelto.ECS.Example.Survive.Components.Damageable;
 
-namespace Svelto.ECS.Example.Survive.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyAnimationEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {
@@ -12,6 +9,11 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
         public void Ready()
         {}
+
+        public EnemyAnimationEngine(ITime time)
+        {
+            _time = time;
+        }
 
         void EntityDamaged(DamageInfo damageInfo)
         {
@@ -43,7 +45,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
             while (DateTime.UtcNow < afterTwoSec)
             {
-                entity.transformComponent.position += -Vector3.up * sinkSpeed * Time.deltaTime;
+                entity.transformComponent.position += -UnityEngine.Vector3.up * sinkSpeed * _time.deltaTime;
 
                 yield return null;
             }
@@ -66,5 +68,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
                     TriggerTargetDeathAnimation(token.entityDamaged);    
             }
         }
+        
+        ITime _time;
     }
 }

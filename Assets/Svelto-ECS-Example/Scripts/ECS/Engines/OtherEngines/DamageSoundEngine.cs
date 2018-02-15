@@ -1,7 +1,4 @@
-using Svelto.ECS.Example.Survive.EntityViews.Sound;
-using Svelto.ECS.Example.Survive.Components.Damageable;
-
-namespace Svelto.ECS.Example.Survive.Engines.Sound.Damage
+namespace Svelto.ECS.Example.Survive.Sound
 {
     public class DamageSoundEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {

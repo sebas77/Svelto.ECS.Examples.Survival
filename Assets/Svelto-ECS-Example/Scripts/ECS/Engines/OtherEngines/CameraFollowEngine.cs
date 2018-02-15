@@ -1,10 +1,8 @@
 using System.Collections;
-using Svelto.ECS.Example.Survive.EntityViews.Camera;
-using Svelto.ECS.Example.Survive.Others;
 using Svelto.Tasks;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Engines.Camera
+namespace Svelto.ECS.Example.Survive.Camera
 {
     //First step identify the entity type we want the engine to handle: CameraEntity
     //Second step name the engine according the behaviour and the entity: I.E.: CameraFollowTargetEngine

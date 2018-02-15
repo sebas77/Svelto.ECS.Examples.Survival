@@ -1,6 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.Damageable;
-
-namespace Svelto.ECS.Example.Survive.EntityViews.DamageableEntities
+namespace Svelto.ECS.Example.Survive
 {
     public class HealthEntityView: EntityView
     {

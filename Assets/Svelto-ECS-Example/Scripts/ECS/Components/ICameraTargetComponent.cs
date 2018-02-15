@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Components.Camera
+namespace Svelto.ECS.Example.Survive.Camera
 {
     public interface ICameraTargetComponent
     {

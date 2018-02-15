@@ -1,12 +1,9 @@
-using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.EntityViews.HUD;
 using Svelto.Tasks.Enumerators;
 using System.Collections;
-using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Svelto.ECS.Example.Survive.Engines.HUD
+namespace Svelto.ECS.Example.Survive.HUD
 {
     public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
     {

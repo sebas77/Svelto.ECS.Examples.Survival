@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Components.HUD
+namespace Svelto.ECS.Example.Survive.HUD
 {
     public interface IDamageHUDComponent: IComponent
     {

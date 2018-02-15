@@ -1,30 +1,22 @@
 using System.Collections.Generic;
-using Svelto.ECS.Example.Survive.Engines.Enemies;
-using Svelto.ECS.Example.Survive.Engines.Health;
-using Svelto.ECS.Example.Survive.Engines.HUD;
-using Svelto.ECS.Example.Survive.Engines.Player;
-using Svelto.ECS.Example.Survive.Engines.Player.Gun;
-using Svelto.ECS.Example.Survive.Engines.Sound.Damage;
-using Svelto.ECS.Example.Survive.Observables.Enemies;
-using Svelto.ECS.Example.Survive.Observers.HUD;
+using Svelto.ECS.Example.Survive.Enemies;
+using Svelto.ECS.Example.Survive.Player;
+using Svelto.ECS.Example.Survive.Player.Gun;
+using Svelto.ECS.Example.Survive.Sound;
+using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Context;
-using Svelto.ECS.Example.Survive.CameraImplementors;
-using Svelto.ECS.Example.Survive.Engines.Camera;
-using Svelto.ECS.Example.Survive.EntityDescriptors.Camera;
-using Svelto.ECS.Example.Survive.EntityDescriptors.Player;
-using Svelto.ECS.Example.Survive.Implementors.Player;
-using Svelto.ECS.Example.Survive.Others;
+using Svelto.ECS.Example.Survive.Camera;
 using UnityEngine;
 using Svelto.ECS.Schedulers.Unity;
 using Svelto.Tasks;
 
 //Main is the Application Composition Root.
-//Composition Root is the place where all the depencies are 
+//A Composition Root is the where all the depencies are 
 //created and injected (I talk a lot about this in my articles)
-//A composition Root belongs to the Context, but
-//a Context can have more than a composition root.
+//A composition root belongs to the Context, but
+//a context can have more than a composition root.
 //For example a factory is a composition root.
-//An Application can also have more than a context
+//Furthemore an application can have more than a context
 //but this is more advanced and not part of this demo
 namespace Svelto.ECS.Example.Survive
 {
@@ -143,7 +135,7 @@ namespace Svelto.ECS.Example.Survive
             //wrap non testable unity static classes, so that 
             //can be mocked if needed.
             IRayCaster rayCaster = new RayCaster();
-            ITime      time      = new Others.Time();
+            ITime      time      = new Survive.Time();
             
             //Player related engines. ALL the dependecies must be solved at this point
             //through constructor injection.
@@ -153,7 +145,7 @@ namespace Svelto.ECS.Example.Survive
             var playerAnimationEngine = new PlayerAnimationEngine();
             
             //Enemy related engines
-            var enemyAnimationEngine = new EnemyAnimationEngine();
+            var enemyAnimationEngine = new EnemyAnimationEngine(time);
             var enemyHealthEngine = new HealthEngine(entityFunctions, enemyDamageSequence);
             var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence, time);
             var enemyMovementEngine = new EnemyMovementEngine();
@@ -277,9 +269,9 @@ namespace Svelto.ECS.Example.Survive
 
         void BuildCameraEntity()
         {
-            var implementor = Camera.main.gameObject.AddComponent<CameraImplementor>();
+            var implementor = UnityEngine.Camera.main.gameObject.AddComponent<CameraImplementor>();
 
-            _entityFactory.BuildEntity<CameraEntityDescriptor>(Camera.main.GetInstanceID(), new object[] {implementor});
+            _entityFactory.BuildEntity<CameraEntityDescriptor>(UnityEngine.Camera.main.GetInstanceID(), new object[] {implementor});
         }
 
         void BuildEntitiesFromScene(UnityContext contextHolder)

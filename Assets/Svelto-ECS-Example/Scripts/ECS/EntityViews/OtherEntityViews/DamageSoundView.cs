@@ -1,7 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.Shared;
-using Svelto.ECS.Example.Survive.Components.Damageable;
-
-namespace Svelto.ECS.Example.Survive.EntityViews.Sound
+namespace Svelto.ECS.Example.Survive.Sound
 {
     public class DamageSoundEntityView: EntityView
     {

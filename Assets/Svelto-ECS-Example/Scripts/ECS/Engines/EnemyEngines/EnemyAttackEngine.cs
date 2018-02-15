@@ -1,11 +1,8 @@
 using System.Collections;
-using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.EntityViews.Enemies;
-using Svelto.ECS.Example.Survive.Others;
 using Svelto.Tasks;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyAttackEngine : MultiEntityViewsEngine<EnemyEntityView, EnemyTargetEntityView>, IQueryingEntityViewEngine
     {

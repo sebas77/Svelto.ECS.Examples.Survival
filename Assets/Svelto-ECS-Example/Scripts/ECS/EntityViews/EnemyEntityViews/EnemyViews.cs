@@ -1,7 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.Shared;
-using Svelto.ECS.Example.Survive.Components.Enemies;
-
-namespace Svelto.ECS.Example.Survive.EntityViews.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyEntityView:EntityView
     {

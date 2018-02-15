@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 
-namespace Svelto.ECS.Example.Survive.Components.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public interface IEnemyTargetComponent: IComponent
     {

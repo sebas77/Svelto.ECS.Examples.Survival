@@ -1,15 +1,10 @@
-using Svelto.ECS.Example.Survive.Components.Damageable;
 using System.Collections;
 using System.Collections.Generic;
 using Svelto.Tasks.Enumerators;
 using System.IO;
-using Svelto.ECS.Example.Survive.DataSources;
-using Svelto.ECS.Example.Survive.EntityDescriptors.Enemies;
-using Svelto.ECS.Example.Survive.Implementors.Enemies;
-using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemySpawnerEngine : IEngine, IStep<DamageInfo>
     {

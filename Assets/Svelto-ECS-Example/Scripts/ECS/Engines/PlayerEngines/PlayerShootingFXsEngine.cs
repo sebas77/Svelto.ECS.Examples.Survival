@@ -1,9 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using Svelto.Tasks;
-using Svelto.ECS.Example.Survive.EntityViews.Gun;
 
-namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
+namespace Svelto.ECS.Example.Survive.Player.Gun
 {
     public class PlayerGunShootingFXsEngine : SingleEntityViewEngine<GunEntityView>, IQueryingEntityViewEngine
     {

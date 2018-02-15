@@ -1,4 +1,4 @@
-namespace Svelto.ECS.Example.Survive.Components.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public interface IDestroyComponent
     {
