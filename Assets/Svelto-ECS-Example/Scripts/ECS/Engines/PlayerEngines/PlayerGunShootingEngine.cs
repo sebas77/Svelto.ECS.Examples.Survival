@@ -103,7 +103,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         public void Step(ref DamageInfo token, int condition)
         {
-            OnTargetDead(token.entityDamaged);
+            OnTargetDead(token.entityDamagedID);
         }
 
         readonly EnemyKilledObservable _enemyKilledObservable;

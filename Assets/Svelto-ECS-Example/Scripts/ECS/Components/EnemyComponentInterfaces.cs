@@ -23,7 +23,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
     public interface IEnemyMovementComponent: IComponent
     {
         bool navMeshEnabled {  set; }
-        bool isNavMeshActiveAndEnabled { get; }
         Vector3 navMeshDestination { set; }
         bool setCapsuleAsTrigger { set; }
     }

@@ -30,18 +30,18 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         protected override void Add(EnemyTargetEntityView entity)
         {
-            _targetEntityView = entity;
             _taskRoutine.Start();
         }
 
         protected override void Remove(EnemyTargetEntityView obj)
         {
             _taskRoutine.Stop();
-            _targetEntityView = null;
         }
 
         IEnumerator CheckIfHittingEnemyTarget()
         {
+            var targetEntityView = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>()[0];
+            
             while (true)
             {
                 var enemiesAttackList = entityViewsDB.QueryEntityViews<EnemyEntityView>();
@@ -59,7 +59,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             attackDamageComponent.timer = 0.0f;
 
                             var damageInfo = new DamageInfo(attackDamageComponent.damage, Vector3.zero,
-                                _targetEntityView.ID, EntityDamagedType.EnemyTarget);
+                                targetEntityView.ID, EntityDamagedType.EnemyTarget);
 
                             _targetDamageSequence.Next(this, ref damageInfo);
                         }
@@ -78,22 +78,19 @@ namespace Svelto.ECS.Example.Survive.Enemies
         /// <param name="inRange"></param>
         void CheckTarget(int targetID, int enemyID, bool inRange)
         {
-            if (_targetEntityView == null)
-                return;
-
-            if (targetID == _targetEntityView.ID)
+            EnemyTargetEntityView targetEntityView;
+            if (entityViewsDB.TryQueryEntityView(targetID, out targetEntityView) == true)
             {
-                var enemyEntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(enemyID);
-                var component = enemyEntityView.targetTriggerComponent;
+                 var enemyEntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(enemyID);
+                 var component       = enemyEntityView.targetTriggerComponent;
 
-                if (inRange)
-                    component.targetInRange = true;
-                else
-                    component.targetInRange = false;
+                 if (inRange)
+                     component.targetInRange = true;
+                 else
+                     component.targetInRange = false;
             }
         }
 
-        EnemyTargetEntityView _targetEntityView;
         ISequencer             _targetDamageSequence;
         ITime                 _time;
         ITaskRoutine          _taskRoutine;

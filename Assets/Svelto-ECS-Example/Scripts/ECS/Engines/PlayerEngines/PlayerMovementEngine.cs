@@ -95,7 +95,7 @@ namespace Svelto.ECS.Example.Survive.Player
 
         public void Step(ref DamageInfo token, int condition)
         {
-            StopMovementOnDeath(token.entityDamaged);
+            StopMovementOnDeath(token.entityDamagedID);
         }
 
         readonly int floorMask = LayerMask.GetMask("Floor");    // A layer mask so that a ray can be cast just at gameobjects on the floor layer.

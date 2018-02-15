@@ -17,7 +17,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void EntityDamaged(DamageInfo damageInfo)
         {
-            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamaged);
+            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamagedID);
 
             entity.vfxComponent.position = damageInfo.damagePoint;
             entity.vfxComponent.play.value = true;
@@ -59,14 +59,14 @@ namespace Svelto.ECS.Example.Survive.Enemies
             if (token.entityType == EntityDamagedType.PlayerTarget)
             {
                 if (condition == DamageCondition.dead)
-                    TriggerDeathAnimation(token.entityDamaged);
+                    TriggerDeathAnimation(token.entityDamagedID);
                 else
                     EntityDamaged(token);
             }
             else
             {
                 if (condition == DamageCondition.dead)
-                    TriggerTargetDeathAnimation(token.entityDamaged);    
+                    TriggerTargetDeathAnimation(token.entityDamagedID);    
             }
         }
         

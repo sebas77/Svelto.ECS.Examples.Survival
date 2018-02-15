@@ -33,7 +33,7 @@ namespace Svelto.ECS.Example.Survive.Player
 
         public void Step(ref DamageInfo token, int condition)
         {
-            TriggerDeathAnimation(token.entityDamaged);
+            TriggerDeathAnimation(token.entityDamagedID);
         }
 
         protected override void Add(PlayerEntityView entityView)

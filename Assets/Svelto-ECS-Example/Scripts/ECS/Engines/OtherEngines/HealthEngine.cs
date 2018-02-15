@@ -1,6 +1,3 @@
-using System.Collections;
-using UnityEngine;
-
 namespace Svelto.ECS.Example.Survive
 {
     public class HealthEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
@@ -8,10 +5,9 @@ namespace Svelto.ECS.Example.Survive
         public void Ready()
         { }
 
-        public HealthEngine(IEntityFunctions entityFunctions, ISequencer playerDamageSequence)
+        public HealthEngine(ISequencer damageSequence)
         {
-            _damageSequence = playerDamageSequence;
-            _entityfunctions = entityFunctions;
+            _damageSequence = damageSequence;
         }
 
         public IEntityViewsDB entityViewsDB { set; private get; }
@@ -23,30 +19,17 @@ namespace Svelto.ECS.Example.Survive
 
         void TriggerDamage(ref DamageInfo damage)
         {
-            var entityView = entityViewsDB.QueryEntityView<HealthEntityView>(damage.entityDamaged);
+            var entityView = entityViewsDB.QueryEntityView<HealthEntityView>(damage.entityDamagedID);
             var healthComponent = entityView.healthComponent;
 
             healthComponent.currentHealth -= damage.damagePerShot;
 
             if (healthComponent.currentHealth <= 0)
-            {
                 _damageSequence.Next(this, ref damage, DamageCondition.dead);
-
-                RemoveEntityAtTheEndOfTheFrame(damage, entityView).Run();
-            }
             else
                 _damageSequence.Next(this, ref damage, DamageCondition.damage);
         }
 
-        IEnumerator RemoveEntityAtTheEndOfTheFrame(DamageInfo damage, HealthEntityView entityView)
-        {
-            yield return _endOfFrame;
-
-            _entityfunctions.RemoveEntity(damage.entityDamaged, entityView.removeEntityComponent);
-        }
-
-        ISequencer         _damageSequence;
-        IEntityFunctions  _entityfunctions;
-        WaitForEndOfFrame _endOfFrame = new WaitForEndOfFrame();
+        readonly ISequencer  _damageSequence;
     }
 }

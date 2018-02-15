@@ -139,17 +139,20 @@ namespace Svelto.ECS.Example.Survive
             
             //Player related engines. ALL the dependecies must be solved at this point
             //through constructor injection.
-            var playerHealthEngine = new HealthEngine(entityFunctions, playerDamageSequence);
+            var playerHealthEngine = new HealthEngine(playerDamageSequence);
             var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence, rayCaster, time);
             var playerMovementEngine = new PlayerMovementEngine(rayCaster, time);
             var playerAnimationEngine = new PlayerAnimationEngine();
+            var playerDeathEngine = new PlayerDeathEngine(entityFunctions);
             
             //Enemy related engines
             var enemyAnimationEngine = new EnemyAnimationEngine(time);
-            var enemyHealthEngine = new HealthEngine(entityFunctions, enemyDamageSequence);
+            //HealthEngine is a different object for the enemy because it uses a different sequence
+            var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
             var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence, time);
             var enemyMovementEngine = new EnemyMovementEngine();
             var enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
+            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions);
             
             //hud and sound engines
             var hudEngine = new HUDEngine(time);
@@ -173,7 +176,7 @@ namespace Svelto.ECS.Example.Survive
                         { 
                             {  DamageCondition.damage, new IStep[] { hudEngine, damageSoundEngine }  }, //these engines will be called when the Next function is called with the DamageCondition.damage set
                             {  DamageCondition.dead, new IStep[] { hudEngine, damageSoundEngine, 
-                                playerMovementEngine, playerAnimationEngine, enemyAnimationEngine }  }, //these engines will be called when the Next function is called with the DamageCondition.dead set
+                                playerMovementEngine, playerAnimationEngine, enemyAnimationEngine, playerDeathEngine }  }, //these engines will be called when the Next function is called with the DamageCondition.dead set
                         }  
                     }  
                 }
@@ -195,7 +198,7 @@ namespace Svelto.ECS.Example.Survive
                         { 
                             {  DamageCondition.damage, new IStep[] { enemyAnimationEngine, damageSoundEngine }  },
                             {  DamageCondition.dead, new IStep[] { enemyMovementEngine, 
-                                enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine, damageSoundEngine }  },
+                                enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine, damageSoundEngine, enemyDeathEngine }  },
                         }  
                     }  
                 }
@@ -215,6 +218,7 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(enemyMovementEngine);
             _enginesRoot.AddEngine(enemyAnimationEngine);
             _enginesRoot.AddEngine(enemyHealthEngine);
+            _enginesRoot.AddEngine(enemyDeathEngine);
             //other engines
             _enginesRoot.AddEngine(new CameraFollowTargetEngine(time));
             _enginesRoot.AddEngine(damageSoundEngine);
