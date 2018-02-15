@@ -45,7 +45,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
             while (DateTime.UtcNow < afterTwoSec)
             {
-                entity.transformComponent.position += -UnityEngine.Vector3.up * sinkSpeed * _time.deltaTime;
+                entity.transformComponent.position = 
+                    entity.positionComponent.position + -UnityEngine.Vector3.up * sinkSpeed * _time.deltaTime;
 
                 yield return null;
             }

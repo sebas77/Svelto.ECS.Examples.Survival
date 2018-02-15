@@ -45,14 +45,14 @@ namespace Svelto.ECS.Example.Survive.Camera
 
             float smoothing = 5.0f;
             
-            Vector3 offset = _cameraEntityView.transformComponent.position - _cameraTargetEntityView.targetComponent.position;
+            Vector3 offset = _cameraEntityView.positionComponent.position - _cameraTargetEntityView.targetComponent.position;
             
             while (true)
             {
                 Vector3 targetCameraPos = _cameraTargetEntityView.targetComponent.position + offset;
 
                 _cameraEntityView.transformComponent.position = Vector3.Lerp(
-                    _cameraEntityView.transformComponent.position, targetCameraPos, smoothing * _time.deltaTime);
+                    _cameraEntityView.positionComponent.position, targetCameraPos, smoothing * _time.deltaTime);
                 
                 yield return null;
             }

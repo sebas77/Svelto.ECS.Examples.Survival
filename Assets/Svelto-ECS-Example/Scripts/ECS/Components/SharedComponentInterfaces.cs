@@ -16,19 +16,14 @@ namespace Svelto.ECS.Example.Survive
         string trigger { set; }
     }
 
-    public interface IEnemySinkComponent : IComponent
-    {
-        float sinkAnimSpeed { get; }
-    }
-
     public interface IPositionComponent: IComponent
     {
         Vector3 position { get; }
     }
 
-    public interface ITransformComponent: IComponent
+    public interface ITransformComponent: IPositionComponent
     {
-        Vector3 position { get; set; }
+        Vector3 position { set; }
         Quaternion rotation { set; }
     }
 

@@ -4,11 +4,12 @@ namespace Svelto.ECS.Example.Survive.Player
 {
     public class PlayerEntityView : EntityView
     {
+        public IPlayerInputComponent inputComponent;
+        
         public ISpeedComponent         speedComponent;
         public IRigidBodyComponent     rigidBodyComponent;
         public IPositionComponent      positionComponent;
         public IAnimationComponent     animationComponent;
-        public IPlayerInputComponent   inputComponent;
         public ITransformComponent     transformComponent;
     }
 

@@ -32,8 +32,8 @@ namespace Svelto.ECS.Example.Survive.Player
             //some safe assumption here: I assume that the player entity is created
             //and added in the EnginesRoot when this code runs.
             //I assume that there is just one player entity in the array of entities.
-            var _playerEntityViews = entityViewsDB.QueryEntityViews<PlayerEntityView>();
-            var playerEntityView = _playerEntityViews[0];
+            var playerEntityViews = entityViewsDB.QueryEntityViews<PlayerEntityView>();
+            var playerEntityView = playerEntityViews[0];
             
             while (true)
             {   
@@ -55,10 +55,10 @@ namespace Svelto.ECS.Example.Survive.Player
         void Movement(PlayerEntityView playerEntityView)
         {
             // Store the input axes.
-            Vector3 movement = playerEntityView.inputComponent.input;
+            Vector3 input = playerEntityView.inputComponent.input;
             
             // Normalise the movement vector and make it proportional to the speed per second.
-            movement = movement.normalized * playerEntityView.speedComponent.movementSpeed * _time.deltaTime;
+            Vector3 movement = input.normalized * playerEntityView.speedComponent.movementSpeed * _time.deltaTime;
 
             // Move the player to it's current position plus the movement.
             playerEntityView.transformComponent.position = playerEntityView.positionComponent.position + movement;
@@ -101,8 +101,8 @@ namespace Svelto.ECS.Example.Survive.Player
         readonly int floorMask = LayerMask.GetMask("Floor");    // A layer mask so that a ray can be cast just at gameobjects on the floor layer.
         const float camRayLength = 100f;                        // The length of the ray from the camera into the scene.
 
-        IRayCaster _rayCaster;
+        IRayCaster   _rayCaster;
         ITaskRoutine _taskRoutine;
-        ITime _time;
+        ITime        _time;
     }
 }

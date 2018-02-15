@@ -7,6 +7,11 @@ namespace Svelto.ECS.Example.Survive.Enemies
     {
         bool targetInRange { get; }
     }
+    
+    public interface IEnemySinkComponent : IComponent
+    {
+        float sinkAnimSpeed { get; }
+    }
 
     public interface IEnemyAttackDataComponent: IComponent
     {
