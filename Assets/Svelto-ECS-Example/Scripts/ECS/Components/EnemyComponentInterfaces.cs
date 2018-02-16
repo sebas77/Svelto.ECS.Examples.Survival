@@ -3,11 +3,6 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public interface IEnemyTargetComponent: IComponent
-    {
-        bool targetInRange { get; }
-    }
-    
     public interface IEnemySinkComponent : IComponent
     {
         float sinkAnimSpeed { get; }
@@ -29,9 +24,19 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
     public interface IEnemyTriggerComponent: IComponent
     {
-        event Action<int, int, bool> entityInRange;
+        EnemyCollisionData entityInRange { get; }
+    }
 
-        bool targetInRange { set; }
+    public struct EnemyCollisionData
+    {
+        public int otherEntityID;
+        public bool collides;
+
+        public EnemyCollisionData(int otherEntityID, bool collides)
+        {
+            this.otherEntityID = otherEntityID;
+            this.collides = collides;
+        }
     }
 
     public interface IEnemyVFXComponent: IComponent

@@ -2,7 +2,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyEntityView:EntityView
     {
-        public IEnemyTargetComponent      TargetComponent;
         public IEnemyAttackDataComponent  attackDamageComponent;
         public IEnemyTriggerComponent     targetTriggerComponent;
         public IEnemyMovementComponent    movementComponent;

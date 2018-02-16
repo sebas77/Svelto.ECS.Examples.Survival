@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyAttackEngine : MultiEntityViewsEngine<EnemyEntityView, EnemyTargetEntityView>, IQueryingEntityViewEngine
+    public class EnemyAttackEngine : SingleEntityViewEngine<EnemyTargetEntityView>, IQueryingEntityViewEngine
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -16,16 +16,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _targetDamageSequence = enemyrDamageSequence;
             _time = time;
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(CheckIfHittingEnemyTarget()).SetScheduler(StandardSchedulers.physicScheduler);
-        }
-
-        protected override void Add(EnemyEntityView entity)
-        {
-            entity.targetTriggerComponent.entityInRange += CheckTarget;
-        }
-
-        protected override void Remove(EnemyEntityView entity)
-        {
-            entity.targetTriggerComponent.entityInRange -= CheckTarget;
         }
 
         protected override void Add(EnemyTargetEntityView entity)
@@ -49,7 +39,9 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0; --enemyIndex)
                 {
                     var enemyAttackEntityView = enemiesAttackList[enemyIndex];
-                    if (enemyAttackEntityView.TargetComponent.targetInRange == true)
+                    var enemyCollisionData = enemyAttackEntityView.targetTriggerComponent.entityInRange;
+                    if (enemyCollisionData.collides == true &&
+                        enemyCollisionData.otherEntityID == targetEntityView.ID)
                     {
                         var attackDamageComponent = enemyAttackEntityView.attackDamageComponent;
                         attackDamageComponent.timer += _time.deltaTime;
@@ -70,28 +62,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             }
         }
 
-        /// <summary>
-        /// Logic for when the Unity OnTrigger is enable
-        /// </summary>
-        /// <param name="targetID"></param>
-        /// <param name="enemyID"></param>
-        /// <param name="inRange"></param>
-        void CheckTarget(int targetID, int enemyID, bool inRange)
-        {
-            EnemyTargetEntityView targetEntityView;
-            if (entityViewsDB.TryQueryEntityView(targetID, out targetEntityView) == true)
-            {
-                 var enemyEntityView = entityViewsDB.QueryEntityView<EnemyEntityView>(enemyID);
-                 var component       = enemyEntityView.targetTriggerComponent;
-
-                 if (inRange)
-                     component.targetInRange = true;
-                 else
-                     component.targetInRange = false;
-            }
-        }
-
-        ISequencer             _targetDamageSequence;
+        ISequencer            _targetDamageSequence;
         ITime                 _time;
         ITaskRoutine          _taskRoutine;
     }
