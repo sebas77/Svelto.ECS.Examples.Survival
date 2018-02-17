@@ -286,7 +286,14 @@ namespace Svelto.ECS.Example.Survive
             //an Entity and later queries to build the entitity itself.
             //This allow to trigger a sort of polyformic code that can be re-used to 
             //create several type of entities.
+            
             IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
+            
+            //However this common pattern in Svelto.ECS application exists to automatically
+            //create entities from gameobjects already presented in the scene.
+            //I still suggest to avoid this method though and create entities always
+            //manually. Basically EntityDescriptorHolder should be avoided
+            //whenver not strictly necessary.
 
             for (int i = 0; i < entities.Length; i++)
             {
