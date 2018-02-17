@@ -1,6 +1,6 @@
-namespace Svelto.ECS.Example.Survive.Components.Player
+namespace Svelto.ECS.Example.Survive.Player
 {
-    public interface ITargetTypeComponent: IComponent
+    public interface IPlayerTargetComponent: IComponent
     {
         PlayerTargetType targetType { get; }
     }

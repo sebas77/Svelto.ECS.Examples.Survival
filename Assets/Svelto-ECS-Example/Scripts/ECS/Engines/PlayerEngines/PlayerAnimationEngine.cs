@@ -1,9 +1,7 @@
-using Svelto.ECS.Example.Survive.EntityViews.Player;
 using System.Collections;
-using Svelto.ECS.Example.Survive.Components.Damageable;
 using Svelto.Tasks;
 
-namespace Svelto.ECS.Example.Survive.Engines.Player
+namespace Svelto.ECS.Example.Survive.Player
 {
     public class PlayerAnimationEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<DamageInfo>
     {
@@ -35,7 +33,7 @@ namespace Svelto.ECS.Example.Survive.Engines.Player
 
         public void Step(ref DamageInfo token, int condition)
         {
-            TriggerDeathAnimation(token.entityDamaged);
+            TriggerDeathAnimation(token.entityDamagedID);
         }
 
         protected override void Add(PlayerEntityView entityView)

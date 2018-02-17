@@ -1,13 +1,9 @@
 using System.Collections;
 using UnityEngine;
-using Svelto.ECS.Example.Survive.EntityViews.Player;
-using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.Observables.Enemies;
-using Svelto.ECS.Example.Survive.EntityViews.Gun;
-using Svelto.ECS.Example.Survive.Others;
+using Svelto.ECS.Example.Survive.Enemies;
 using Svelto.Tasks;
 
-namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
+namespace Svelto.ECS.Example.Survive.Player.Gun
 {
     public class PlayerGunShootingEngine : MultiEntityViewsEngine<GunEntityView, PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
     {
@@ -100,14 +96,14 @@ namespace Svelto.ECS.Example.Survive.Engines.Player.Gun
         void OnTargetDead(int targetID)
         {
             var playerTarget = entityViewsDB.QueryEntityView<PlayerTargetEntityView>(targetID);
-            var targetType   = playerTarget.targetTypeComponent.targetType;
+            var targetType   = playerTarget.playerTargetComponent.targetType;
 
             _enemyKilledObservable.Dispatch(ref targetType);
         }
 
         public void Step(ref DamageInfo token, int condition)
         {
-            OnTargetDead(token.entityDamaged);
+            OnTargetDead(token.entityDamagedID);
         }
 
         readonly EnemyKilledObservable _enemyKilledObservable;

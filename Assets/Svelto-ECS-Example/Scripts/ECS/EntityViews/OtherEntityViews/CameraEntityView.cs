@@ -1,9 +1,8 @@
-using Svelto.ECS.Example.Survive.Components.Base;
-
-namespace Svelto.ECS.Example.Survive.EntityViews.Camera
+namespace Svelto.ECS.Example.Survive.Camera
 {
     public class CameraEntityView: EntityView
     {
         public ITransformComponent transformComponent;
+        public IPositionComponent  positionComponent;
     }
 }

@@ -1,26 +1,19 @@
-using System;
 using UnityEngine;
-using Svelto.ECS.Example.Survive.Components.Enemies;
 
-namespace Svelto.ECS.Example.Survive.Implementors.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyTriggerImplementor : MonoBehaviour, IImplementor, IEnemyTriggerComponent, IEnemyTargetComponent
+    public class EnemyTriggerImplementor : MonoBehaviour, IImplementor, IEnemyTriggerComponent
     {
-        public event Action<int, int, bool> entityInRange;
-
-        bool IEnemyTriggerComponent.targetInRange { set { _targetInRange = value; } }
-        bool IEnemyTargetComponent.targetInRange { get { return _targetInRange; } }
+        public EnemyCollisionData entityInRange { get; private set; }
 
         void OnTriggerEnter(Collider other)
         {
-            if (entityInRange != null)
-                entityInRange(other.gameObject.GetInstanceID(), gameObject.GetInstanceID(), true);
+            entityInRange = new EnemyCollisionData(other.gameObject.GetInstanceID(), true);
         }
 
         void OnTriggerExit(Collider other)
         {
-            if (entityInRange != null)
-                entityInRange(other.gameObject.GetInstanceID(), gameObject.GetInstanceID(), false);
+            entityInRange = new EnemyCollisionData(other.gameObject.GetInstanceID(), false);
         }
 
         bool    _targetInRange;

@@ -1,6 +1,4 @@
-using Svelto.ECS.Example.Survive.EntityViews.Camera;
-
-namespace Svelto.ECS.Example.Survive.EntityDescriptors.Camera
+namespace Svelto.ECS.Example.Survive.Camera
 {
     public class CameraEntityDescriptor : GenericEntityDescriptor<CameraEntityView>
     {}

@@ -1,12 +1,9 @@
-using Svelto.ECS.Example.Survive.Components.Damageable;
-using Svelto.ECS.Example.Survive.EntityViews.HUD;
 using Svelto.Tasks.Enumerators;
 using System.Collections;
-using Svelto.ECS.Example.Survive.Others;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Svelto.ECS.Example.Survive.Engines.HUD
+namespace Svelto.ECS.Example.Survive.HUD
 {
     public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
     {
@@ -36,9 +33,8 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             while (true)
             {
                 var damageComponent = _guiEntityView.damageImageComponent;
-                var damageImage = damageComponent.damageImage;
 
-                damageImage.color = Color.Lerp(damageImage.color, Color.clear, damageComponent.speed * _time.deltaTime);
+                damageComponent.imageColor = Color.Lerp(damageComponent.imageColor, Color.clear, damageComponent.speed * _time.deltaTime);
 
                 yield return null;
                 
@@ -48,17 +44,26 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
 
         void OnDamageEvent(DamageInfo damaged)
         {
-            var damageComponent = _guiEntityView.damageImageComponent;
-            var damageImage = damageComponent.damageImage;
-
-            damageImage.color = damageComponent.flashColor;
-
-            _guiEntityView.healthSliderComponent.healthSlider.value = entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamaged).healthComponent.currentHealth;
+            UpdateSlider(damaged);
         }
 
         void OnDeadEvent()
         {
+            _guiEntityView.healthSliderComponent.value = 0;
+
             RestartLevelAfterFewSeconds().Run();
+        }
+
+        void UpdateSlider(DamageInfo damaged)
+        {
+            var damageComponent = _guiEntityView.damageImageComponent;
+
+            damageComponent.imageColor = damageComponent.flashColor;
+
+            var hudDamageEntityView =
+                entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamagedID);
+         
+            _guiEntityView.healthSliderComponent.value = hudDamageEntityView.healthComponent.currentHealth;
         }
 
         IEnumerator RestartLevelAfterFewSeconds()
@@ -66,7 +71,7 @@ namespace Svelto.ECS.Example.Survive.Engines.HUD
             _waitForSeconds.Reset(5);
             yield return _waitForSeconds;
 
-            _guiEntityView.HUDAnimator.hudAnimator.SetTrigger("GameOver");
+            _guiEntityView.HUDAnimator.trigger = "GameOver";
 
             _waitForSeconds.Reset(2);
             yield return _waitForSeconds;

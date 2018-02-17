@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-using UnityEngine;
-using Svelto.ECS.Example.Survive.EntityViews.Enemies;
-using Svelto.ECS.Example.Survive.Components.Damageable;
 
-namespace Svelto.ECS.Example.Survive.Engines.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyAnimationEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {
@@ -13,9 +10,14 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
         public void Ready()
         {}
 
+        public EnemyAnimationEngine(ITime time)
+        {
+            _time = time;
+        }
+
         void EntityDamaged(DamageInfo damageInfo)
         {
-            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamaged);
+            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamagedID);
 
             entity.vfxComponent.position = damageInfo.damagePoint;
             entity.vfxComponent.play.value = true;
@@ -43,7 +45,8 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
 
             while (DateTime.UtcNow < afterTwoSec)
             {
-                entity.transformComponent.position += -Vector3.up * sinkSpeed * Time.deltaTime;
+                entity.transformComponent.position = 
+                    entity.positionComponent.position + -UnityEngine.Vector3.up * sinkSpeed * _time.deltaTime;
 
                 yield return null;
             }
@@ -56,15 +59,17 @@ namespace Svelto.ECS.Example.Survive.Engines.Enemies
             if (token.entityType == EntityDamagedType.PlayerTarget)
             {
                 if (condition == DamageCondition.dead)
-                    TriggerDeathAnimation(token.entityDamaged);
+                    TriggerDeathAnimation(token.entityDamagedID);
                 else
                     EntityDamaged(token);
             }
             else
             {
                 if (condition == DamageCondition.dead)
-                    TriggerTargetDeathAnimation(token.entityDamaged);    
+                    TriggerTargetDeathAnimation(token.entityDamagedID);    
             }
         }
+        
+        ITime _time;
     }
 }

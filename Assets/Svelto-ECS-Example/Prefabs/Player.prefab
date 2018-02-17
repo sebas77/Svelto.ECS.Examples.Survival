@@ -65,8 +65,8 @@ GameObject:
   - component: {fileID: 5400000}
   - component: {fileID: 13600000}
   - component: {fileID: 8200002}
-  - component: {fileID: 114495654404046050}
   - component: {fileID: 114444016794603990}
+  - component: {fileID: 114064602781519324}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -4047,6 +4047,19 @@ MonoBehaviour:
   DamagePerShot: 20
   TimeBetweenBullets: 0.15
   Range: 100
+--- !u!114 &114064602781519324
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9496655af362413bb65ca481e25470c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathClip: {fileID: 8300000, guid: d36a393bca4582043982db9089e1694f, type: 3}
+  damageClip: {fileID: 8300000, guid: 9922a12f34d0a084aab32de985459723, type: 3}
 --- !u!114 &114444016794603990
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4059,17 +4072,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 6
---- !u!114 &114495654404046050
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92e829a07fd99154e980738b493f36d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startingHealth: 100
-  deathClip: {fileID: 8300000, guid: d36a393bca4582043982db9089e1694f, type: 3}
-  damageClip: {fileID: 8300000, guid: 9922a12f34d0a084aab32de985459723, type: 3}

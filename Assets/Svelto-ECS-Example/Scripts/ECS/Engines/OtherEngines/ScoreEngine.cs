@@ -1,7 +1,4 @@
-using Svelto.ECS.Example.Survive.EntityViews.HUD;
-using Svelto.ECS.Example.Survive.Observers.HUD;
-
-namespace Svelto.ECS.Example.Survive.Engines.HUD
+namespace Svelto.ECS.Example.Survive.HUD
 {
     public class ScoreEngine : SingleEntityViewEngine<HUDEntityView>
     {

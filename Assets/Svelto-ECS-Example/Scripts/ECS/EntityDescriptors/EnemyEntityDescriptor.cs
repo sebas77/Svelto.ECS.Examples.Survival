@@ -1,9 +1,7 @@
-﻿using Svelto.ECS.Example.Survive.EntityViews.Enemies;
-using Svelto.ECS.Example.Survive.EntityViews.DamageableEntities;
-using Svelto.ECS.Example.Survive.EntityViews.Player;
-using Svelto.ECS.Example.Survive.EntityViews.Sound;
+﻿using Svelto.ECS.Example.Survive.Player;
+using Svelto.ECS.Example.Survive.Sound;
 
-namespace Svelto.ECS.Example.Survive.EntityDescriptors.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     class EnemyEntityDescriptor : GenericEntityDescriptor<EnemyEntityView, DamageSoundEntityView, PlayerTargetEntityView, HealthEntityView>
     {}

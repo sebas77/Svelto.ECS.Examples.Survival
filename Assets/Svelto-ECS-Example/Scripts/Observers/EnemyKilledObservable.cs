@@ -1,7 +1,7 @@
-using Svelto.ECS.Example.Survive.Components.Player;
+using Svelto.ECS.Example.Survive.Player;
 using Svelto.Observer;
 
-namespace Svelto.ECS.Example.Survive.Observables.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyKilledObservable : Observable<PlayerTargetType>
     { }

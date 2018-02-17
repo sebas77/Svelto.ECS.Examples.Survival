@@ -1,4 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.HUD;
+using Svelto.ECS.Example.Survive.HUD;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +12,12 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
         public Image damageImage { get { return _image; } }
         public float speed { get { return flashSpeed; } }
         public Color flashColor { get { return flashColour; } }
+
+        public Color imageColor
+        {
+            get { return _image.color; }
+            set { _image.color = value; }
+        }
 
         void Awake()
         {

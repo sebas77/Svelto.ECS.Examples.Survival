@@ -1,7 +1,6 @@
-using Svelto.ECS.Example.Survive.EntityViews.Player;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Implementors.Player
+namespace Svelto.ECS.Example.Survive.Player
 {
     public class PlayerInputImplementor:IPlayerInputComponent, IImplementor
     {

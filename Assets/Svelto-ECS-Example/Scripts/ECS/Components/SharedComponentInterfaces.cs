@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Components.Base
+namespace Svelto.ECS.Example.Survive
 {
     //in order to avoid referencing directly the
     //unity Animation class, we explicitly create
@@ -16,25 +16,17 @@ namespace Svelto.ECS.Example.Survive.Components.Base
         string trigger { set; }
     }
 
-    public interface IEnemySinkComponent : IComponent
-    {
-        float sinkAnimSpeed { get; }
-    }
-
     public interface IPositionComponent: IComponent
     {
         Vector3 position { get; }
     }
 
-    public interface ITransformComponent: IComponent
+    public interface ITransformComponent: IPositionComponent
     {
-        Vector3 position { get; set; }
+        Vector3 position { set; }
         Quaternion rotation { set; }
     }
 
-    //Avoid to return a third party class (in this
-    //case the RigidBody) when you can wrap
-    //setters and getters
     public interface IRigidBodyComponent: IComponent
     {
         bool isKinematic { set; }
@@ -47,8 +39,6 @@ namespace Svelto.ECS.Example.Survive.Components.Base
 
     public interface IDamageSoundComponent: IComponent
     {
-        AudioSource audioSource { get; }
-        AudioClip   death       { get; }
-        AudioClip   damage      { get; }
+        AudioType playOneShot { set; }
     }
 }

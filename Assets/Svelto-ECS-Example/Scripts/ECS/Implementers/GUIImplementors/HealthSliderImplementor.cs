@@ -1,4 +1,4 @@
-using Svelto.ECS.Example.Survive.Components.HUD;
+using Svelto.ECS.Example.Survive.HUD;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +11,11 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
         void Awake()
         {
             healthSlider = GetComponent<Slider>();
+        }
+
+        public int value
+        {
+            set { healthSlider.value = value; }
         }
     }
 }

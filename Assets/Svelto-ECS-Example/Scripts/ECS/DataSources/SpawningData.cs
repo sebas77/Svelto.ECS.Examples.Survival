@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Svelto.ECS.Example.Survive.Others;
+using Svelto.ECS.Example.Survive;
 using UnityEngine;
 
 [ExecuteInEditMode]

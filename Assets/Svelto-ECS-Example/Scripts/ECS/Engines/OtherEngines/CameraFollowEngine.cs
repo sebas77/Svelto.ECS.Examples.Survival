@@ -1,10 +1,8 @@
 using System.Collections;
-using Svelto.ECS.Example.Survive.EntityViews.Camera;
-using Svelto.ECS.Example.Survive.Others;
 using Svelto.Tasks;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Engines.Camera
+namespace Svelto.ECS.Example.Survive.Camera
 {
     //First step identify the entity type we want the engine to handle: CameraEntity
     //Second step name the engine according the behaviour and the entity: I.E.: CameraFollowTargetEngine
@@ -47,14 +45,14 @@ namespace Svelto.ECS.Example.Survive.Engines.Camera
 
             float smoothing = 5.0f;
             
-            Vector3 offset = _cameraEntityView.transformComponent.position - _cameraTargetEntityView.targetComponent.position;
+            Vector3 offset = _cameraEntityView.positionComponent.position - _cameraTargetEntityView.targetComponent.position;
             
             while (true)
             {
                 Vector3 targetCameraPos = _cameraTargetEntityView.targetComponent.position + offset;
 
                 _cameraEntityView.transformComponent.position = Vector3.Lerp(
-                    _cameraEntityView.transformComponent.position, targetCameraPos, smoothing * _time.deltaTime);
+                    _cameraEntityView.positionComponent.position, targetCameraPos, smoothing * _time.deltaTime);
                 
                 yield return null;
             }

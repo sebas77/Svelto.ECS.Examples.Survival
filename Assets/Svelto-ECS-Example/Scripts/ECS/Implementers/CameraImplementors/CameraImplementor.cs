@@ -1,7 +1,6 @@
-﻿using Svelto.ECS.Example.Survive.Components.Base;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.CameraImplementors
+namespace Svelto.ECS.Example.Survive.Camera
 {
     public class CameraImplementor : MonoBehaviour, ITransformComponent
     {

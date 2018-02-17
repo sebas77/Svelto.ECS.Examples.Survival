@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 
-namespace Svelto.ECS.Example.Survive.Components.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public interface IEnemyTargetComponent: IComponent
+    public interface IEnemySinkComponent : IComponent
     {
-        bool targetInRange { get; }
+        float sinkAnimSpeed { get; }
     }
 
     public interface IEnemyAttackDataComponent: IComponent
@@ -19,16 +18,25 @@ namespace Svelto.ECS.Example.Survive.Components.Enemies
     public interface IEnemyMovementComponent: IComponent
     {
         bool navMeshEnabled {  set; }
-        bool isNavMeshActiveAndEnabled { get; }
         Vector3 navMeshDestination { set; }
         bool setCapsuleAsTrigger { set; }
     }
 
     public interface IEnemyTriggerComponent: IComponent
     {
-        event Action<int, int, bool> entityInRange;
+        EnemyCollisionData entityInRange { get; }
+    }
 
-        bool targetInRange { set; }
+    public struct EnemyCollisionData
+    {
+        public int otherEntityID;
+        public bool collides;
+
+        public EnemyCollisionData(int otherEntityID, bool collides)
+        {
+            this.otherEntityID = otherEntityID;
+            this.collides = collides;
+        }
     }
 
     public interface IEnemyVFXComponent: IComponent

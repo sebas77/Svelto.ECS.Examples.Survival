@@ -1,7 +1,6 @@
-﻿using Svelto.ECS.Example.Survive.EntityViews.HUD;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.EntityDescriptors.HUD
+namespace Svelto.ECS.Example.Survive.HUD
 {
     [DisallowMultipleComponent]
 	public class HudEntityDescriptorHolder:GenericEntityDescriptorHolder<GenericEntityDescriptor<HUDEntityView>>

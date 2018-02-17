@@ -1,11 +1,7 @@
-using Svelto.ECS.Example.Survive.Components.Base;
-using Svelto.ECS.Example.Survive.Components.Enemies;
-
-namespace Svelto.ECS.Example.Survive.EntityViews.Enemies
+namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyEntityView:EntityView
     {
-        public IEnemyTargetComponent      TargetComponent;
         public IEnemyAttackDataComponent  attackDamageComponent;
         public IEnemyTriggerComponent     targetTriggerComponent;
         public IEnemyMovementComponent    movementComponent;
@@ -13,6 +9,7 @@ namespace Svelto.ECS.Example.Survive.EntityViews.Enemies
 
         public IAnimationComponent        animationComponent;
         public ITransformComponent        transformComponent;
+        public IPositionComponent         positionComponent;
         public IDestroyComponent          destroyComponent;
         public IEnemySinkComponent        sinkSpeedComponent;
         public IRigidBodyComponent        rigidBodyComponent;
