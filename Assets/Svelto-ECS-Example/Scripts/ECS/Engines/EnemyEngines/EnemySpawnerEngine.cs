@@ -19,6 +19,14 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         IEnumerator IntervaledTick()
         {
+//OK this is of fundamental importance: Never create implementors as Monobehaviour just to hold 
+//data. Data should always been retrieved through a service layer regardless the data source.
+//The benefit are numerous, including the fact that changing data source would require
+//only changing the service code. In this simple example I am not using a Service Layer
+//but you can see the point.          
+//Also note that I am loading the data only once per application run, outside the 
+//main loop. You can always exploit this trick when you now that the data you need
+//to use will never change            
             var enemiestoSpawn = ReadEnemySpawningDataServiceRequest();
 
             while (true)
@@ -39,13 +47,25 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             // Find a random index between zero and one less than the number of spawn points.
                             int spawnPointIndex = Random.Range(0, spawnData.spawnPoints.Length);
 
-                            // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
+                            // Create an instance of the enemy prefab at the randomly selected spawn point position and rotation.
                             var go = _gameobjectFactory.Build(spawnData.enemyPrefab);
+                            
+                            //I have been lazy here and retrieving the data directly from the Monobehaviour
+                            //but still I am not creating an implementor for the purpose!
                             var data = go.GetComponent<EnemyAttackDataHolder>();
                             
+                            //we are going to use a mix of implementors as Monobehaviours and
+                            //normal implementors here:                           
                             List<IImplementor> implementors = new List<IImplementor>();
                             go.GetComponentsInChildren(implementors);
                             implementors.Add(new EnemyAttackImplementor(data.timeBetweenAttacks, data.attackDamage));
+                            
+                            //In this example every kind of enemy generates the same list of EntityViews
+                            //therefore I always use the same EntityDescriptor. However if the 
+                            //different enemies had to create different EntityViews for different
+                            //engines, this would have been a good example where EntityDescriptorHolder
+                            //could have been used to exploit the the kind of polymorphism explained
+                            //in my articles.
                             _entityFactory.BuildEntity<EnemyEntityDescriptor>(
                                 go.GetInstanceID(), implementors.ToArray());
 
