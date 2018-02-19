@@ -109,11 +109,12 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         readonly EnemyKilledObservable _enemyKilledObservable;
         readonly ISequencer            _enemyDamageSequence;
         readonly IRayCaster            _rayCaster;
-        
-        ITime            _time;
+
         PlayerEntityView _playerEntityView;
         GunEntityView    _playerGunEntityView;
-        ITaskRoutine     _taskRoutine;
+        
+        readonly ITime _time;
+        readonly ITaskRoutine     _taskRoutine;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
         static readonly int ENEMY_MASK     = LayerMask.GetMask("Enemies");
