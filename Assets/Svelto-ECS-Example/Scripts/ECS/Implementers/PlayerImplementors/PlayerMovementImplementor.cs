@@ -5,7 +5,6 @@ namespace Svelto.ECS.Example.Survive.Player
 {
     public class PlayerMovementImplementor : MonoBehaviour, IImplementor,
         IRigidBodyComponent,
-        IPositionComponent,
         IAnimationComponent,
         ICameraTargetComponent,
         ISpeedComponent,
