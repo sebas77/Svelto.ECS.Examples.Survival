@@ -30,30 +30,50 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         IEnumerator CheckIfHittingEnemyTarget()
         {
-            var targetEntityView = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>()[0];
-            
             while (true)
             {
+                var targetEntitiesView = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>();
+                //there is a sneaky bug that can be caused by this routine. It can be solved in several
+                //ways once it has been understood.
+                //the targetDamageSequence.Next can trigger a sequence that could lead to the immediate
+                //death of the player, this would mean that the inner loop should stop when the 
+                //enemytarget (the player) dies. However this engine doens't know when the player dies
+                //We can solve this problem in several ways including
+                //- iterating over the enemy target, if the entity has been removed because dead, the for will be skipped
+                //(which is the solution I chose here)
+                //- removing the entity the frame after and not immediatly (a bit hacky)
+                //- add this engine in the sequencer to know when the player is death to stop
+                //this taskroutine
                 var enemiesAttackList = entityViewsDB.QueryEntityViews<EnemyEntityView>();
 
                 for (int enemyIndex = enemiesAttackList.Count - 1; enemyIndex >= 0; --enemyIndex)
                 {
                     var enemyAttackEntityView = enemiesAttackList[enemyIndex];
-                    var enemyCollisionData = enemyAttackEntityView.targetTriggerComponent.entityInRange;
-                    if (enemyCollisionData.collides == true &&
-                        enemyCollisionData.otherEntityID == targetEntityView.ID)
+                    var enemyCollisionData    = enemyAttackEntityView.targetTriggerComponent.entityInRange;
+                    
+                    for (int enemyTargetIndex = 0; enemyTargetIndex < targetEntitiesView.Count; enemyTargetIndex++)
                     {
-                        var attackDamageComponent = enemyAttackEntityView.attackDamageComponent;
-                        attackDamageComponent.timer += _time.deltaTime;
-
-                        if (attackDamageComponent.timer >= attackDamageComponent.attackInterval)
+                        var targetEntityView = targetEntitiesView[enemyTargetIndex];
+                        
+                        //the IEnemyTriggerComponent implementors sets a the collides boolean
+                        //whenever anything enters in the trigger range, but there is not more logic
+                        //we have to check here if the colliding entity is actually an EnemyTarget
+                        
+                        if (enemyCollisionData.collides      == true &&
+                            enemyCollisionData.otherEntityID == targetEntityView.ID)
                         {
-                            attackDamageComponent.timer = 0.0f;
+                            var attackDamageComponent   = enemyAttackEntityView.attackDamageComponent;
+                            attackDamageComponent.timer += _time.deltaTime;
 
-                            var damageInfo = new DamageInfo(attackDamageComponent.damage, Vector3.zero,
-                                targetEntityView.ID, EntityDamagedType.EnemyTarget);
+                            if (attackDamageComponent.timer >= attackDamageComponent.attackInterval)
+                            {
+                                attackDamageComponent.timer = 0.0f;
 
-                            _targetDamageSequence.Next(this, ref damageInfo);
+                                var damageInfo = new DamageInfo(attackDamageComponent.damage, Vector3.zero,
+                                                                targetEntityView.ID, EntityDamagedType.EnemyTarget);
+
+                                _targetDamageSequence.Next(this, ref damageInfo);
+                            }
                         }
                     }
                 }

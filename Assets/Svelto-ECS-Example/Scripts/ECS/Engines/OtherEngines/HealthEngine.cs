@@ -12,18 +12,15 @@ namespace Svelto.ECS.Example.Survive
 
         public IEntityViewsDB entityViewsDB { set; private get; }
 
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref DamageInfo damage, int condition)
         {
-            TriggerDamage(ref token);
-        }
-
-        void TriggerDamage(ref DamageInfo damage)
-        {
-            var entityView = entityViewsDB.QueryEntityView<HealthEntityView>(damage.entityDamagedID);
+            var entityView      = entityViewsDB.QueryEntityView<HealthEntityView>(damage.entityDamagedID);
             var healthComponent = entityView.healthComponent;
 
             healthComponent.currentHealth -= damage.damagePerShot;
 
+            //the HealthEngine can branch the sequencer flow triggering two different
+            //conditions
             if (healthComponent.currentHealth <= 0)
                 _damageSequence.Next(this, ref damage, DamageCondition.dead);
             else

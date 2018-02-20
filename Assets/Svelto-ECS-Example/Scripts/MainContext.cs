@@ -167,16 +167,23 @@ namespace Svelto.ECS.Example.Survive
                         enemyAttackEngine, //this step can be triggered only by this engine through the Next function
                         new To //this step can lead only to one branch
                         { 
-                            playerHealthEngine, //this is the only engine that will be called when enemyAttackEngine triggers Next()
+                            //this is the only engine that will be called when enemyAttackEngine triggers Next()                            
+                            playerHealthEngine 
                         }  
                     },
                     { //second step
                         playerHealthEngine, //this step can be triggered only by this engine through the Next function
-                        new To //this step can branch in two paths
+                        new To //once the playerHealthEngine calls step, all these engines will be called at once
+                            //depending by the condition a different set of engines will be triggered. The
+                            //order of the engines triggered is guaranteed.
                         { 
-                            {  DamageCondition.damage, new IStep[] { hudEngine, damageSoundEngine }  }, //these engines will be called when the Next function is called with the DamageCondition.damage set
-                            {  DamageCondition.dead, new IStep[] { hudEngine, damageSoundEngine, 
-                                playerMovementEngine, playerAnimationEngine, enemyAnimationEngine, playerDeathEngine }  }, //these engines will be called when the Next function is called with the DamageCondition.dead set
+                            //these engines will be called when the Next function is called with the DamageCondition.damage set
+                            {  DamageCondition.damage, new IStep[] { hudEngine, damageSoundEngine }  }, 
+                            //these engines will be called when the Next function is called with the DamageCondition.dead set
+                            {  DamageCondition.dead, new IStep[] { 
+                                hudEngine, damageSoundEngine, 
+                                playerMovementEngine, playerAnimationEngine, 
+                                enemyAnimationEngine, playerDeathEngine }  }, 
                         }  
                     }  
                 }
