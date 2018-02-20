@@ -9,5 +9,5 @@ Most of the source code has been rewritten to work with Svelto.ECS framework. Th
 
 To know more about Svelto.ECS, please check my blog: http://www.sebaslab.com/
 
-**Note: The folders Svelto.ECS, Svelto.Tasks and Svelto.Common, where present, are submodules pointing to the relavite repositories. If you find them empty, you need to initialize the submodules them through the submodule command. You must initialize only the first level submodules, so do not run the recursive option. I am sorry if this is confusing, but it's the best solution I found with git. If you have troubles, please check some instructions here: https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki**
+**Note: The folders Svelto.ECS, Svelto.Tasks and Svelto.Common, where present, are submodules pointing to the relavite repositories. If you find them empty, you need to initialize the submodules through the submodule command. You must initialize only the first level submodules, so do not run the recursive option. I am sorry if this is confusing, but it's the best solution I found with git. If you have troubles, please check some instructions here: https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki**
 
