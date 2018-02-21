@@ -167,7 +167,7 @@ namespace Svelto.ECS.Example.Survive
                         enemyAttackEngine, //this step can be triggered only by this engine through the Next function
                         new To //this step can lead only to one branch
                         { 
-                            //this is the only engine that will be called when enemyAttackEngine triggers Next()                            
+                            //this is the only engine that will be called when enemyAttackEngine triggers Next()
                             playerHealthEngine 
                         }  
                     },
@@ -178,9 +178,9 @@ namespace Svelto.ECS.Example.Survive
                             //order of the engines triggered is guaranteed.
                         { 
                             //these engines will be called when the Next function is called with the DamageCondition.damage set
-                            {  DamageCondition.damage, new IStep[] { hudEngine, damageSoundEngine }  }, 
+                            {  DamageCondition.Damage, new IStep[] { hudEngine, damageSoundEngine }  }, 
                             //these engines will be called when the Next function is called with the DamageCondition.dead set
-                            {  DamageCondition.dead, new IStep[] { 
+                            {  DamageCondition.Dead, new IStep[] { 
                                 hudEngine, damageSoundEngine, 
                                 playerMovementEngine, playerAnimationEngine, 
                                 enemyAnimationEngine, playerDeathEngine }  }, 
@@ -203,8 +203,8 @@ namespace Svelto.ECS.Example.Survive
                         enemyHealthEngine, 
                         new To
                         { 
-                            {  DamageCondition.damage, new IStep[] { enemyAnimationEngine, damageSoundEngine }  },
-                            {  DamageCondition.dead, new IStep[] { enemyMovementEngine, 
+                            {  DamageCondition.Damage, new IStep[] { enemyAnimationEngine, damageSoundEngine }  },
+                            {  DamageCondition.Dead, new IStep[] { enemyMovementEngine, 
                                 enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine, damageSoundEngine, enemyDeathEngine }  },
                         }  
                     }  

@@ -5,7 +5,8 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Player.Gun
 {
-    public class PlayerGunShootingEngine : MultiEntityViewsEngine<GunEntityView, PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class PlayerGunShootingEngine : MultiEntityViewsEngine<GunEntityView, PlayerEntityView>, 
+        IQueryingEntityViewEngine, IStep<DamageInfo>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 

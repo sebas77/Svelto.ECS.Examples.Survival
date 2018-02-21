@@ -25,7 +25,7 @@ namespace Svelto.ECS.Example.Survive.Sound
 
         public void Step(ref DamageInfo token, int condition)
         {
-            if (condition == DamageCondition.damage)
+            if (condition == DamageCondition.Damage)
                 TriggerDamageAudio(token.entityDamagedID);
             else
                 TriggerDeathSound(token.entityDamagedID);

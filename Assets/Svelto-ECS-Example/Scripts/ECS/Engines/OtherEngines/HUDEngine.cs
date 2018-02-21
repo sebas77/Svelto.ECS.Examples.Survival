@@ -81,10 +81,10 @@ namespace Svelto.ECS.Example.Survive.HUD
 
         public void Step(ref DamageInfo token, int condition)
         {
-            if (condition == DamageCondition.damage)
+            if (condition == DamageCondition.Damage)
                 OnDamageEvent(token);
             else
-            if (condition == DamageCondition.dead)
+            if (condition == DamageCondition.Dead)
                 OnDeadEvent();
         }
 

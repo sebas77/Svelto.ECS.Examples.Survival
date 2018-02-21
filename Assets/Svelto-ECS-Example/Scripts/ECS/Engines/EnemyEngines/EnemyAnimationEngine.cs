@@ -58,14 +58,14 @@ namespace Svelto.ECS.Example.Survive.Enemies
         {
             if (token.entityType == EntityDamagedType.PlayerTarget)
             {
-                if (condition == DamageCondition.dead)
+                if (condition == DamageCondition.Dead)
                     TriggerDeathAnimation(token.entityDamagedID);
                 else
                     EntityDamaged(token);
             }
             else
             {
-                if (condition == DamageCondition.dead)
+                if (condition == DamageCondition.Dead)
                     TriggerTargetDeathAnimation(token.entityDamagedID);    
             }
         }

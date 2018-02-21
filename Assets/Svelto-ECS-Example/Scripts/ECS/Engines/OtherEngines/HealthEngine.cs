@@ -22,9 +22,9 @@ namespace Svelto.ECS.Example.Survive
             //the HealthEngine can branch the sequencer flow triggering two different
             //conditions
             if (healthComponent.currentHealth <= 0)
-                _damageSequence.Next(this, ref damage, DamageCondition.dead);
+                _damageSequence.Next(this, ref damage, DamageCondition.Dead);
             else
-                _damageSequence.Next(this, ref damage, DamageCondition.damage);
+                _damageSequence.Next(this, ref damage, DamageCondition.Damage);
         }
 
         readonly ISequencer  _damageSequence;
