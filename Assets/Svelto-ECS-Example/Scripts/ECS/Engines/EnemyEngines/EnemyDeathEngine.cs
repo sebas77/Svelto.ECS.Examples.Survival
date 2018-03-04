@@ -9,7 +9,7 @@
         
         public void Step(ref DamageInfo token, int condition)
         {
-            _entityFunctions.RemoveEntity<EnemyEntityDescriptor>(token.entityDamagedID);
+            _entityFunctions.RemoveEntity(token.entityDamagedID);
         }
 
         readonly IEntityFunctions _entityFunctions;
