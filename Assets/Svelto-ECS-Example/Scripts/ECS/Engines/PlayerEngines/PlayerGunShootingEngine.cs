@@ -96,6 +96,13 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         void OnTargetDead(int targetID)
         {
+            ///
+            /// Pay attention to this bit. The engine is querying a
+            /// PaleryTargetEntityView and not a EnemyEntityView.
+            /// this is more than a sophistication, it actually the implementation
+            /// of the rule that every engine must use its own set of
+            /// EntityViews to promote encapsulation and modularity
+            ///
             var playerTarget = entityViewsDB.QueryEntityView<PlayerTargetEntityView>(targetID);
             var targetType   = playerTarget.playerTargetComponent.targetType;
 
