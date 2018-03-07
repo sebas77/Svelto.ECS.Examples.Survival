@@ -5,7 +5,17 @@ using UnityEngine.SceneManagement;
 
 namespace Svelto.ECS.Example.Survive.HUD
 {
-    public class HUDEngine : SingleEntityViewEngine<HUDEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo>
+    /// <summary>
+    /// 
+    /// You may wonder why I use QueryEntityViews instead to hold a reference
+    /// of the only HudEntityView existing in the game or just using QueryEntityView.
+    /// This is for learning purposes. An engine shouldn't really have the concept
+    /// of how many entities are created. Using the QueryEntityView could be awkward
+    /// because the entity ID is needed.
+    /// Therefore using the Add/Remove callbacks is not wrong, but I try to not
+    /// promote their use. 
+    /// </summary>
+    public class HUDEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -15,30 +25,24 @@ namespace Svelto.ECS.Example.Survive.HUD
         }
 
         public void Ready()
-        {}
-
-        protected override void Add(HUDEntityView EntityView)
         {
-            _guiEntityView = EntityView;
             Tick().Run();
-        }
-
-        protected override void Remove(HUDEntityView EntityView)
-        {
-            _guiEntityView = null;
         }
 
         IEnumerator Tick()
         {
             while (true)
             {
-                var damageComponent = _guiEntityView.damageImageComponent;
+                var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+                for (int i = 0; i < hudEntityViews.Count; i++)
+                {
+                    var damageComponent = hudEntityViews[i].damageImageComponent;
 
-                damageComponent.imageColor = Color.Lerp(damageComponent.imageColor, Color.clear, damageComponent.speed * _time.deltaTime);
-
-                yield return null;
+                    damageComponent.imageColor = Color.Lerp(damageComponent.imageColor, Color.clear,
+                        damageComponent.speed * _time.deltaTime);
+                }
                 
-                if (_guiEntityView == null) yield break;
+                yield return null;
             }
         }
 
@@ -49,21 +53,28 @@ namespace Svelto.ECS.Example.Survive.HUD
 
         void OnDeadEvent()
         {
-            _guiEntityView.healthSliderComponent.value = 0;
+            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+            for (int i = 0; i < hudEntityViews.Count; i++)
+                hudEntityViews[i].healthSliderComponent.value = 0;
 
             RestartLevelAfterFewSeconds().Run();
         }
 
         void UpdateSlider(DamageInfo damaged)
         {
-            var damageComponent = _guiEntityView.damageImageComponent;
+            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+            for (int i = 0; i < hudEntityViews.Count; i++)
+            {
+                var guiEntityView = hudEntityViews[i];
+                var damageComponent = guiEntityView.damageImageComponent;
 
-            damageComponent.imageColor = damageComponent.flashColor;
+                damageComponent.imageColor = damageComponent.flashColor;
 
-            var hudDamageEntityView =
-                entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamagedID);
-         
-            _guiEntityView.healthSliderComponent.value = hudDamageEntityView.healthComponent.currentHealth;
+                var hudDamageEntityView =
+                    entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamagedID);
+
+                guiEntityView.healthSliderComponent.value = hudDamageEntityView.healthComponent.currentHealth;
+            }
         }
 
         IEnumerator RestartLevelAfterFewSeconds()
@@ -71,7 +82,9 @@ namespace Svelto.ECS.Example.Survive.HUD
             _waitForSeconds.Reset(5);
             yield return _waitForSeconds;
 
-            _guiEntityView.HUDAnimator.trigger = "GameOver";
+            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+            for (int i = 0; i < hudEntityViews.Count; i++)
+                hudEntityViews[i].HUDAnimator.trigger = "GameOver";
 
             _waitForSeconds.Reset(2);
             yield return _waitForSeconds;
@@ -88,7 +101,6 @@ namespace Svelto.ECS.Example.Survive.HUD
                 OnDeadEvent();
         }
 
-        HUDEntityView                      _guiEntityView;
         readonly WaitForSecondsEnumerator  _waitForSeconds = new WaitForSecondsEnumerator(5);
         readonly ITime                     _time;
     }
