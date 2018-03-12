@@ -107,22 +107,7 @@ namespace Svelto.ECS.Example.Survive
             //how dependency injection works and why solving dependencies
             //with static classes and singletons is a terrible mistake)
             GameObjectFactory factory = new GameObjectFactory();
-            //The observer pattern is one of the 3 official ways available
-            //in Svelto.ECS to communicate. Specifically, Observers should 
-            //be used to communicate between engines in very specific cases
-            //as it's not the preferred solution and to communicate beteween
-            //engines and legacy code/third party code.
-            //Use them carefully and sparsely.
-            //Observers and Observables should be named according where they are 
-            //used. Observer and Observable are decoupled to allow each object
-            //to be used in the relative context which promote separation of concerns.
-            //The preferred way to communicate between engines is through
-            //the entity components themselves. DispatchOnSet and DispatchOnChange
-            //should be able to cover most of the communication problems
-            //between engines.
-            var enemyKilledObservable = new EnemyKilledObservable();
-            var scoreOnEnemyKilledObserver = new ScoreOnEnemyKilledObserver(enemyKilledObservable);
-            //the ISequencer is one of the 3 official ways available in Svelto.ECS 
+           //the ISequencer is one of the 3 official ways available in Svelto.ECS 
             //to communicate. They are mainly used for two specific cases:
             //1) specify a strict execution order between engines (engine logic
             //is executed horizontally instead than vertically, I will talk about this
@@ -135,12 +120,12 @@ namespace Svelto.ECS.Example.Survive
             //wrap non testable unity static classes, so that 
             //can be mocked if needed.
             IRayCaster rayCaster = new RayCaster();
-            ITime      time      = new Survive.Time();
+            ITime      time      = new Time();
             
             //Player related engines. ALL the dependecies must be solved at this point
             //through constructor injection.
             var playerHealthEngine = new HealthEngine(playerDamageSequence);
-            var playerShootingEngine = new PlayerGunShootingEngine(enemyKilledObservable, enemyDamageSequence, rayCaster, time);
+            var playerShootingEngine = new PlayerGunShootingEngine(enemyDamageSequence, rayCaster, time);
             var playerMovementEngine = new PlayerMovementEngine(rayCaster, time);
             var playerAnimationEngine = new PlayerAnimationEngine();
             var playerDeathEngine = new PlayerDeathEngine(entityFunctions);
@@ -157,6 +142,7 @@ namespace Svelto.ECS.Example.Survive
             //hud and sound engines
             var hudEngine = new HUDEngine(time);
             var damageSoundEngine = new DamageSoundEngine();
+            var scoreEngine = new ScoreEngine();
             
             //The ISequencer implementaton is very simple, but allows to perform
             //complex concatenation including loops and conditional branching.
@@ -168,7 +154,7 @@ namespace Svelto.ECS.Example.Survive
                         new To //this step can lead only to one branch
                         { 
                             //this is the only engine that will be called when enemyAttackEngine triggers Next()
-                            playerHealthEngine 
+                            new IStep[] {playerHealthEngine} 
                         }  
                     },
                     { //second step
@@ -183,7 +169,7 @@ namespace Svelto.ECS.Example.Survive
                             {  DamageCondition.Dead, new IStep[] { 
                                 hudEngine, damageSoundEngine, 
                                 playerMovementEngine, playerAnimationEngine, 
-                                enemyAnimationEngine, playerDeathEngine }  }, 
+                                enemyAnimationEngine, playerDeathEngine }  } 
                         }  
                     }  
                 }
@@ -196,7 +182,8 @@ namespace Svelto.ECS.Example.Survive
                         playerShootingEngine, 
                         new To
                         { 
-                            enemyHealthEngine,
+                            //in every case go to enemyHealthEngine
+                            new IStep[] { enemyHealthEngine}
                         }  
                     },
                     { 
@@ -204,8 +191,9 @@ namespace Svelto.ECS.Example.Survive
                         new To
                         { 
                             {  DamageCondition.Damage, new IStep[] { enemyAnimationEngine, damageSoundEngine }  },
-                            {  DamageCondition.Dead, new IStep[] { enemyMovementEngine, 
-                                enemyAnimationEngine, playerShootingEngine, enemySpawnerEngine, damageSoundEngine, enemyDeathEngine }  },
+                            {  DamageCondition.Dead, new IStep[] { scoreEngine, enemyMovementEngine, 
+                                enemyAnimationEngine, enemySpawnerEngine, 
+                                damageSoundEngine, enemyDeathEngine  }  },
                         }  
                     }  
                 }
@@ -230,7 +218,7 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(new CameraFollowTargetEngine(time));
             _enginesRoot.AddEngine(damageSoundEngine);
             _enginesRoot.AddEngine(hudEngine);
-            _enginesRoot.AddEngine(new ScoreEngine(scoreOnEnemyKilledObserver));
+            _enginesRoot.AddEngine(scoreEngine);
         }
         
         /// <summary>

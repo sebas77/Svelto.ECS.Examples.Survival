@@ -1,39 +1,40 @@
+using Svelto.ECS.Example.Survive.Player;
+
 namespace Svelto.ECS.Example.Survive.HUD
 {
-    public class ScoreEngine : SingleEntityViewEngine<HUDEntityView>
+    public class ScoreEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
     {
-        public ScoreEngine(ScoreOnEnemyKilledObserver scoreOnEnemyKilledObserver)
+        public IEntityViewsDB entityViewsDB { get; set; }
+        public void Ready()
+        {}
+        
+        public void Step(ref DamageInfo token, int condition)
         {
-            scoreOnEnemyKilledObserver.AddAction(AddScore);
-        }
+            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
 
-        void AddScore(ref ScoreActions item)
-        {
-            switch (item)
+            if (hudEntityViews.Count > 0)
             {
-                case ScoreActions.bunnyKilled:
-                    _guiEntityView.scoreComponent.score += 10;
-                    break;
-                case ScoreActions.bearKilled:
-                    _guiEntityView.scoreComponent.score += 20;
-                    break;
-                case ScoreActions.HellephantKilled:
-                    _guiEntityView.scoreComponent.score += 30;
-                    break;
+                var guiEntityView = hudEntityViews[0];
+                
+                var playerTarget = entityViewsDB.QueryEntityView<PlayerTargetEntityView>(token.entityDamagedID);
+                var targetType   = playerTarget.playerTargetComponent.targetType;
+                
+                switch (targetType)
+                {
+                    case PlayerTargetType.Bunny:
+                        guiEntityView.scoreComponent.score += 10;
+                        break;
+                    case PlayerTargetType.Bear:
+                        guiEntityView.scoreComponent.score += 20;
+                        break;
+                    case PlayerTargetType.Hellephant:
+                        guiEntityView.scoreComponent.score += 30;
+                        break;
+                }
             }
         }
 
-        protected override void Add(HUDEntityView EntityView)
-        {
-            _guiEntityView = EntityView;
-        }
-
-        protected override void Remove(HUDEntityView EntityView)
-        {
-            _guiEntityView = null;
-        }
-
-        HUDEntityView _guiEntityView;
+        ISequencer _damageSequence;
     }
 }
 
