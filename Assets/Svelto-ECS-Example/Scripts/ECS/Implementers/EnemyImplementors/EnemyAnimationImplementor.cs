@@ -12,7 +12,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _anim.SetBool(name, value);
         }
 
-        public string trigger { set { _anim.SetTrigger(value);} }
+        public string playAnimation { set { _anim.SetTrigger(value);} }
         public float sinkAnimSpeed { get { return SinkSpeed; } }
 
         void Awake ()

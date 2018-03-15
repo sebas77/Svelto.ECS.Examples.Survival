@@ -84,7 +84,7 @@ namespace Svelto.ECS.Example.Survive.HUD
 
             var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
             for (int i = 0; i < hudEntityViews.Count; i++)
-                hudEntityViews[i].HUDAnimator.trigger = "GameOver";
+                hudEntityViews[i].HUDAnimator.playAnimation = "GameOver";
 
             _waitForSeconds.Reset(2);
             yield return _waitForSeconds;

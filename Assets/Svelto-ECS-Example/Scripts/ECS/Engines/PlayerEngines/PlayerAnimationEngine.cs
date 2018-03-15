@@ -28,7 +28,7 @@ namespace Svelto.ECS.Example.Survive.Player
 
         void TriggerDeathAnimation(int targetID)
         {
-            _playerEntityView.animationComponent.trigger = "Die";
+            _playerEntityView.animationComponent.playAnimation = "Die";
         }
 
         public void Step(ref DamageInfo token, int condition)

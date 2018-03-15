@@ -16,6 +16,6 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
             animator.SetBool(name, value);
         }
 
-        public string trigger { set { animator.SetTrigger(value);} }
+        public string playAnimation { set { animator.SetTrigger(value);} }
     }
 }

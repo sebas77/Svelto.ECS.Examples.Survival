@@ -131,13 +131,13 @@ namespace Svelto.ECS.Example.Survive
             var playerDeathEngine = new PlayerDeathEngine(entityFunctions);
             
             //Enemy related engines
-            var enemyAnimationEngine = new EnemyAnimationEngine(time);
+            var enemyAnimationEngine = new EnemyAnimationEngine();
             //HealthEngine is a different object for the enemy because it uses a different sequence
             var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
             var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence, time);
             var enemyMovementEngine = new EnemyMovementEngine();
             var enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
-            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions);
+            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time);
             
             //hud and sound engines
             var hudEngine = new HUDEngine(time);

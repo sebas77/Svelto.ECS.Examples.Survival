@@ -26,7 +26,7 @@ namespace Svelto.ECS.Example.Survive.Player
             anim.SetBool(name, value);
         }
 
-        public string trigger { set {anim.SetTrigger(value);} }
+        public string playAnimation { set {anim.SetTrigger(value);} }
 
         void Awake ()
         {

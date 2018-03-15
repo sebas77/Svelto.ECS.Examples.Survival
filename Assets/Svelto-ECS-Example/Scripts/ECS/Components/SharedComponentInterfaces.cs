@@ -13,7 +13,7 @@ namespace Svelto.ECS.Example.Survive
     public interface IAnimationComponent: IComponent
     {
         void setBool(string name, bool value);
-        string trigger { set; }
+        string playAnimation { set; }
     }
 
     public interface IPositionComponent: IComponent
