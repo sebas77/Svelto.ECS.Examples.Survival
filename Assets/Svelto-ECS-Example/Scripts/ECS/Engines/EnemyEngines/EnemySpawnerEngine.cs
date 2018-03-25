@@ -28,6 +28,11 @@ namespace Svelto.ECS.Example.Survive.Enemies
 //main loop. You can always exploit this trick when you now that the data you need
 //to use will never change            
             var enemiestoSpawn = ReadEnemySpawningDataServiceRequest();
+            
+            float[] times = new float[enemiestoSpawn.Length];
+
+            for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
+                times[i] = enemiestoSpawn[i].spawnTime;
 
             while (true)
             {
@@ -36,13 +41,12 @@ namespace Svelto.ECS.Example.Survive.Enemies
 //but it's better to not abuse it.                
                 yield return _waitForSecondsEnumerator;
 
-                if (enemiestoSpawn != null)
                 {
                     for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
                     {
                         var spawnData = enemiestoSpawn[i];
 
-                        if (spawnData.timeLeft <= 0.0f)
+                        if (times[i] <= 0.0f)
                         {
                             // Find a random index between zero and one less than the number of spawn points.
                             int spawnPointIndex = Random.Range(0, spawnData.spawnPoints.Length);
@@ -75,11 +79,11 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             transform.position = spawnInfo.position;
                             transform.rotation = spawnInfo.rotation;
 
-                            spawnData.timeLeft = spawnData.spawnTime;
+                            times[i] = spawnData.spawnTime;
                             _numberOfEnemyToSpawn--;
                         }
 
-                        spawnData.timeLeft -= 1.0f;
+                        times[i] -= 1.0f;
                     }
                 }
             }

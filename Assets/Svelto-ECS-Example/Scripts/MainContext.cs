@@ -314,7 +314,7 @@ namespace Svelto.ECS.Example.Survive
             //that, the runners must be stopped explicitily.
             //carefull because if you don't do it and 
             //unintentionally leave tasks running, you will cause leaks
-            TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks();
+            TaskRunner.StopAndCleanupAllDefaultSchedulers();
         }
 
         EnginesRoot    _enginesRoot;

@@ -23,7 +23,7 @@ namespace Svelto.ECS.Example.Survive
 
     public interface ITransformComponent: IPositionComponent
     {
-        Vector3 position { set; }
+        new Vector3 position { set; }
         Quaternion rotation { set; }
     }
 
