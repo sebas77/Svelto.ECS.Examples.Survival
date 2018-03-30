@@ -15,12 +15,12 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void OnTriggerEnter(Collider other)
         {
-            entityInRange = new EnemyCollisionData(other.gameObject.GetInstanceID(), true);
+            entityInRange = new EnemyCollisionData(new EGID(other.gameObject.GetInstanceID()), true);
         }
 
         void OnTriggerExit(Collider other)
         {
-            entityInRange = new EnemyCollisionData(other.gameObject.GetInstanceID(), false);
+            entityInRange = new EnemyCollisionData(new EGID(other.gameObject.GetInstanceID()), false);
         }
 
         bool    _targetInRange;

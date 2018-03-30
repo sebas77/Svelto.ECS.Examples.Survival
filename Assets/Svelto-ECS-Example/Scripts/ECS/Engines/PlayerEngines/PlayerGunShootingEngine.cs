@@ -77,9 +77,9 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             {
                 PlayerTargetEntityView targetComponent;
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (entityViewsDB.TryQueryEntityView(entityHit, out targetComponent))
+                if (entityViewsDB.TryQueryEntityView(new EGID(entityHit), out targetComponent))
                 {
-                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, entityHit, EntityDamagedType.Enemy);
+                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, new EGID(entityHit), EntityDamagedType.Enemy);
                     _enemyDamageSequence.Next(this, ref damageInfo);
 
                     playerGunComponent.lastTargetPosition = point;

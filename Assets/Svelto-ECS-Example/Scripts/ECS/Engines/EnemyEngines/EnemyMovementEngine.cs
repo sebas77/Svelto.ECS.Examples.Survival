@@ -35,7 +35,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             }
         }
 
-        void StopEnemyOnDeath(int targetID)
+        void StopEnemyOnDeath(EGID targetID)
         {
             EnemyEntityView entityView = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
             

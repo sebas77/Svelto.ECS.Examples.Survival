@@ -35,7 +35,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         void Shoot(int ID, bool targetHasBeenHit)
         {
-            var playerGunEntityView = entityViewsDB.QueryEntityView<GunEntityView>(ID);
+            var playerGunEntityView = entityViewsDB.QueryEntityView<GunEntityView>(new EGID(ID));
 
             var gunFXComponent = playerGunEntityView.gunFXComponent;
 

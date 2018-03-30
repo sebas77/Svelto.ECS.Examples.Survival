@@ -26,7 +26,7 @@ namespace Svelto.ECS.Example.Survive.Player
             }
         }
 
-        void TriggerDeathAnimation(int targetID)
+        void TriggerDeathAnimation(EGID targetID)
         {
             _playerEntityView.animationComponent.playAnimation = "Die";
         }

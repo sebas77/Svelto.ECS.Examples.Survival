@@ -26,7 +26,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 entity[i].animationComponent.playAnimation = "PlayerDead";
         }
 
-        void TriggerDeathAnimation(int targetID)
+        void TriggerDeathAnimation(EGID targetID)
         {
             var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
             

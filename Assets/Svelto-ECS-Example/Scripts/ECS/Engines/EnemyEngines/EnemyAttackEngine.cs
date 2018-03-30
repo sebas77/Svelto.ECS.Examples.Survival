@@ -32,13 +32,11 @@ namespace Svelto.ECS.Example.Survive.Enemies
         {
             while (true)
             {
-                ///
-                /// Pay attention to this bit. The engine is querying a
-                /// EnemyTargetEntityView and not a PlayerEntityView.
-                /// this is more than a sophistication, it actually the implementation
-                /// of the rule that every engine must use its own set of
-                /// EntityViews to promote encapsulation and modularity
-                ///
+                // Pay attention to this bit. The engine is querying a
+                // EnemyTargetEntityView and not a PlayerEntityView.
+                // this is more than a sophistication, it actually the implementation
+                // of the rule that every engine must use its own set of
+                // EntityViews to promote encapsulation and modularity
                 var targetEntitiesView = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>();
                 //there is a sneaky bug that can be caused by this routine. It can be solved in several
                 //ways once it has been understood.
@@ -67,7 +65,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                         //we have to check here if the colliding entity is actually an EnemyTarget
                         
                         if (enemyCollisionData.collides      == true &&
-                            enemyCollisionData.otherEntityID == targetEntityView.ID)
+                            enemyCollisionData.otherEntityID.IsEqualTo(targetEntityView.ID))
                         {
                             var attackDamageComponent   = enemyAttackEntityView.attackDamageComponent;
                             attackDamageComponent.timer += _time.deltaTime;

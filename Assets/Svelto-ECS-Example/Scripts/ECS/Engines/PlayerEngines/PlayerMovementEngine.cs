@@ -87,7 +87,7 @@ namespace Svelto.ECS.Example.Survive.Player
             }
         }
 
-        void StopMovementOnDeath(int ID)
+        void StopMovementOnDeath(EGID ID)
         {
             var playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0]; 
             playerEntityView.rigidBodyComponent.isKinematic = true;

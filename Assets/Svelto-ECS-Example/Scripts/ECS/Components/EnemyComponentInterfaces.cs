@@ -29,10 +29,10 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
     public struct EnemyCollisionData
     {
-        public int otherEntityID;
+        public EGID otherEntityID;
         public bool collides;
 
-        public EnemyCollisionData(int otherEntityID, bool collides)
+        public EnemyCollisionData(EGID otherEntityID, bool collides)
         {
             this.otherEntityID = otherEntityID;
             this.collides = collides;
