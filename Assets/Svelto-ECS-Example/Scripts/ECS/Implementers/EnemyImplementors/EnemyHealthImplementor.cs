@@ -22,6 +22,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         public DispatchOnChange<bool> mustDestroy { get; private set; }
 
-        int             _currentHealth;        // The current health the enemy has.
+        int  _currentHealth;        // The current health the enemy has.
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Svelto.Tasks.Enumerators;
 using System.IO;
+using Svelto.ECS.Example.Survive.Player;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Enemies
@@ -63,6 +64,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             List<IImplementor> implementors = new List<IImplementor>();
                             go.GetComponentsInChildren(implementors);
                             implementors.Add(new EnemyAttackImplementor(data.timeBetweenAttacks, data.attackDamage));
+                            implementors.Add(new PlayerTargetTypeImplementor(spawnData.targetType));
                             
                             //In this example every kind of enemy generates the same list of EntityViews
                             //therefore I always use the same EntityDescriptor. However if the 

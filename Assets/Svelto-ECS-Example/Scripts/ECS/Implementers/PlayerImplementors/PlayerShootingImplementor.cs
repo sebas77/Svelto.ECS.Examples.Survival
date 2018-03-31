@@ -20,7 +20,7 @@ namespace Svelto.ECS.Example.Survive.Player
 
         public float   effectsDisplayTime { get { return _effectsDisplayTime; } }
         public Vector3 lineEndPosition    { set { _gunLine.SetPosition(1, value);} }
-        public Vector3 lineStartPosition  { set{ _gunLine.SetPosition(0, value);} }
+        public Vector3 lineStartPosition  { set { _gunLine.SetPosition(0, value);} }
         public bool    lineEnabled        { set { _gunLine.enabled = value; }}
         public bool    play
         {
@@ -42,7 +42,7 @@ namespace Svelto.ECS.Example.Survive.Player
 
             // Set up the references.
             _gunParticles = GetComponent<ParticleSystem> ();
-            _gunLine      = GetComponent <LineRenderer> ();
+            _gunLine      = GetComponent<LineRenderer> ();
             _gunAudio     = GetComponent<AudioSource> ();
             _gunLight     = GetComponent<Light> ();
 

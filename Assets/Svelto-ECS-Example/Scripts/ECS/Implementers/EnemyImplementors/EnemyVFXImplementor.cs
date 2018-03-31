@@ -5,13 +5,11 @@ namespace Svelto.ECS.Example.Survive.Enemies
     public class EnemyVFXImplementor : MonoBehaviour, IImplementor, 
         IEnemyVFXComponent
     {
-        public ParticleSystem hitParticles { get { return particle; } }
-
         void Awake ()
         {
             // Setting up the references.
             particle = GetComponentInChildren <ParticleSystem> ();
-            play = new DispatchOnSet<bool>(this.gameObject.GetInstanceID());
+            play = new DispatchOnSet<bool>(gameObject.GetInstanceID());
             play.NotifyOnValueSet(Play);
         }
 

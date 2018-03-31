@@ -1,12 +1,15 @@
-using UnityEngine;
-
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerTargetTypeImplementor : MonoBehaviour, IImplementor 
+    public class PlayerTargetTypeImplementor : IImplementor 
         , IPlayerTargetComponent
     {
-        public PlayerTargetType targetType;
+        readonly PlayerTargetType _targetType;
 
-        PlayerTargetType IPlayerTargetComponent.targetType { get { return targetType; } }
+        public PlayerTargetTypeImplementor(PlayerTargetType targetType)
+        {
+            _targetType = targetType;
+        }
+
+        public PlayerTargetType targetType { get { return _targetType; } }
     }
 }

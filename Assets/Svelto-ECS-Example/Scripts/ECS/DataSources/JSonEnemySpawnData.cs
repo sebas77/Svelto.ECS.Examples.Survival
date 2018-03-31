@@ -1,4 +1,5 @@
 using System;
+using Svelto.ECS.Example.Survive.Player;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive
@@ -9,11 +10,13 @@ namespace Svelto.ECS.Example.Survive
         public GameObject enemyPrefab;
         public SpawningStruct[] spawnPoints;
         public float spawnTime;
+        public PlayerTargetType targetType;
         
         public JSonEnemySpawnData(EnemySpawnData spawnData)
         {
             enemyPrefab = spawnData.enemyPrefab;
             spawnPoints = new SpawningStruct[spawnData.spawnPoints.Length];
+            targetType = spawnData.targetType;
 
             for (int i = 0; i < spawnPoints.Length; i++)
             {
@@ -31,6 +34,7 @@ namespace Svelto.ECS.Example.Survive
         public GameObject    enemyPrefab;
         public Transform[]   spawnPoints;
         public float         spawnTime;
+        public PlayerTargetType targetType;
     }
 
     [Serializable]
