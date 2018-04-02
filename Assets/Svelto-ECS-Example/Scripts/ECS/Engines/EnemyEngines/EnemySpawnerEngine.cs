@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Svelto.Tasks.Enumerators;
 using System.IO;
+using Svelto.DataStructures;
 using Svelto.ECS.Example.Survive.Player;
 using UnityEngine;
 
@@ -29,11 +30,12 @@ namespace Svelto.ECS.Example.Survive.Enemies
 //main loop. You can always exploit this trick when you now that the data you need
 //to use will never change            
             var enemiestoSpawn = ReadEnemySpawningDataServiceRequest();
+            var enemyAttackData = ReadEnemyAttackDataServiceRequest();
             
             float[] times = new float[enemiestoSpawn.Length];
 
             for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
-                times[i] = enemiestoSpawn[i].spawnTime;
+                times[i] = enemiestoSpawn[i].enemySpawnData.spawnTime;
 
             while (true)
             {
@@ -45,26 +47,20 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 {
                     for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
                     {
-                        var spawnData = enemiestoSpawn[i];
-
                         if (times[i] <= 0.0f)
                         {
+                            var spawnData = enemiestoSpawn[i];
                             // Find a random index between zero and one less than the number of spawn points.
-                            int spawnPointIndex = Random.Range(0, spawnData.spawnPoints.Length);
+                            int spawnPointIndex = Random.Range(0, spawnData.enemySpawnData.spawnPoints.Length);
 
                             // Create an instance of the enemy prefab at the randomly selected spawn point position and rotation.
-                            var go = _gameobjectFactory.Build(spawnData.enemyPrefab);
-                            
-                            //I have been lazy here and retrieving the data directly from the Monobehaviour
-                            //but still I am not creating an implementor for the purpose!
-                            var data = go.GetComponent<EnemyAttackDataHolder>();
-                            
+                            var go = _gameobjectFactory.Build(spawnData.enemySpawnData.enemyPrefab);
+                                                       
                             //we are going to use a mix of implementors as Monobehaviours and
                             //normal implementors here:                           
                             List<IImplementor> implementors = new List<IImplementor>();
                             go.GetComponentsInChildren(implementors);
-                            implementors.Add(new EnemyAttackImplementor(data.timeBetweenAttacks, data.attackDamage));
-                            implementors.Add(new PlayerTargetTypeImplementor(spawnData.targetType));
+                            implementors.Add(new PlayerTargetTypeImplementor(spawnData.enemySpawnData.targetType));
                             
                             //In this example every kind of enemy generates the same list of EntityViews
                             //therefore I always use the same EntityDescriptor. However if the 
@@ -72,20 +68,38 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             //engines, this would have been a good example where EntityDescriptorHolder
                             //could have been used to exploit the the kind of polymorphism explained
                             //in my articles.
-                            _entityFactory.BuildEntity<EnemyEntityDescriptor>(
-                                go.GetInstanceID(), implementors.ToArray());
+                            EnemyAttackStruct initialize = new EnemyAttackStruct();
+                            initialize.attackDamage = enemyAttackData[i].enemyAttackData.attackDamage;
+                            initialize.timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks;
+                            
+                            //The DynamicEntityDescriptorInfo here is just an excercise. This is a complex way
+                            //to build an entity, please see the other BuildEntity for normal cases.
+                            //DynamicEntityDescriptorInfo allows to extend the basic EntityDescriptor with
+                            //extra IEntityViewBuilder. In this case, for the sake of experimentation, 
+                            //I wanted the Enemy Entity to generate an EntityStruct too. EntityStructs are
+                            //used for super fast cache friendly code, which is totally unnecessary for this 
+                            //case, but at least I have an example to show their use.
+                            //In this case, I want the struct to be initialized with specific values.
+                            //I don't need a DynamicEntityDescriptorInfo to build EntityStructs, they
+                            //can be declared through EntityViewStructBuilder statically in a MixedEntityDescriptor.
+                            //however in this case I need it to be dynamic to pass the values to use for initialization!
+                            _entityFactory.BuildEntity(
+                                go.GetInstanceID(), 
+                                    new DynamicEntityDescriptorInfo<EnemyEntityDescriptor>(
+                                        new FasterList<IEntityViewBuilder> {new EntityViewStructBuilder<EnemyAttackStruct>(ref initialize)}), 
+                                        implementors.ToArray());
 
                             var transform = go.transform;
-                            var spawnInfo = spawnData.spawnPoints[spawnPointIndex];
+                            var spawnInfo = spawnData.enemySpawnData.spawnPoints[spawnPointIndex];
 
                             transform.position = spawnInfo.position;
                             transform.rotation = spawnInfo.rotation;
 
-                            times[i] = spawnData.spawnTime;
+                            times[i] = spawnData.enemySpawnData.spawnTime;
                             _numberOfEnemyToSpawn--;
                         }
 
-                        times[i] -= 1.0f;
+                        times[i] -= SECONDS_BETWEEN_SPAWNS;
                     }
                 }
             }
@@ -99,6 +113,16 @@ namespace Svelto.ECS.Example.Survive.Enemies
             
             return enemiestoSpawn;
         }
+        
+        static JSonEnemyAttackData[] ReadEnemyAttackDataServiceRequest()
+        {
+            string json = File.ReadAllText(Application.persistentDataPath + "/EnemyAttackData.json");
+            
+            JSonEnemyAttackData[] enemiestoSpawn = JsonHelper.getJsonArray<JSonEnemyAttackData>(json);
+            
+            return enemiestoSpawn;
+        }
+
 
         public void Step(ref DamageInfo token, int condition)
         {
@@ -107,8 +131,9 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         readonly Factories.IGameObjectFactory   _gameobjectFactory;
         readonly IEntityFactory                 _entityFactory;
-        readonly WaitForSecondsEnumerator       _waitForSecondsEnumerator = new WaitForSecondsEnumerator(1);
+        readonly WaitForSecondsEnumerator       _waitForSecondsEnumerator = new WaitForSecondsEnumerator(SECONDS_BETWEEN_SPAWNS);
 
         int     _numberOfEnemyToSpawn;
+        const int SECONDS_BETWEEN_SPAWNS = 1;
     }
 }

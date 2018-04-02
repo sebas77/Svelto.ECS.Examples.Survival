@@ -8,13 +8,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
         float sinkAnimSpeed { get; }
     }
 
-    public interface IEnemyAttackDataComponent: IComponent
-    {
-        int   damage         { get; }
-        float attackInterval { get; }
-        float timer          { get; set; }
-    }
-
     public interface IEnemyMovementComponent: IComponent
     {
         bool navMeshEnabled {  set; }
@@ -30,7 +23,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
     public struct EnemyCollisionData
     {
         public EGID otherEntityID;
-        public bool collides;
+        public readonly bool collides;
 
         public EnemyCollisionData(EGID otherEntityID, bool collides)
         {

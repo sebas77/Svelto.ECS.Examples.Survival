@@ -5,19 +5,22 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class SpawningData : MonoBehaviour
 {
-    static private bool serializedOnce;
+    static private bool serializedSpawnDataOnce;
+    static private bool serializedAttackDataOnce;
 
     void Awake()
     {
-        if (serializedOnce == false)
-        {
-            SerializeData();
-        }
+        if (serializedSpawnDataOnce == false)
+            SerializeSpawnData();
+
+        if (serializedAttackDataOnce == false)
+            SerializeAttackData();            
     }
-    public void SerializeData()
+    public void SerializeSpawnData()
     {
-        serializedOnce = true;
-        var data = GetComponents<EnemySpawnDataSource>();
+        serializedSpawnDataOnce = true;
+        
+        var data = GetComponents<EnemyData>();
         JSonEnemySpawnData[] spawningdata = new JSonEnemySpawnData[data.Length];
 
         for (int i = 0; i < data.Length; i++)
@@ -27,6 +30,23 @@ public class SpawningData : MonoBehaviour
 
         Utility.Console.Log(json);
 
-        File.WriteAllText(Application.persistentDataPath+ "/EnemySpawningData.json", json);
+        File.WriteAllText(Application.persistentDataPath + "/EnemySpawningData.json", json);
+    }
+    
+    public void SerializeAttackData()
+    {
+        var                  data         = GetComponents<EnemyData>();
+        JSonEnemyAttackData[] attackData = new JSonEnemyAttackData[data.Length];
+        
+        serializedAttackDataOnce = true;
+
+        for (int i = 0; i < data.Length; i++)
+            attackData[i] = new JSonEnemyAttackData(data[i].attackData);
+
+        var json = JsonHelper.arrayToJson(attackData);
+
+        Utility.Console.Log(json);
+
+        File.WriteAllText(Application.persistentDataPath + "/EnemyAttackData.json", json);
     }
 }

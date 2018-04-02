@@ -14,14 +14,12 @@ GameObject:
   - component: {fileID: 13500000}
   - component: {fileID: 19500000}
   - component: {fileID: 8200000}
-  - component: {fileID: 114272253794579396}
   - component: {fileID: 114990192060338038}
   - component: {fileID: 114432205145767808}
   - component: {fileID: 114491744935877456}
   - component: {fileID: 114213345132320286}
   - component: {fileID: 114235789861668310}
   - component: {fileID: 114065615883026690}
-  - component: {fileID: 114594475276058976}
   m_Layer: 10
   m_Name: Hellephant
   m_TagString: Untagged
@@ -7303,19 +7301,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particle: {fileID: 19800002}
---- !u!114 &114272253794579396
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 018e1ad9e2c6ac04fb7dff5a53f6dad1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timeBetweenAttacks: 0.5
-  attackDamage: 30
 --- !u!114 &114432205145767808
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7338,18 +7323,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ff5c645416db24cb1bf2a3f8b43b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114594475276058976
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc8154b7fcd24eddba7ffc52634c33d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetType: 2
 --- !u!114 &114990192060338038
 MonoBehaviour:
   m_ObjectHideFlags: 1
