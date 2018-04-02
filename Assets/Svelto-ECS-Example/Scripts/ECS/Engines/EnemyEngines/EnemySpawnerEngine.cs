@@ -32,14 +32,15 @@ namespace Svelto.ECS.Example.Survive.Enemies
             var enemiestoSpawn = ReadEnemySpawningDataServiceRequest();
             var enemyAttackData = ReadEnemyAttackDataServiceRequest();
             
-            float[] times = new float[enemiestoSpawn.Length];
+            float[] spawningTimes = new float[enemiestoSpawn.Length];
 
             for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
-                times[i] = enemiestoSpawn[i].enemySpawnData.spawnTime;
+                spawningTimes[i] = enemiestoSpawn[i].enemySpawnData.spawnTime;
 
             while (true)
             {
-//Svelto.Tasks allows to yield UnityYield instructions but this comes with a performance hit
+                
+//Svelto.Tasks can yield Unity YieldInstructions but this comes with a performance hit
 //so the fastest solution is always to use custom enumerators. To be honest the hit is minimal
 //but it's better to not abuse it.                
                 yield return _waitForSecondsEnumerator;
@@ -47,7 +48,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 {
                     for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
                     {
-                        if (times[i] <= 0.0f)
+                        if (spawningTimes[i] <= 0.0f)
                         {
                             var spawnData = enemiestoSpawn[i];
                             // Find a random index between zero and one less than the number of spawn points.
@@ -64,7 +65,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             
                             //In this example every kind of enemy generates the same list of EntityViews
                             //therefore I always use the same EntityDescriptor. However if the 
-                            //different enemies had to create different EntityViews for different
+                            //different enemies had to create different EntityViews for differentaww
                             //engines, this would have been a good example where EntityDescriptorHolder
                             //could have been used to exploit the the kind of polymorphism explained
                             //in my articles.
@@ -91,15 +92,15 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
                             var transform = go.transform;
                             var spawnInfo = spawnData.enemySpawnData.spawnPoints[spawnPointIndex];
-
+                            
                             transform.position = spawnInfo.position;
                             transform.rotation = spawnInfo.rotation;
 
-                            times[i] = spawnData.enemySpawnData.spawnTime;
+                            spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
                             _numberOfEnemyToSpawn--;
                         }
 
-                        times[i] -= SECONDS_BETWEEN_SPAWNS;
+                        spawningTimes[i] -= SECONDS_BETWEEN_SPAWNS;
                     }
                 }
             }
@@ -122,7 +123,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
             
             return enemiestoSpawn;
         }
-
 
         public void Step(ref DamageInfo token, int condition)
         {

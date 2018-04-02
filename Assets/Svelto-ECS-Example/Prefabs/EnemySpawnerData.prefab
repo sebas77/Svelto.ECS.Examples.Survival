@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1922506580865240}
+  m_IsPrefabParent: 1
+--- !u!1 &1922506580865240
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4598746901073556}
+  - component: {fileID: 114233045665104508}
+  - component: {fileID: 114896541645062730}
+  - component: {fileID: 114611887252346438}
+  - component: {fileID: 114451084322188494}
+  m_Layer: 0
+  m_Name: EnemySpawnerData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!4 &4598746901073556
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1922506580865240}
+  m_LocalRotation: {x: -0, y: 0.3826835, z: -0, w: 0.92387956}
+  m_LocalPosition: {x: -5.3801255, y: 1.3608818, z: -1.7222899}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114233045665104508
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1922506580865240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bf862ffeb7e74943a1729f1cff11eb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnData:
+    enemyPrefab: {fileID: 100002, guid: e5171f72421770240bd7c3989fe351e3, type: 2}
+    spawnPoints:
+    - {fileID: 4632516573451786, guid: ebe4d20d1dd279047bb9865a296b0390, type: 2}
+    spawnTime: 3
+    targetType: 0
+  attackData:
+    timeBetweenAttacks: 0.5
+    attackDamage: 10
+--- !u!114 &114451084322188494
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1922506580865240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c359e1932f375d4ab05c8cb21988ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114611887252346438
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1922506580865240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bf862ffeb7e74943a1729f1cff11eb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnData:
+    enemyPrefab: {fileID: 100000, guid: 548c56f4bcf4db24b8aa057e9846a005, type: 2}
+    spawnPoints:
+    - {fileID: 4390937213714950, guid: 586348114209d8141a1c0fd09adb4231, type: 2}
+    spawnTime: 15
+    targetType: 2
+  attackData:
+    timeBetweenAttacks: 0.5
+    attackDamage: 30
+--- !u!114 &114896541645062730
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1922506580865240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bf862ffeb7e74943a1729f1cff11eb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnData:
+    enemyPrefab: {fileID: 100000, guid: ea3c2728ef33e3a4d99527a86cda6465, type: 2}
+    spawnPoints:
+    - {fileID: 4435085146943598, guid: 74c96b0351ea22b46a28ffcbf4ab44b5, type: 2}
+    spawnTime: 3
+    targetType: 1
+  attackData:
+    timeBetweenAttacks: 0.5
+    attackDamage: 15
