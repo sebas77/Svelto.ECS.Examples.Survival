@@ -4506,6 +4506,48 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.4878683, y: 0.8788283, z: 1.2891334}
   m_Center: {x: 0.24413626, y: 0.35415924, z: 0.14878966}
+--- !u!1001 &1998351512
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0.3826835
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.92387956
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598746901073556, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 40ab5a57b3b4a764593975a4f084fc69, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &2046443844
 GameObject:
   m_ObjectHideFlags: 0

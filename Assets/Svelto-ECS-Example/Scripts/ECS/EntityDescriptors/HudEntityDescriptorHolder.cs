@@ -2,7 +2,10 @@
 
 namespace Svelto.ECS.Example.Survive.HUD
 {
+	public class HudEntityDescriptor : GenericEntityDescriptor<HUDEntityView>
+	{}
+	
     [DisallowMultipleComponent]
-	public class HudEntityDescriptorHolder:GenericEntityDescriptorHolder<GenericEntityDescriptor<HUDEntityView>>
+	public class HudEntityDescriptorHolder:GenericEntityDescriptorHolder<HudEntityDescriptor>
 	{}
 }
