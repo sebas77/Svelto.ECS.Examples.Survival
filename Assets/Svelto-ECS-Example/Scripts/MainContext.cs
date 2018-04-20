@@ -275,19 +275,19 @@ namespace Svelto.ECS.Example.Survive
 
         void BuildEntitiesFromScene(UnityContext contextHolder)
         {
-            //An EntityDescriptorHolder is a special Svelto.ECS class created to exploit
+            /An EntityDescriptorHolder is a special Svelto.ECS class created to exploit
             //GameObjects to dynamically retrieve the Entity information attached to it.
-            //Basically a GameObject can be used to hold all the information needed to create
-            //an Entity and later queries to build the entitity itself.
-            //This allow to trigger a sort of polyformic code that can be re-used to 
+            //A GameObject can be used to hold all the information needed to create
+            //an Entity.
+            //This allows to trigger a sort of polymorphic code that can be re-used to 
             //create several type of entities.
             
             IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
             
-            //However this common pattern in Svelto.ECS application exists to automatically
-            //create entities from gameobjects already presented in the scene.
-            //I still suggest to avoid this method though and create entities always
-            //manually. Basically EntityDescriptorHolder should be avoided
+            //Although this common pattern in Svelto.ECS application exists to automatically
+            //create entities from gameobjects already presented in the scene,
+            //I still suggest to avoid this method and create entities always
+            //explcitly. EntityDescriptorHolder should be avoided
             //whenver not strictly necessary.
 
             for (int i = 0; i < entities.Length; i++)
