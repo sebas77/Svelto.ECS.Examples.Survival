@@ -58,9 +58,9 @@ namespace Svelto.ECS.Example.Survive.Camera
             }
         }
 
-        readonly ITime _time;
+        readonly ITime         _time;
         CameraTargetEntityView _cameraTargetEntityView;
-        CameraEntityView _cameraEntityView;
-        ITaskRoutine _taskRoutine;
+        CameraEntityView       _cameraEntityView;
+        readonly ITaskRoutine  _taskRoutine;
     }
 }

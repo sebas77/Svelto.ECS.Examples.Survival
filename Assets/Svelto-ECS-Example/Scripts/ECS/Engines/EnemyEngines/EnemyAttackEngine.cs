@@ -63,7 +63,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 }
 
                 int count;
-                var enemiesAttackData = entityViewsDB.QueryEntityViewsAsArray<EnemyAttackStruct>(out count);
+                var enemiesAttackData = entityViewsDB.QueryEntityViewsCacheFriendly<EnemyAttackStruct>(out count);
                 
                 //this is more complex than needed code is just to show how you can use entity structs
                 //this case is banal, entity structs should be use to handle hundreds or thousands
@@ -91,7 +91,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             //the IEnemyTriggerComponent implementors sets a the collides boolean
                             //whenever anything enters in the trigger range, but there is not more logic
                             //we have to check here if the colliding entity is actually an EnemyTarget
-                            if (enemiesAttackData[enemyIndex].entityInRange.otherEntityID.IsEqualTo(targetEntityView.ID))
+                            if (enemiesAttackData[enemyIndex].entityInRange.otherEntityID.GID == targetEntityView.ID.GID)
                             {
                                 enemiesAttackData[enemyIndex].timer += _time.deltaTime;
                                 
