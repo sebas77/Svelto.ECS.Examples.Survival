@@ -10,7 +10,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         
         public void Step(ref DamageInfo token, int condition)
         {
-            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+            var hudEntityViews = entityViewsDB.QueryEntities<HUDEntityView>();
 
             if (hudEntityViews.Count > 0)
             {

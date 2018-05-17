@@ -15,13 +15,13 @@ namespace Svelto.ECS.Example.Survive.Enemies
         {
             while (true)
             {
-                var enemyTargetEntityViews = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>();
+                var enemyTargetEntityViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>();
 
                 if (enemyTargetEntityViews.Count > 0)
                 {
                     var targetEntityView = enemyTargetEntityViews[0];
 
-                    var enemies = entityViewsDB.QueryEntityViews<EnemyEntityView>();
+                    var enemies = entityViewsDB.QueryEntities<EnemyEntityView>();
 
                     for (var i = 0; i < enemies.Count; i++)
                     {

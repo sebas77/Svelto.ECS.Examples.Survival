@@ -24,25 +24,19 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         }
 
         protected override void Add(GunEntityView entityView)
-        {
-            _playerGunEntityView = entityView;
-        }
+        {}
 
         protected override void Remove(GunEntityView entityView)
         {
             _taskRoutine.Stop();
-            _playerGunEntityView = null;
         }
 
         protected override void Add(PlayerEntityView entityView)
-        {
-            _playerEntityView = entityView;
-        }
+        {}
 
         protected override void Remove(PlayerEntityView entityView)
         {
             _taskRoutine.Stop();
-            _playerEntityView = null;
         }
 
         IEnumerator Tick()
@@ -75,9 +69,8 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             
             if (entityHit != -1)
             {
-                PlayerTargetEntityView targetComponent;
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (entityViewsDB.TryQueryEntityView(new EGID(entityHit), out targetComponent))
+                if (entityViewsDB.EntityExists<PlayerTargetEntityView>(new EGID(entityHit)))
                 {
                     var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, new EGID(entityHit), EntityDamagedType.Enemy);
                     _enemyDamageSequence.Next(this, ref damageInfo);
@@ -95,9 +88,6 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         readonly ISequencer            _enemyDamageSequence;
         readonly IRayCaster            _rayCaster;
 
-        PlayerEntityView _playerEntityView;
-        GunEntityView    _playerGunEntityView;
-        
         readonly ITime _time;
         readonly ITaskRoutine     _taskRoutine;
 

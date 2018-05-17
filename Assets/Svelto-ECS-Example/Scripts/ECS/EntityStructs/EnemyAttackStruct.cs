@@ -2,10 +2,10 @@ namespace Svelto.ECS.Example.Survive.Enemies
 {
     public struct EnemyAttackStruct:IEntityData
     {
-        public EnemyCollisionData entityInRange;
-        public float timeBetweenAttack; // The time in seconds between each attack.
-        public int   attackDamage ;   // The amount of health taken away per attack.
-        public float              timer;
+        public EnemyCollisionData    entityInRange;
+        public float                 timeBetweenAttack; // The time in seconds between each attack.
+        public int                   attackDamage ;   // The amount of health taken away per attack.
+        public float                 timer;
         
         public EGID ID { get; set; }
     }

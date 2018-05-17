@@ -1,10 +1,11 @@
 namespace Svelto.ECS.Example.Survive.HUD
 {
-    public class HUDEntityView : EntityView
+    public struct HUDEntityView : IEntityData
     {
         public IAnimationComponent      HUDAnimator;
         public IDamageHUDComponent      damageImageComponent;
         public IHealthSliderComponent   healthSliderComponent;
         public IScoreComponent          scoreComponent;
+        public EGID ID { get; set; }
     }
 }

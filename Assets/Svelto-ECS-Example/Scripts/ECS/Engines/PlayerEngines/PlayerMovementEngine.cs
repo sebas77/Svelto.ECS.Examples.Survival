@@ -32,7 +32,7 @@ namespace Svelto.ECS.Example.Survive.Player
             //some safe assumption here: I assume that the player entity is created
             //and added in the EnginesRoot when this code runs.
             //I assume that there is just one player entity in the array of entities.
-            var playerEntityViews = entityViewsDB.QueryEntityViews<PlayerEntityView>();
+            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>();
             var playerEntityView = playerEntityViews[0];
             
             while (true)
@@ -89,7 +89,7 @@ namespace Svelto.ECS.Example.Survive.Player
 
         void StopMovementOnDeath(EGID ID)
         {
-            var playerEntityView = entityViewsDB.QueryEntityViews<PlayerEntityView>()[0]; 
+            var playerEntityView = entityViewsDB.QueryEntities<PlayerEntityView>()[0]; 
             playerEntityView.rigidBodyComponent.isKinematic = true;
         }
 

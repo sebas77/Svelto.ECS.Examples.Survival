@@ -37,11 +37,11 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 // this is more than a sophistication, it actually the implementation
                 // of the rule that every engine must use its own set of
                 // EntityViews to promote encapsulation and modularity
-                var targetEntitieViews = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>();
+                var targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>();
                 while (targetEntitieViews.Count == 0)
                 {
                     yield return null;
-                    targetEntitieViews = entityViewsDB.QueryEntityViews<EnemyTargetEntityView>();
+                    targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>();
                 }
 
                 //there is a sneaky bug that can be caused by this routine. It can be solved in several
@@ -55,15 +55,15 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 //- removing the entity the frame after and not immediatly (a bit hacky)
                 //- add this engine in the sequencer to know when the player is death to stop
                 //this taskroutine
-                var enemies = entityViewsDB.QueryEntityViews<EnemyAttackEntityView>();
+                var enemies = entityViewsDB.QueryEntities<EnemyAttackEntityView>();
                 while (enemies.Count == 0)
                 {
                     yield return null;
-                    enemies = entityViewsDB.QueryEntityViews<EnemyAttackEntityView>();
+                    enemies = entityViewsDB.QueryEntities<EnemyAttackEntityView>();
                 }
 
                 int count;
-                var enemiesAttackData = entityViewsDB.QueryEntityViewsCacheFriendly<EnemyAttackStruct>(out count);
+                var enemiesAttackData = entityViewsDB.QueryEntitiesCacheFriendly<EnemyAttackStruct>(out count);
                 
                 //this is more complex than needed code is just to show how you can use entity structs
                 //this case is banal, entity structs should be use to handle hundreds or thousands

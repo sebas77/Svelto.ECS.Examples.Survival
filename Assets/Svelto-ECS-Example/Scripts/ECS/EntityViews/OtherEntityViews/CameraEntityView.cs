@@ -1,6 +1,6 @@
 namespace Svelto.ECS.Example.Survive.Camera
 {
-    public class CameraEntityView: EntityView
+    public struct CameraEntityView: IEntityData
     {
         public ITransformComponent transformComponent;
         public IPositionComponent  positionComponent;

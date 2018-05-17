@@ -1,7 +1,8 @@
 namespace Svelto.ECS.Example.Survive
 {
-    public class HealthEntityView: EntityView
+    public struct HealthEntityView: IEntityData
     {
         public IHealthComponent healthComponent;
+        public EGID ID { get; set; }
     }
 }

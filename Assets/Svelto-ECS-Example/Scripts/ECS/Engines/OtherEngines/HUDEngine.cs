@@ -33,7 +33,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         {
             while (true)
             {
-                var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+                var hudEntityViews = entityViewsDB.QueryEntities<HUDEntityView>();
                 for (int i = 0; i < hudEntityViews.Count; i++)
                 {
                     var damageComponent = hudEntityViews[i].damageImageComponent;
@@ -53,7 +53,7 @@ namespace Svelto.ECS.Example.Survive.HUD
 
         void OnDeadEvent()
         {
-            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+            var hudEntityViews = entityViewsDB.QueryEntities<HUDEntityView>();
             for (int i = 0; i < hudEntityViews.Count; i++)
                 hudEntityViews[i].healthSliderComponent.value = 0;
 
@@ -62,7 +62,7 @@ namespace Svelto.ECS.Example.Survive.HUD
 
         void UpdateSlider(DamageInfo damaged)
         {
-            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+            var hudEntityViews = entityViewsDB.QueryEntities<HUDEntityView>();
             for (int i = 0; i < hudEntityViews.Count; i++)
             {
                 var guiEntityView = hudEntityViews[i];
@@ -82,7 +82,7 @@ namespace Svelto.ECS.Example.Survive.HUD
             _waitForSeconds.Reset(5);
             yield return _waitForSeconds;
 
-            var hudEntityViews = entityViewsDB.QueryEntityViews<HUDEntityView>();
+            var hudEntityViews = entityViewsDB.QueryEntities<HUDEntityView>();
             for (int i = 0; i < hudEntityViews.Count; i++)
                 hudEntityViews[i].HUDAnimator.playAnimation = "GameOver";
 

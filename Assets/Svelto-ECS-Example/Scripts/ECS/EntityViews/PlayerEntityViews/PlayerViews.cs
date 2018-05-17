@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerEntityView : EntityView
+    public struct PlayerEntityView : IEntityData
     {
         public IPlayerInputComponent inputComponent;
         
@@ -11,6 +11,7 @@ namespace Svelto.ECS.Example.Survive.Player
         public IPositionComponent      positionComponent;
         public IAnimationComponent     animationComponent;
         public ITransformComponent     transformComponent;
+        public EGID ID { get; set; }
     }
 
     public interface IPlayerInputComponent
@@ -20,18 +21,20 @@ namespace Svelto.ECS.Example.Survive.Player
         bool fire { get; set; }
     }
 
-    public class PlayerTargetEntityView : EntityView
+    public struct PlayerTargetEntityView : IEntityData
     {
         public IPlayerTargetComponent     playerTargetComponent;
+        public EGID ID { get; set; }
     }
 }
 
 namespace Svelto.ECS.Example.Survive.Player.Gun
 {
-    public class GunEntityView : EntityView
+    public struct GunEntityView : IEntityData
     {
         public IGunAttributesComponent   gunComponent;
         public IGunFXComponent           gunFXComponent;
         public IGunHitTargetComponent    gunHitTargetComponent;
+        public EGID ID { get; set; }
     }
 }
