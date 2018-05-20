@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerMovementEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<DamageInfo>, IQueryingEntityViewEngine
+    public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityView>, IStep<DamageInfo>, IQueryingEntityViewEngine
     {
         public IEntityViewsDB entityViewsDB { get; set; }
         public void Ready()
@@ -17,24 +17,20 @@ namespace Svelto.ECS.Example.Survive.Player
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicsTick()).SetScheduler(StandardSchedulers.physicScheduler);
         }
 
-        protected override void Add(PlayerEntityView entityView)
+        protected override void Add(ref PlayerEntityView entityView)
         {
             _taskRoutine.Start();
         }
 
-        protected override void Remove(PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityView entityView)
         {
             _taskRoutine.Stop();
         }
         
         IEnumerator PhysicsTick()
         {  
-            //some safe assumption here: I assume that the player entity is created
-            //and added in the EnginesRoot when this code runs.
-            //I assume that there is just one player entity in the array of entities.
-            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>();
-            var playerEntityView = playerEntityViews[0];
-            
+            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+
             while (true)
             {   
                 Movement(playerEntityView);

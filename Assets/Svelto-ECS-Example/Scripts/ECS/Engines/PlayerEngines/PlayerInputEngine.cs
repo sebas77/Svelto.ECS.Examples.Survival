@@ -9,8 +9,11 @@ namespace Svelto.ECS.Example.Survive.Player
     /// if you need to test input, you can mock this class
     /// alternativaly you can mock the implementor.
     /// </summary>
-    public class PlayerInputEngine:SingleEntityViewEngine<PlayerEntityView>
+    public class PlayerInputEngine:SingleEntityEngine<PlayerEntityView>, IQueryingEntityViewEngine
     {
+        public IEntityViewsDB entityViewsDB { get; set; }
+        public void Ready()
+        {}
         public PlayerInputEngine()
         {
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(ReadInput());
@@ -18,32 +21,36 @@ namespace Svelto.ECS.Example.Survive.Player
 
         IEnumerator ReadInput()
         {
+            while (entityViewsDB.Has<PlayerEntityView>() == false)
+            {
+                yield return null; //skip a frame
+            }
+            
+            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+           
             while (true)
             {
                 float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
                 float v = CrossPlatformInputManager.GetAxisRaw("Vertical");
 
-                _playerEntityView.inputComponent.input = new Vector3(h, 0f, v);
-                _playerEntityView.inputComponent.camRay = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-                _playerEntityView.inputComponent.fire = Input.GetButton("Fire1");
+                playerEntityView.inputComponent.input = new Vector3(h, 0f, v);
+                playerEntityView.inputComponent.camRay = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+                playerEntityView.inputComponent.fire = Input.GetButton("Fire1");
                 
                 yield return null;
             }
         }
 
-        protected override void Add(PlayerEntityView entityView)
+        protected override void Add(ref PlayerEntityView entityView)
         {
-            _playerEntityView = entityView;
             _taskRoutine.Start();
         }
 
-        protected override void Remove(PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityView entityView)
         {
             _taskRoutine.Stop();
-            _playerEntityView = null;
         }
         
         ITaskRoutine _taskRoutine;
-        PlayerEntityView _playerEntityView;
     }
 }

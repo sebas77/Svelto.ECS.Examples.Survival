@@ -4,7 +4,7 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Player.Gun
 {
-    public class PlayerGunShootingEngine : MultiEntityViewsEngine<GunEntityView, PlayerEntityView>, 
+    public class PlayerGunShootingEngine : MultiEntitiesEngine<GunEntityView, PlayerEntityView>, 
         IQueryingEntityViewEngine
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
@@ -23,35 +23,41 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
                                                .SetScheduler(StandardSchedulers.physicScheduler);
         }
 
-        protected override void Add(GunEntityView entityView)
+        protected override void Add(ref GunEntityView entityView)
         {}
 
-        protected override void Remove(GunEntityView entityView)
+        protected override void Remove(ref GunEntityView entityView)
         {
             _taskRoutine.Stop();
         }
 
-        protected override void Add(PlayerEntityView entityView)
+        protected override void Add(ref PlayerEntityView entityView)
         {}
 
-        protected override void Remove(PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityView entityView)
         {
             _taskRoutine.Stop();
         }
 
         IEnumerator Tick()
         {
-            while (_playerEntityView == null || _playerGunEntityView == null) yield return null;
+            while (entityViewsDB.Has<PlayerEntityView>() == false || entityViewsDB.Has<GunEntityView>() == false)
+            {
+                yield return null; //skip a frame
+            }
+
+            GunEntityView playerGunEntityView; entityViewsDB.Fetch(out playerGunEntityView);
+            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
             
             while (true)
             {
-                var playerGunComponent = _playerGunEntityView.gunComponent;
+                var playerGunComponent = playerGunEntityView.gunComponent;
 
                 playerGunComponent.timer += _time.deltaTime;
                 
-                if (_playerEntityView.inputComponent.fire &&
-                    playerGunComponent.timer >= _playerGunEntityView.gunComponent.timeBetweenBullets)
-                    Shoot(_playerGunEntityView);
+                if (playerEntityView.inputComponent.fire &&
+                    playerGunComponent.timer >= playerGunEntityView.gunComponent.timeBetweenBullets)
+                    Shoot(playerGunEntityView);
 
                 yield return null;
             }
@@ -70,7 +76,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             if (entityHit != -1)
             {
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (entityViewsDB.EntityExists<PlayerTargetEntityView>(new EGID(entityHit)))
+                if (entityViewsDB.Exists<PlayerTargetEntityView>(new EGID(entityHit)))
                 {
                     var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, new EGID(entityHit), EntityDamagedType.Enemy);
                     _enemyDamageSequence.Next(this, ref damageInfo);

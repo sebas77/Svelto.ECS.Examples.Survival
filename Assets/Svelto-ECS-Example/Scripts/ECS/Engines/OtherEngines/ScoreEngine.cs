@@ -15,8 +15,9 @@ namespace Svelto.ECS.Example.Survive.HUD
             if (hudEntityViews.Count > 0)
             {
                 var guiEntityView = hudEntityViews[0];
-                
-                var playerTarget = entityViewsDB.QueryEntityView<PlayerTargetEntityView>(token.entityDamagedID);
+
+                PlayerTargetEntityView playerTarget;
+                entityViewsDB.TryQueryEntityView(token.entityDamagedID, out playerTarget);
                 var targetType   = playerTarget.playerTargetComponent.targetType;
                 
                 switch (targetType)

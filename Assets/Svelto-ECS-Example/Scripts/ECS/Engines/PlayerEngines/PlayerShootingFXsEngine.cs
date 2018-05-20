@@ -4,7 +4,7 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Player.Gun
 {
-    public class PlayerGunShootingFXsEngine : SingleEntityViewEngine<GunEntityView>, IQueryingEntityViewEngine
+    public class PlayerGunShootingFXsEngine : SingleEntityEngine<GunEntityView>, IQueryingEntityViewEngine
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -21,21 +21,19 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         /// querying is always cleaner.
         /// </summary>
         /// <param name="playerGunEntityView"></param>
-        protected override void Add(GunEntityView playerGunEntityView)
+        protected override void Add(ref GunEntityView playerGunEntityView)
         {
-            _playerGunEntityView = playerGunEntityView;
             playerGunEntityView.gunHitTargetComponent.targetHit.NotifyOnValueSet(Shoot);
-            _waitForSeconds = new WaitForSeconds(_playerGunEntityView.gunComponent.timeBetweenBullets * _playerGunEntityView.gunFXComponent.effectsDisplayTime);
+            _waitForSeconds = new WaitForSeconds(playerGunEntityView.gunComponent.timeBetweenBullets * playerGunEntityView.gunFXComponent.effectsDisplayTime);
         }
 
-        protected override void Remove(GunEntityView playerGunEntityView)
-        {
-            _playerGunEntityView = null;
-        }
+        protected override void Remove(ref GunEntityView playerGunEntityView)
+        {}
 
         void Shoot(int ID, bool targetHasBeenHit)
         {
-            var playerGunEntityView = entityViewsDB.QueryEntityView<GunEntityView>(new EGID(ID));
+            GunEntityView playerGunEntityView;
+            entityViewsDB.TryQueryEntityView(new EGID(ID), out playerGunEntityView);
 
             var gunFXComponent = playerGunEntityView.gunFXComponent;
 
@@ -82,14 +80,15 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         void DisableEffects ()
         {
-            var fxComponent = _playerGunEntityView.gunFXComponent;
+            GunEntityView    playerGunEntityView; entityViewsDB.Fetch(out playerGunEntityView);
+
+            var fxComponent = playerGunEntityView.gunFXComponent;
             // Disable the line renderer and the light.
             fxComponent.lineEnabled = false;
             fxComponent.lightEnabled = false;
         }
 
         ITaskRoutine   _taskRoutine;
-        GunEntityView  _playerGunEntityView;
         WaitForSeconds _waitForSeconds;
     }
 }

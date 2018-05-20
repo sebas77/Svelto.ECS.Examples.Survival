@@ -14,7 +14,8 @@ namespace Svelto.ECS.Example.Survive
 
         public void Step(ref DamageInfo damage, int condition)
         {
-            var entityView      = entityViewsDB.QueryEntityView<HealthEntityView>(damage.entityDamagedID);
+            HealthEntityView entityView;
+            entityViewsDB.TryQueryEntityView(damage.entityDamagedID, out entityView);
             var healthComponent = entityView.healthComponent;
 
             healthComponent.currentHealth -= damage.damagePerShot;

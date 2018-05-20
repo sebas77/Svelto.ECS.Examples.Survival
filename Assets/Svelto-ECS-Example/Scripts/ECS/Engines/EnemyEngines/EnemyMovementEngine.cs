@@ -37,7 +37,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void StopEnemyOnDeath(EGID targetID)
         {
-            EnemyEntityView entityView = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
+            EnemyEntityView entityView;
+            entityViewsDB.TryQueryEntityView(targetID, out entityView);
             
             entityView.movementComponent.navMeshEnabled = false;
             entityView.movementComponent.setCapsuleAsTrigger = true;

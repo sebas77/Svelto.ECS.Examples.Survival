@@ -70,8 +70,8 @@ namespace Svelto.ECS.Example.Survive.HUD
 
                 damageComponent.imageColor = damageComponent.flashColor;
 
-                var hudDamageEntityView =
-                    entityViewsDB.QueryEntityView<HUDDamageEntityView>(damaged.entityDamagedID);
+                HUDDamageEntityView hudDamageEntityView;
+                    entityViewsDB.TryQueryEntityView(damaged.entityDamagedID, out hudDamageEntityView);
 
                 guiEntityView.healthSliderComponent.value = hudDamageEntityView.healthComponent.currentHealth;
             }

@@ -3,8 +3,14 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerAnimationEngine : SingleEntityViewEngine<PlayerEntityView>, IStep<DamageInfo>
+    public class PlayerAnimationEngine : SingleEntityEngine<PlayerEntityView>, IStep<DamageInfo>, IQueryingEntityViewEngine
     {
+        public IEntityViewsDB entityViewsDB { get; set; }
+        public void Ready()
+        {
+            _taskRoutine.Start();
+        }
+        
         public PlayerAnimationEngine()
         {
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicsTick()).SetScheduler(StandardSchedulers.physicScheduler);
@@ -12,15 +18,22 @@ namespace Svelto.ECS.Example.Survive.Player
         
         IEnumerator PhysicsTick()
         {
+            while (entityViewsDB.Has<PlayerEntityView>() == false)
+            {
+                yield return null; //skip a frame
+            }
+            
+            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+            
             while (true)
             {
-                var input = _playerEntityView.inputComponent.input;
+                var input = playerEntityView.inputComponent.input;
 
                 // Create a boolean that is true if either of the input axes is non-zero.
                 bool walking = input.x != 0f || input.z != 0f;
 
                 // Tell the animator whether or not the player is walking.
-                _playerEntityView.animationComponent.setBool("IsWalking", walking);
+                playerEntityView.animationComponent.setBool("IsWalking", walking);
 
                 yield return null;
             }
@@ -28,7 +41,9 @@ namespace Svelto.ECS.Example.Survive.Player
 
         void TriggerDeathAnimation(EGID targetID)
         {
-            _playerEntityView.animationComponent.playAnimation = "Die";
+            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+            
+            playerEntityView.animationComponent.playAnimation = "Die";
         }
 
         public void Step(ref DamageInfo token, int condition)
@@ -36,19 +51,14 @@ namespace Svelto.ECS.Example.Survive.Player
             TriggerDeathAnimation(token.entityDamagedID);
         }
 
-        protected override void Add(PlayerEntityView entityView)
-        {
-            _playerEntityView = entityView;
-            _taskRoutine.Start();
-        }
+        protected override void Add(ref PlayerEntityView entityView)
+        {}
 
-        protected override void Remove(PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityView entityView)
         {
             _taskRoutine.Stop();
-            _playerEntityView = null;
         }
         
-        PlayerEntityView _playerEntityView;
         readonly ITaskRoutine _taskRoutine;
     }
 }

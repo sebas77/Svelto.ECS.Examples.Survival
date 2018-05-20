@@ -9,7 +9,8 @@ namespace Svelto.ECS.Example.Survive.Sound
 
         void TriggerDeathSound(EGID targetID)
         {
-            var audioEntityView =  entityViewsDB.QueryEntityView<DamageSoundEntityView>(targetID);
+            DamageSoundEntityView audioEntityView;
+            entityViewsDB.TryQueryEntityView(targetID, out audioEntityView);
             var audioComponent = audioEntityView.audioComponent;
 
             audioComponent.playOneShot = AudioType.death;
@@ -17,7 +18,8 @@ namespace Svelto.ECS.Example.Survive.Sound
 
         void TriggerDamageAudio(EGID sender)
         {
-           var audioEntityView = entityViewsDB.QueryEntityView<DamageSoundEntityView>(sender);
+            DamageSoundEntityView audioEntityView;
+            entityViewsDB.TryQueryEntityView(sender, out audioEntityView);
            var audioComponent = audioEntityView.audioComponent;
 
            audioComponent.playOneShot = AudioType.damage;

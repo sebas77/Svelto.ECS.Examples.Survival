@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyAttackEngine : SingleEntityViewEngine<EnemyTargetEntityView>, IQueryingEntityViewEngine
+    public class EnemyAttackEngine : SingleEntityEngine<EnemyTargetEntityView>, IQueryingEntityViewEngine
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -18,12 +18,12 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(CheckIfHittingEnemyTarget()).SetScheduler(StandardSchedulers.physicScheduler);
         }
 
-        protected override void Add(EnemyTargetEntityView entity)
+        protected override void Add(ref EnemyTargetEntityView entity)
         {
             _taskRoutine.Start();
         }
 
-        protected override void Remove(EnemyTargetEntityView entity)
+        protected override void Remove(ref EnemyTargetEntityView entity)
         {
             _taskRoutine.Stop();
         }

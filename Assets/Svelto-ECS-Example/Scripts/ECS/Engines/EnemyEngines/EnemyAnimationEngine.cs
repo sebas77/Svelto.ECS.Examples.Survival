@@ -12,7 +12,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void EntityDamaged(DamageInfo damageInfo)
         {
-            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(damageInfo.entityDamagedID);
+            EnemyEntityView entity;
+            entityViewsDB.TryQueryEntityView(damageInfo.entityDamagedID, out entity);
 
             entity.vfxComponent.position = damageInfo.damagePoint;
             entity.vfxComponent.play.value = true;
@@ -28,7 +29,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void TriggerDeathAnimation(EGID targetID)
         {
-            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(targetID);
+            EnemyEntityView entity;
+            entityViewsDB.TryQueryEntityView(targetID, out entity);
             
             entity.animationComponent.playAnimation = "Dead";
         }

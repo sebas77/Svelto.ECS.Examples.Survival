@@ -13,7 +13,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
         
         public void Step(ref DamageInfo token, int condition)
         {
-            var entity = entityViewsDB.QueryEntityView<EnemyEntityView>(token.entityDamagedID);
+            EnemyEntityView entity;
+            entityViewsDB.TryQueryEntityView(token.entityDamagedID, out entity);
             
             _entityFunctions.RemoveEntity(entity.ID);
             

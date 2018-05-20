@@ -7,60 +7,62 @@ namespace Svelto.ECS.Example.Survive.Camera
     //First step identify the entity type we want the engine to handle: CameraEntity
     //Second step name the engine according the behaviour and the entity: I.E.: CameraFollowTargetEngine
     //Third step start to write the code and create classes/fields as needed using refactoring tools 
-    public class CameraFollowTargetEngine : MultiEntityViewsEngine<CameraEntityView, CameraTargetEntityView>
+    public class CameraFollowTargetEngine : MultiEntitiesEngine<CameraEntityView, CameraTargetEntityView>, IQueryingEntityViewEngine
     {
         public CameraFollowTargetEngine(ITime time)
         {
             _time = time;
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicUpdate()).SetScheduler(StandardSchedulers.physicScheduler);
-            _taskRoutine.Start();
         }
         
-        protected override void Add(CameraEntityView entityView)
+        public void Ready()
         {
-            _cameraEntityView = entityView;
+            _taskRoutine.Start();            
         }
+        
+        protected override void Add(ref CameraEntityView entityView)
+        {}
 
-        protected override void Remove(CameraEntityView entityView)
+        protected override void Remove(ref CameraEntityView entityView)
         {
             _taskRoutine.Stop();
-            _cameraEntityView = null;
         }
 
-        protected override void Add(CameraTargetEntityView entityView)
-        {
-            _cameraTargetEntityView = entityView;
-        }
+        protected override void Add(ref CameraTargetEntityView entityView)
+        {}
 
-        protected override void Remove(CameraTargetEntityView entityView)
+        protected override void Remove(ref CameraTargetEntityView entityView)
         {
             _taskRoutine.Stop();
-            _cameraTargetEntityView = null;
         }
         
         IEnumerator PhysicUpdate()
         {
-            while (_cameraEntityView == null || _cameraTargetEntityView == null)
+            while (entityViewsDB.Has<CameraTargetEntityView>() == false || entityViewsDB.Has<CameraEntityView>() == false)
+            {
                 yield return null; //skip a frame
+            }
+            
+            CameraTargetEntityView cameraTargetEntityView; entityViewsDB.Fetch(out cameraTargetEntityView);
+            CameraEntityView cameraEntityView; entityViewsDB.Fetch(out cameraEntityView);
 
             float smoothing = 5.0f;
             
-            Vector3 offset = _cameraEntityView.positionComponent.position - _cameraTargetEntityView.targetComponent.position;
+            Vector3 offset = cameraEntityView.positionComponent.position - cameraTargetEntityView.targetComponent.position;
             
             while (true)
             {
-                Vector3 targetCameraPos = _cameraTargetEntityView.targetComponent.position + offset;
+                Vector3 targetCameraPos = cameraTargetEntityView.targetComponent.position + offset;
 
-                _cameraEntityView.transformComponent.position = Vector3.Lerp(
-                    _cameraEntityView.positionComponent.position, targetCameraPos, smoothing * _time.deltaTime);
+                cameraEntityView.transformComponent.position = Vector3.Lerp(
+                    cameraEntityView.positionComponent.position, targetCameraPos, smoothing * _time.deltaTime);
                 
                 yield return null;
             }
         }
 
         readonly ITime         _time;
-        CameraTargetEntityView _cameraTargetEntityView;
-        CameraEntityView       _cameraEntityView;
         readonly ITaskRoutine  _taskRoutine;
+        public IEntityViewsDB entityViewsDB { get; set; }
     }
 }
