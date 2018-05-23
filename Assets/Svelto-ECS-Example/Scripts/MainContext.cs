@@ -100,13 +100,7 @@ namespace Svelto.ECS.Example.Survive
             //The entity functions is a set of utility operations on Entities, including
             //removing an entity. I couldn't find a better name so far.
             var entityFunctions = _enginesRoot.GenerateEntityFunctions();
-            //GameObjectFactory allows to create GameObjects without using the Static
-            //method GameObject.Instantiate. While it seems a complication
-            //it's important to keep the engines testable and not
-            //coupled with hard dependencies references (read my articles to understand
-            //how dependency injection works and why solving dependencies
-            //with static classes and singletons is a terrible mistake)
-            GameObjectFactory factory = new GameObjectFactory();
+            
            //the ISequencer is one of the 3 official ways available in Svelto.ECS 
             //to communicate. They are mainly used for two specific cases:
             //1) specify a strict execution order between engines (engine logic
@@ -136,7 +130,17 @@ namespace Svelto.ECS.Example.Survive
             var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
             var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence, time);
             var enemyMovementEngine = new EnemyMovementEngine();
-            var enemySpawnerEngine = new EnemySpawnerEngine(factory, _entityFactory);
+            
+            //GameObjectFactory allows to create GameObjects without using the Static
+            //method GameObject.Instantiate. While it seems a complication
+            //it's important to keep the engines testable and not
+            //coupled with hard dependencies references (read my articles to understand
+            //how dependency injection works and why solving dependencies
+            //with static classes and singletons is a terrible mistake)
+            GameObjectFactory factory = new GameObjectFactory();
+            IEnemyFactory enemyFactory = new EnemyFactory(new GameObjectPool(), factory, _entityFactory);
+            var enemySpawnerEngine = new EnemySpawnerEngine(enemyFactory);
+            
             var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time);
             
             //hud and sound engines
