@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public struct PlayerInputDataStruct : IEntityData
+    public struct PlayerInputDataStruct : IEntityStruct
     {
         public Vector3 input;
         public Ray     camRay;
