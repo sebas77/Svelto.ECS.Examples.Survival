@@ -21,9 +21,14 @@ namespace Svelto.ECS.Example.Survive.Player
 
         public float       movementSpeed { get { return speed; } }
         
-        public void setBool(string name, bool value)
+        public void setState(string name, bool value)
         {
             anim.SetBool(name, value);
+        }
+
+        public void reset()
+        {
+            anim.Rebind();
         }
 
         public string playAnimation { set {anim.SetTrigger(value);} }

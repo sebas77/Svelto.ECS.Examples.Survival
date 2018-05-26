@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyAnimationEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class EnemyAnimationEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -12,30 +12,36 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void EntityDamaged(DamageInfo damageInfo)
         {
-            EnemyEntityView entity;
-            entityViewsDB.TryQueryEntityView(damageInfo.entityDamagedID, out entity);
-
-            entity.vfxComponent.position = damageInfo.damagePoint;
-            entity.vfxComponent.play.value = true;
+            entityViewsDB.ExecuteOnEntity(damageInfo.entityDamagedID, ref damageInfo,
+                                              (ref EnemyEntityView entity, ref DamageInfo damage) =>
+                                              {
+                                                  entity.vfxComponent.position =
+                                                      damage.damagePoint;
+                                                  entity.vfxComponent.play.value = true;
+                                              });
         }
 
         void TriggerTargetDeathAnimation()
         {
-            var entity = entityViewsDB.QueryEntities<EnemyEntityView>();
+            int count;
+            var entity = entityViewsDB.QueryEntities<EnemyEntityView>(out count);
 
-            for (int i = 0; i < entity.Count; i++)
+            for (int i = 0; i < count; i++)
                 entity[i].animationComponent.playAnimation = "PlayerDead";
         }
 
         void TriggerDeathAnimation(EGID targetID)
         {
-            EnemyEntityView entity;
-            entityViewsDB.TryQueryEntityView(targetID, out entity);
+            entityViewsDB.ExecuteOnEntity(targetID,
+                                              (ref EnemyEntityView entity) =>
+                                              {
+                                                  entity.animationComponent.playAnimation = "Dead";
+                                              });
             
-            entity.animationComponent.playAnimation = "Dead";
+            
         }
 
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref DamageInfo token, DamageCondition condition)
         {
             if (token.entityType == EntityDamagedType.Enemy)
             {

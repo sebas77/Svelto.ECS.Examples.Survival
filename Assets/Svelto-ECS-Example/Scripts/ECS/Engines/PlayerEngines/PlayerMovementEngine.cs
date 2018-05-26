@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityView>, IStep<DamageInfo>, IQueryingEntityViewEngine
+    public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
     {
         public IEntityViewsDB entityViewsDB { get; set; }
         public void Ready()
@@ -29,12 +29,13 @@ namespace Svelto.ECS.Example.Survive.Player
         
         IEnumerator PhysicsTick()
         {  
-            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+            int targetsCount;
+            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(out targetsCount);
 
             while (true)
             {   
-                Movement(playerEntityView);
-                Turning(playerEntityView);
+                Movement(ref playerEntityViews[0]);
+                Turning(ref playerEntityViews[0]);
 
                 yield return null; //don't forget to yield or you will enter in an infinite loop!
             }
@@ -48,7 +49,7 @@ namespace Svelto.ECS.Example.Survive.Player
         /// the class Input.
         /// </summary>
         /// <param name="playerEntityView"></param>
-        void Movement(PlayerEntityView playerEntityView)
+        void Movement(ref PlayerEntityView playerEntityView)
         {
             // Store the input axes.
             Vector3 input = playerEntityView.inputComponent.input;
@@ -60,7 +61,7 @@ namespace Svelto.ECS.Example.Survive.Player
             playerEntityView.transformComponent.position = playerEntityView.positionComponent.position + movement;
         }
 
-        void Turning(PlayerEntityView playerEntityView)
+        void Turning(ref PlayerEntityView playerEntityView)
         {
             // Create a ray from the mouse cursor on screen in the direction of the camera.
             Ray camRay = playerEntityView.inputComponent.camRay;
@@ -85,11 +86,12 @@ namespace Svelto.ECS.Example.Survive.Player
 
         void StopMovementOnDeath(EGID ID)
         {
-            var playerEntityView = entityViewsDB.QueryEntities<PlayerEntityView>()[0]; 
+            int count;
+            var playerEntityView = entityViewsDB.QueryEntities<PlayerEntityView>(out count)[0]; 
             playerEntityView.rigidBodyComponent.isKinematic = true;
         }
 
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref DamageInfo token, DamageCondition condition)
         {
             StopMovementOnDeath(token.entityDamagedID);
         }

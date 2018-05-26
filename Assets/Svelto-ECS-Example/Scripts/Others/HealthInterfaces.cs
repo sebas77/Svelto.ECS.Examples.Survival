@@ -2,17 +2,12 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive
 {
-    public interface IHealthComponent : IComponent
-    {
-        int currentHealth { get; set; }
-    }
-
     public struct DamageInfo
     {
-        public int damagePerShot { get; private set; }
-        public Vector3 damagePoint { get; private set; }
-        public EGID entityDamagedID { get; private set; }
-        public EntityDamagedType entityType  { get; private set; }
+        public int damagePerShot { get; }
+        public Vector3 damagePoint { get; }
+        public EGID entityDamagedID { get; }
+        public EntityDamagedType entityType { get; }
         
         public DamageInfo(int damage, Vector3 point, EGID entity, EntityDamagedType edt) : this()
         {

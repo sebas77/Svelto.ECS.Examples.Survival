@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyMovementEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class EnemyMovementEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -15,15 +15,16 @@ namespace Svelto.ECS.Example.Survive.Enemies
         {
             while (true)
             {
-                var enemyTargetEntityViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>();
+                int count;
+                var enemyTargetEntityViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>(out count);
 
-                if (enemyTargetEntityViews.Count > 0)
+                if (count > 0)
                 {
                     var targetEntityView = enemyTargetEntityViews[0];
 
-                    var enemies = entityViewsDB.QueryEntities<EnemyEntityView>();
+                    var enemies = entityViewsDB.QueryEntities<EnemyEntityView>(out count);
 
-                    for (var i = 0; i < enemies.Count; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         var component = enemies[i].movementComponent;
 
@@ -37,15 +38,14 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void StopEnemyOnDeath(EGID targetID)
         {
-            EnemyEntityView entityView;
-            entityViewsDB.TryQueryEntityView(targetID, out entityView);
-            
-            entityView.movementComponent.navMeshEnabled = false;
-            entityView.movementComponent.setCapsuleAsTrigger = true;
-            entityView.rigidBodyComponent.isKinematic = true;
+            entityViewsDB.ExecuteOnEntity(targetID, (ref EnemyEntityView entityView) =>
+            {
+                entityView.movementComponent.navMeshEnabled      = false;
+                entityView.movementComponent.setCapsuleAsTrigger = true;
+            });
         }
 
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref DamageInfo token, DamageCondition condition)
         {
             StopEnemyOnDeath(token.entityDamagedID);
         }

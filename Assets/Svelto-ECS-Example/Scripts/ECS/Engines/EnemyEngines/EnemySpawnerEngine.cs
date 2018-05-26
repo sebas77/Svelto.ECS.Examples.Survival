@@ -1,23 +1,31 @@
 using System.Collections;
 using Svelto.Tasks.Enumerators;
 using System.IO;
+using Svelto.ECS.Example.Survive.Player;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemySpawnerEngine : IEngine, IStep<DamageInfo>
+    public class EnemySpawnerEngine : IStep<EGID>, IQueryingEntityViewEngine
     {
-        public EnemySpawnerEngine(IEnemyFactory enemyFactory)
+        public EnemySpawnerEngine(IEnemyFactory enemyFactory, IEntityFunctions entityFunctions)
         {
+            _entityFunctions = entityFunctions;
             _enemyFactory = enemyFactory;
             _numberOfEnemyToSpawn = 15;
+        }
+        
+        public IEntityViewsDB entityViewsDB { get; set; }
 
-            IntervaledTick().Run();
+        public void Ready()
+        {
+            IntervaledTick().Run();            
         }
 
         IEnumerator IntervaledTick()
         {
 //OK this is of fundamental importance: Never create implementors as Monobehaviour just to hold 
-//data. Data should always been retrieved through a service layer regardless the data source.
+//data (especially if read only data). Data should always been retrieved through a service layer
+//regardless the data source.
 //The benefit are numerous, including the fact that changing data source would require
 //only changing the service code. In this simple example I am not using a Service Layer
 //but you can see the point.          
@@ -39,6 +47,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 //but it's better to not abuse it.                
                 yield return _waitForSecondsEnumerator;
                 {
+                    //cycle around the enemies to spawn and check if it can be spawned
                     for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
                     {
                         if (spawningTimes[i] <= 0.0f)
@@ -57,7 +66,19 @@ namespace Svelto.ECS.Example.Survive.Enemies
                                 timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks
                             };
 
-                            _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackstruct);
+                            //has a compatible entity previously disabled and can be reused?
+                            //Note, pooling make sense only for Entities that use implementors.
+                            //A pure struct based entity doesn't need pooling because it 
+                            //never allocates.
+                            var fromGroupId = ECSGroups.EnemyGroup[spawnData.enemySpawnData.targetType];
+                            if (entityViewsDB.HasAny<EnemyEntityView>(fromGroupId))
+                            {
+                                ReuseEnemy(fromGroupId, ref spawnData);
+                            }
+                            else
+                            {
+                                _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackstruct);
+                            }
 
                             spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
                             _numberOfEnemyToSpawn--;
@@ -67,6 +88,40 @@ namespace Svelto.ECS.Example.Survive.Enemies
                     }
                 }
             }
+        }
+
+        void ReuseEnemy(int fromGroupId, ref JSonEnemySpawnData spawnData)
+        {
+            //take an entity (with all its entity views and implementors) from the group
+            var egid = _entityFunctions.SwapFirstEntityGroup(fromGroupId);
+            
+            //reset some components
+            entityViewsDB.ExecuteOnEntity(egid,
+                                          (ref HealthEntityStruct healthStruct) => { healthStruct.currentHealth = 100; });
+            entityViewsDB.ExecuteOnEntity(egid, ref spawnData,
+                                          (ref EnemyEntityView    entityView,
+                                           ref JSonEnemySpawnData spawnDataInfo) =>
+                                          {
+                                              int spawnPointIndex =
+                                                  UnityEngine
+                                                     .Random
+                                                     .Range(0,
+                                                            spawnDataInfo.enemySpawnData.spawnPoints
+                                                                         .Length);
+
+                                              var spawnInfo =
+                                                  spawnDataInfo.enemySpawnData.spawnPoints
+                                                      [spawnPointIndex];
+
+                                              entityView.transformComponent.position =
+                                                  spawnInfo.position;
+                                              entityView.transformComponent.rotation =
+                                                  spawnInfo.rotation;
+
+                                              entityView.animationComponent.reset();
+                                              entityView.movementComponent.navMeshEnabled = true;
+                                              entityView.movementComponent.setCapsuleAsTrigger = false;
+                                          });
         }
 
         static JSonEnemySpawnData[] ReadEnemySpawningDataServiceRequest()
@@ -86,16 +141,19 @@ namespace Svelto.ECS.Example.Survive.Enemies
             
             return enemiestoSpawn;
         }
-
-        public void Step(ref DamageInfo token, int condition)
+        
+        public void Step(ref EGID token, int condition)
         {
             _numberOfEnemyToSpawn++;
         }
 
         readonly WaitForSecondsEnumerator   _waitForSecondsEnumerator = new WaitForSecondsEnumerator(SECONDS_BETWEEN_SPAWNS);
+        
+        readonly IEnemyFactory _enemyFactory;
+        readonly IEntityFunctions _entityFunctions;
 
         int     _numberOfEnemyToSpawn;
-        readonly IEnemyFactory _enemyFactory;
+        
         const int SECONDS_BETWEEN_SPAWNS = 1;
     }
 }

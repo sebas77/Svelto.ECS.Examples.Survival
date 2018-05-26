@@ -3,7 +3,7 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerAnimationEngine : SingleEntityEngine<PlayerEntityView>, IStep<DamageInfo>, IQueryingEntityViewEngine
+    public class PlayerAnimationEngine : SingleEntityEngine<PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
     {
         public IEntityViewsDB entityViewsDB { get; set; }
         public void Ready()
@@ -18,22 +18,23 @@ namespace Svelto.ECS.Example.Survive.Player
         
         IEnumerator PhysicsTick()
         {
-            while (entityViewsDB.Has<PlayerEntityView>() == false)
+            while (entityViewsDB.HasAny<PlayerEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
-            
-            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+
+            int targetsCount;
+            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(out targetsCount);
             
             while (true)
             {
-                var input = playerEntityView.inputComponent.input;
+                var input = playerEntityViews[0].inputComponent.input;
 
                 // Create a boolean that is true if either of the input axes is non-zero.
                 bool walking = input.x != 0f || input.z != 0f;
 
                 // Tell the animator whether or not the player is walking.
-                playerEntityView.animationComponent.setBool("IsWalking", walking);
+                playerEntityViews[0].animationComponent.setState("IsWalking", walking);
 
                 yield return null;
             }
@@ -41,12 +42,13 @@ namespace Svelto.ECS.Example.Survive.Player
 
         void TriggerDeathAnimation(EGID targetID)
         {
-            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+            uint index;
+            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(targetID, out index);
             
-            playerEntityView.animationComponent.playAnimation = "Die";
+            playerEntityViews[index].animationComponent.playAnimation = "Die";
         }
 
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref DamageInfo token, DamageCondition condition)
         {
             TriggerDeathAnimation(token.entityDamagedID);
         }

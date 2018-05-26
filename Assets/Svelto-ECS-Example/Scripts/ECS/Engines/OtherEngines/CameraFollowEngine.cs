@@ -38,24 +38,25 @@ namespace Svelto.ECS.Example.Survive.Camera
         
         IEnumerator PhysicUpdate()
         {
-            while (entityViewsDB.Has<CameraTargetEntityView>() == false || entityViewsDB.Has<CameraEntityView>() == false)
+            while (entityViewsDB.HasAny<CameraTargetEntityView>() == false || entityViewsDB.HasAny<CameraEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
             
-            CameraTargetEntityView cameraTargetEntityView; entityViewsDB.Fetch(out cameraTargetEntityView);
-            CameraEntityView cameraEntityView; entityViewsDB.Fetch(out cameraEntityView);
+            int count;
+            var cameraTargets = entityViewsDB.QueryEntities<CameraTargetEntityView>(out count);
+            var cameraEntities = entityViewsDB.QueryEntities<CameraEntityView>(out count);
 
             float smoothing = 5.0f;
             
-            Vector3 offset = cameraEntityView.positionComponent.position - cameraTargetEntityView.targetComponent.position;
+            Vector3 offset = cameraEntities[0].positionComponent.position - cameraTargets[0].targetComponent.position;
             
             while (true)
             {
-                Vector3 targetCameraPos = cameraTargetEntityView.targetComponent.position + offset;
+                Vector3 targetCameraPos = cameraTargets[0].targetComponent.position + offset;
 
-                cameraEntityView.transformComponent.position = Vector3.Lerp(
-                    cameraEntityView.positionComponent.position, targetCameraPos, smoothing * _time.deltaTime);
+                cameraEntities[0].transformComponent.position = Vector3.Lerp(
+                                                                             cameraEntities[0].positionComponent.position, targetCameraPos, smoothing * _time.deltaTime);
                 
                 yield return null;
             }

@@ -2,34 +2,33 @@ using Svelto.ECS.Example.Survive.Player;
 
 namespace Svelto.ECS.Example.Survive.HUD
 {
-    public class ScoreEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class ScoreEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
     {
         public IEntityViewsDB entityViewsDB { get; set; }
         public void Ready()
         {}
         
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref DamageInfo token, DamageCondition condition)
         {
-            var hudEntityViews = entityViewsDB.QueryEntities<HUDEntityView>();
+            int hudEntityViewsCount;
+            var hudEntityViews = entityViewsDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
 
-            if (hudEntityViews.Count > 0)
+            if (hudEntityViewsCount > 0)
             {
-                var guiEntityView = hudEntityViews[0];
-
-                PlayerTargetTypeEntityStruct playerTarget;
-                entityViewsDB.TryQueryEntityView(token.entityDamagedID, out playerTarget);
-                var targetType   = playerTarget.targetType;
+                uint index;
+                PlayerTargetTypeEntityStruct playerTarget =
+                entityViewsDB.QueryEntities<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index)[index];
                 
-                switch (targetType)
+                switch (playerTarget.targetType)
                 {
                     case PlayerTargetType.Bunny:
-                        guiEntityView.scoreComponent.score += 10;
+                        hudEntityViews[0].scoreComponent.score += 10;
                         break;
                     case PlayerTargetType.Bear:
-                        guiEntityView.scoreComponent.score += 20;
+                        hudEntityViews[0].scoreComponent.score += 20;
                         break;
                     case PlayerTargetType.Hellephant:
-                        guiEntityView.scoreComponent.score += 30;
+                        hudEntityViews[0].scoreComponent.score += 30;
                         break;
                 }
             }

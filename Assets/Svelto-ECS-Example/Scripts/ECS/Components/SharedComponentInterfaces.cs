@@ -12,7 +12,8 @@ namespace Svelto.ECS.Example.Survive
     //valuetype by reference
     public interface IAnimationComponent: IComponent
     {
-        void setBool(string name, bool value);
+        void setState(string name, bool value);
+        void reset();
         string playAnimation { set; }
     }
 

@@ -18,9 +18,9 @@ namespace Svelto.ECS.Example.Survive
     [Serializable]
     public class EnemySpawnData
     {
-        public GameObject    enemyPrefab;
-        public Transform[]   spawnPoints;
-        public float         spawnTime;
-        public PlayerTargetType targetType;
+        public GameObject        enemyPrefab;
+        public Transform[]       spawnPoints;
+        public float             spawnTime;
+        public PlayerTargetType  targetType;
     }
 }

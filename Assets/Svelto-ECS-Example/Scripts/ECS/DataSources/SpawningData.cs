@@ -5,8 +5,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class SpawningData : MonoBehaviour
 {
-    static private bool serializedSpawnDataOnce;
-    static private bool serializedAttackDataOnce;
+    static bool serializedSpawnDataOnce;
+    static bool serializedAttackDataOnce;
 
     void Awake()
     {
@@ -16,6 +16,7 @@ public class SpawningData : MonoBehaviour
         if (serializedAttackDataOnce == false)
             SerializeAttackData();            
     }
+    
     public void SerializeSpawnData()
     {
         serializedSpawnDataOnce = true;
@@ -35,7 +36,7 @@ public class SpawningData : MonoBehaviour
     
     public void SerializeAttackData()
     {
-        var                  data         = GetComponents<EnemyData>();
+        var data = GetComponents<EnemyData>();
         JSonEnemyAttackData[] attackData = new JSonEnemyAttackData[data.Length];
         
         serializedAttackDataOnce = true;

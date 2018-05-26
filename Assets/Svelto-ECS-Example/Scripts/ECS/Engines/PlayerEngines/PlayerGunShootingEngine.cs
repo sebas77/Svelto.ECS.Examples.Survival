@@ -41,23 +41,24 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         IEnumerator Tick()
         {
-            while (entityViewsDB.Has<PlayerEntityView>() == false || entityViewsDB.Has<GunEntityView>() == false)
+            while (entityViewsDB.HasAny<PlayerEntityView>() == false || entityViewsDB.HasAny<GunEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
 
-            GunEntityView playerGunEntityView; entityViewsDB.Fetch(out playerGunEntityView);
-            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+            int count;
+            var playerGunEntities = entityViewsDB.QueryEntities<GunEntityView>(out count);
+            var playerEntities = entityViewsDB.QueryEntities<PlayerEntityView>(out count);
             
             while (true)
             {
-                var playerGunComponent = playerGunEntityView.gunComponent;
+                var playerGunComponent = playerGunEntities[0].gunComponent;
 
                 playerGunComponent.timer += _time.deltaTime;
                 
-                if (playerEntityView.inputComponent.fire &&
-                    playerGunComponent.timer >= playerGunEntityView.gunComponent.timeBetweenBullets)
-                    Shoot(playerGunEntityView);
+                if (playerEntities[0].inputComponent.fire &&
+                    playerGunComponent.timer >= playerGunEntities[0].gunComponent.timeBetweenBullets)
+                    Shoot(playerGunEntities[0]);
 
                 yield return null;
             }
@@ -91,11 +92,10 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             playerGunHitComponent.targetHit.value = false;
         }
 
-        readonly ISequencer            _enemyDamageSequence;
-        readonly IRayCaster            _rayCaster;
-
-        readonly ITime _time;
-        readonly ITaskRoutine     _taskRoutine;
+        readonly ISequencer    _enemyDamageSequence;
+        readonly IRayCaster    _rayCaster;
+        readonly ITime         _time;
+        readonly ITaskRoutine  _taskRoutine;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
         static readonly int ENEMY_MASK     = LayerMask.GetMask("Enemies");

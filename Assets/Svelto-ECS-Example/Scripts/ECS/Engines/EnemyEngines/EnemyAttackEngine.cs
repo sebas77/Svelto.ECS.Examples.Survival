@@ -37,33 +37,17 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 // this is more than a sophistication, it actually the implementation
                 // of the rule that every engine must use its own set of
                 // EntityViews to promote encapsulation and modularity
-                var targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>();
-                while (targetEntitieViews.Count == 0)
+                while (entityViewsDB.HasAny<EnemyTargetEntityView>() == false || entityViewsDB.HasAny<EnemyAttackEntityView>() == false)
                 {
                     yield return null;
-                    targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>();
                 }
-
-                //there is a sneaky bug that can be caused by this routine. It can be solved in several
-                //ways once it has been understood.
-                //the targetDamageSequence.Next can trigger a sequence that could lead to the immediate
-                //death of the player, this would mean that the inner loop should stop when the 
-                //enemytarget (the player) dies. However this engine doens't know when the player dies
-                //We can solve this problem in several ways including
-                //- iterating over the enemy target, if the entity has been removed because dead, the for will be skipped
-                //(which is the solution I chose here)
-                //- removing the entity the frame after and not immediatly (a bit hacky)
-                //- add this engine in the sequencer to know when the player is death to stop
-                //this taskroutine
-                var enemies = entityViewsDB.QueryEntities<EnemyAttackEntityView>();
-                while (enemies.Count == 0)
-                {
-                    yield return null;
-                    enemies = entityViewsDB.QueryEntities<EnemyAttackEntityView>();
-                }
-
-                int count;
-                var enemiesAttackData = entityViewsDB.QueryEntitiesCacheFriendly<EnemyAttackStruct>(out count);
+                
+                int targetsCount;
+                var targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>(out targetsCount);
+                
+                int enemiesCount;
+                var enemiesAttackData = entityViewsDB.QueryEntities<EnemyAttackStruct>(out enemiesCount);
+                var enemies = entityViewsDB.QueryEntities<EnemyAttackEntityView>(out enemiesCount);
                 
                 //this is more complex than needed code is just to show how you can use entity structs
                 //this case is banal, entity structs should be use to handle hundreds or thousands
@@ -73,18 +57,18 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 //a game using only entity structs, but entity structs make sense ONLY if they
                 //hold value types, so they come with a lot of limitations
 
-                for (int enemyIndex = enemies.Count - 1; enemyIndex >= 0; --enemyIndex)
+                for (int enemyIndex = enemiesCount - 1; enemyIndex >= 0; --enemyIndex)
                 {
                     var enemyAttackEntityView = enemies[enemyIndex];
                     
                     enemiesAttackData[enemyIndex].entityInRange = enemyAttackEntityView.targetTriggerComponent.entityInRange;
                 }
 
-                for (int enemyTargetIndex = 0; enemyTargetIndex < targetEntitieViews.Count; enemyTargetIndex++)
+                for (int enemyTargetIndex = 0; enemyTargetIndex < targetsCount; enemyTargetIndex++)
                 {
                     var targetEntityView = targetEntitieViews[enemyTargetIndex];
 
-                    for (int enemyIndex = enemies.Count - 1; enemyIndex >= 0; --enemyIndex)
+                    for (int enemyIndex = enemiesCount - 1; enemyIndex >= 0; --enemyIndex)
                     {
                         if (enemiesAttackData[enemyIndex].entityInRange.collides == true)
                         {

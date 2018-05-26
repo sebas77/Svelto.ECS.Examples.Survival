@@ -11,9 +11,14 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
             animator = GetComponent<Animator>();
         }
 
-        public void setBool(string name, bool value)
+        public void setState(string name, bool value)
         {
             animator.SetBool(name, value);
+        }
+
+        public void reset()
+        {
+            animator.Rebind();
         }
 
         public string playAnimation { set { animator.SetTrigger(value);} }

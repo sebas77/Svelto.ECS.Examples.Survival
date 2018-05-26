@@ -21,21 +21,24 @@ namespace Svelto.ECS.Example.Survive.Player
 
         IEnumerator ReadInput()
         {
-            while (entityViewsDB.Has<PlayerEntityView>() == false)
+            while (entityViewsDB.HasAny<PlayerEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
             
-            PlayerEntityView playerEntityView; entityViewsDB.Fetch(out playerEntityView);
+            int targetsCount;
+            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(out targetsCount);
            
             while (true)
             {
                 float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
                 float v = CrossPlatformInputManager.GetAxisRaw("Vertical");
 
-                playerEntityView.inputComponent.input = new Vector3(h, 0f, v);
-                playerEntityView.inputComponent.camRay = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-                playerEntityView.inputComponent.fire = Input.GetButton("Fire1");
+                var playerInputComponent = playerEntityViews[0].inputComponent;
+                
+                playerInputComponent.input = new Vector3(h, 0f, v);
+                playerInputComponent.camRay = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+                playerInputComponent.fire = Input.GetButton("Fire1");
                 
                 yield return null;
             }

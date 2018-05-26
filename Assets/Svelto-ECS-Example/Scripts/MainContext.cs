@@ -5,6 +5,7 @@ using Svelto.ECS.Example.Survive.Player.Gun;
 using Svelto.ECS.Example.Survive.Sound;
 using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Context;
+using Svelto.DataStructures;
 using Svelto.ECS.Example.Survive.Camera;
 using UnityEngine;
 using Svelto.ECS.Schedulers.Unity;
@@ -138,10 +139,10 @@ namespace Svelto.ECS.Example.Survive
             //how dependency injection works and why solving dependencies
             //with static classes and singletons is a terrible mistake)
             GameObjectFactory factory = new GameObjectFactory();
-            IEnemyFactory enemyFactory = new EnemyFactory(new GameObjectPool(), factory, _entityFactory);
-            var enemySpawnerEngine = new EnemySpawnerEngine(enemyFactory);
+            IEnemyFactory enemyFactory = new EnemyFactory(factory, _entityFactory);
+            var enemySpawnerEngine = new EnemySpawnerEngine(enemyFactory, entityFunctions);
             
-            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time);
+            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time, enemyDamageSequence);
             
             //hud and sound engines
             var hudEngine = new HUDEngine(time);
@@ -158,19 +159,19 @@ namespace Svelto.ECS.Example.Survive
                         new To //this step can lead only to one branch
                         { 
                             //this is the only engine that will be called when enemyAttackEngine triggers Next()
-                            new IStep[] {playerHealthEngine} 
+                            playerHealthEngine 
                         }  
                     },
                     { //second step
                         playerHealthEngine, //this step can be triggered only by this engine through the Next function
-                        new To //once the playerHealthEngine calls step, all these engines will be called at once
+                        new To<DamageCondition> //once the playerHealthEngine calls step, all these engines will be called at once
                             //depending by the condition a different set of engines will be triggered. The
                             //order of the engines triggered is guaranteed.
                         { 
                             //these engines will be called when the Next function is called with the DamageCondition.damage set
-                            {  DamageCondition.Damage, new IStep[] { hudEngine, damageSoundEngine }  }, 
+                            {  DamageCondition.Damage, new IStep<DamageInfo, DamageCondition>[] { hudEngine, damageSoundEngine }  }, 
                             //these engines will be called when the Next function is called with the DamageCondition.dead set
-                            {  DamageCondition.Dead, new IStep[] { 
+                            {  DamageCondition.Dead, new IStep<DamageInfo, DamageCondition>[] { 
                                 hudEngine, damageSoundEngine, 
                                 playerMovementEngine, playerAnimationEngine, 
                                 enemyAnimationEngine, playerDeathEngine }  } 
@@ -187,17 +188,24 @@ namespace Svelto.ECS.Example.Survive
                         new To
                         { 
                             //in every case go to enemyHealthEngine
-                            new IStep[] { enemyHealthEngine}
+                            enemyHealthEngine
                         }  
                     },
                     { 
                         enemyHealthEngine, 
+                        new To<DamageCondition>
+                        { 
+                            {  DamageCondition.Damage, new IStep<DamageInfo, DamageCondition>[] { enemyAnimationEngine, damageSoundEngine }  },
+                            {  DamageCondition.Dead, new IStep<DamageInfo, DamageCondition>[] { scoreEngine, enemyMovementEngine, 
+                                enemyAnimationEngine, 
+                                damageSoundEngine, enemyDeathEngine  }  }
+                        }  
+                    },
+                    { 
+                        enemyDeathEngine, 
                         new To
                         { 
-                            {  DamageCondition.Damage, new IStep[] { enemyAnimationEngine, damageSoundEngine }  },
-                            {  DamageCondition.Dead, new IStep[] { scoreEngine, enemyMovementEngine, 
-                                enemyAnimationEngine, enemySpawnerEngine, 
-                                damageSoundEngine, enemyDeathEngine  }  },
+                            enemySpawnerEngine
                         }  
                     }  
                 }
@@ -260,13 +268,14 @@ namespace Svelto.ECS.Example.Survive
             player.GetComponents(implementors);
             //Add not monobehaviour implementors
             implementors.Add(new PlayerInputImplementor());
-            implementors.Add(new PlayerHealthImplementor(100));
-            
-            _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), implementors.ToArray());
+            HealthEntityStruct healthEntityStruct = new HealthEntityStruct(100);
+            var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), implementors.ToArray());
+            initializer.Init(ref healthEntityStruct);
 
             //unluckily the gun is parented in the original prefab, so there is no easy way to create it
             //explicitly, I have to create if from the existing gameobject.
             var gun = player.GetComponentInChildren<PlayerShootingImplementor>();
+            
             _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(), new object[] {gun});
         }
 
@@ -300,7 +309,7 @@ namespace Svelto.ECS.Example.Survive
                 var entityDescriptor = entityDescriptorHolder.RetrieveDescriptor();
                 _entityFactory.BuildEntity
                 (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(),
-                    entityDescriptor,
+                    entityDescriptor.entityViewsToBuild,
                     (entityDescriptorHolder as MonoBehaviour).GetComponentsInChildren<IImplementor>());
             }
         }

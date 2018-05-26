@@ -1,13 +1,13 @@
 ﻿namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerDeathEngine:IStep<DamageInfo>, IEngine
+    public class PlayerDeathEngine:IEngine, IStep<DamageInfo, DamageCondition>
     {
         public PlayerDeathEngine(IEntityFunctions entityFunctions)
         {
             _entityFunctions = entityFunctions;
         }
         
-        public void Step(ref DamageInfo token, int condition)
+        public void Step(ref DamageInfo token, DamageCondition condition)
         {
             _entityFunctions.RemoveEntity(token.entityDamagedID);
         }

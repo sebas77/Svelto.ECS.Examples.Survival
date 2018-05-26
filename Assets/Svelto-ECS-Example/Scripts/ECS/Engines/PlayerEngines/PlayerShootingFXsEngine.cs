@@ -32,10 +32,10 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         void Shoot(int ID, bool targetHasBeenHit)
         {
-            GunEntityView playerGunEntityView;
-            entityViewsDB.TryQueryEntityView(new EGID(ID), out playerGunEntityView);
+            uint index;
+            var structs = entityViewsDB.QueryEntities<GunEntityView>(new EGID(ID), out index);
 
-            var gunFXComponent = playerGunEntityView.gunFXComponent;
+            var gunFXComponent = structs[index].gunFXComponent;
 
             // Play the gun shot audioclip.
             gunFXComponent.playAudio = true;
@@ -47,7 +47,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             gunFXComponent.play = false;
             gunFXComponent.play = true;
 
-            var gunComponent = playerGunEntityView.gunComponent;
+            var gunComponent = structs[index].gunComponent;
             var shootRay = gunComponent.shootRay;
 
             // Enable the line renderer and set it's first position to be the end of the gun.
@@ -80,9 +80,10 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         void DisableEffects ()
         {
-            GunEntityView    playerGunEntityView; entityViewsDB.Fetch(out playerGunEntityView);
+            int targetsCount;
+            var gunEntityViews = entityViewsDB.QueryEntities<GunEntityView>(out targetsCount);
 
-            var fxComponent = playerGunEntityView.gunFXComponent;
+            var fxComponent = gunEntityViews[0].gunFXComponent;
             // Disable the line renderer and the light.
             fxComponent.lineEnabled = false;
             fxComponent.lightEnabled = false;
