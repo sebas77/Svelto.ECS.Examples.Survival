@@ -5,7 +5,6 @@ using Svelto.ECS.Example.Survive.Player.Gun;
 using Svelto.ECS.Example.Survive.Sound;
 using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Context;
-using Svelto.DataStructures;
 using Svelto.ECS.Example.Survive.Camera;
 using UnityEngine;
 using Svelto.ECS.Schedulers.Unity;
@@ -39,20 +38,32 @@ namespace Svelto.ECS.Example.Survive
 ///     it must be a real and concrete entity that you can explain
 ///     in terms of game design. The name of each entity should reflect
 ///     a specific concept from the game design domain
-/// - IComponents:
-///     Components must be seen as data holders. There are implementing
-///     exceptions, but logically it must be still see as a group
-///     of readable or writeable data.
+/// - Engines (Systems):
+///     Where all the logic lies. Engines operates on EntityViews or EntityStructs
+/// - EntityViews and EntitiyViewStructs:
+///     EntityViews maps Entity Components. The Engines can't
+///     access directly to each entity (as a single set of components), but
+///     through component sets defined by the EntityView.
+///     They act as component filters and expose only the entity components
+///     that the Engine is interested in.
+///     EntityViews are actually defined with the Engine so they
+///     come together with the engine and in the same namespace of the engine.
+///     EntityViewStructs should always be used, while EntityViews as
+///     class use should be considered an exception. 
+/// - Component Interfaces:
+///     Components must be seen as data holders. There may be implementation
+///     exceptions, but the interface must declare a group
+///     of readable and/or writeable data.
 ///     In Svelto.ECS components are always interfaces declaring
-///     Setters and Getters of ValueTypes. DispatchOnSet
+///     Setters and Getters of Value Types. DispatchOnSet
 ///     and DispatchOnChange must not be seen as events, but
 ///     as pushing of data instead of data polling, similar
 ///     to the concept of DataBinding.
 /// - Implementors:
 ///     Being components interfaces, they must be implemented through
 ///     Implementors. The relation Implementors to Components
-///     is not 1:1 so that you can, if logic, group several
-///     components in one implementor. This allows to easily
+///     is not 1:1 so that you can group several
+///     components into fewer implementors. This allows to easily
 ///     share data between components. Implementors also act
 ///     as bridge between the platform and Svelto.ECS.
 ///     Since Components can hold only value types, Implementors
@@ -63,26 +74,13 @@ namespace Svelto.ECS.Example.Survive
 ///     The reason is that all the logic must lie in the engines
 ///     so Components cannot hold references to instances that can
 ///     expose functions with logic.
-/// - Engines:
-///     Where all the logic lies. Engines operates on EntityViews
-/// - EntityViews:
-///     EntityViews maps EntityComponents. The Engines can't
-///     access directly to each entity (as a single set of components), but
-///     through a component sets defined by EntityView.
-///     They act as a component filters and expose only the entity components
-///     that the Engine is interested in.
-///     EntityViews are actually defined by the need of the Engine so they
-///     come together with the engine and in the same namespace of the engine.
 /// - EntityStructs:
-///     In order to write Data Oriented Cache Friendly code, Svelto.ECS
-///     also support EntityStructs. Please check other examples to
-///     understand how to use them. However know that this kind of
-///     optimizations is very limited to special circumstances
-///     so the flexibility of EntityViews is most of the times what you need.
+///     In order to write Data Oriented Cache Friendly and allocation 0 code, Svelto.ECS
+///     also supports EntityStructs. 
 /// - EntityDescriptors:
 ///     Gives a way to formalize your Entity in svelto.ECS, it also
-///     groups the EntityViews that must be generated once the
-///     Entity is built  
+///     defoines the EntityViews, EntityStructs and EntityViewStructs that must be generated once the
+///     Entity is built
 /// </summary>
         void SetupEnginesAndEntities()
         {
@@ -102,7 +100,7 @@ namespace Svelto.ECS.Example.Survive
             //removing an entity. I couldn't find a better name so far.
             var entityFunctions = _enginesRoot.GenerateEntityFunctions();
             
-           //the ISequencer is one of the 3 official ways available in Svelto.ECS 
+            //the ISequencer is one of the 2 official ways available in Svelto.ECS 
             //to communicate. They are mainly used for two specific cases:
             //1) specify a strict execution order between engines (engine logic
             //is executed horizontally instead than vertically, I will talk about this
@@ -139,9 +137,9 @@ namespace Svelto.ECS.Example.Survive
             //how dependency injection works and why solving dependencies
             //with static classes and singletons is a terrible mistake)
             GameObjectFactory factory = new GameObjectFactory();
+            //Factory is one of the few patterns that work very well with ECS. Its use is highly encuraged
             IEnemyFactory enemyFactory = new EnemyFactory(factory, _entityFactory);
             var enemySpawnerEngine = new EnemySpawnerEngine(enemyFactory, entityFunctions);
-            
             var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time, enemyDamageSequence);
             
             //hud and sound engines
@@ -155,18 +153,18 @@ namespace Svelto.ECS.Example.Survive
                 new Steps //sequence of steps, this is a dictionary!
                 { 
                     { //first step
-                        enemyAttackEngine, //this step can be triggered only by this engine through the Next function
-                        new To //this step can lead only to one branch
+                        /*from: */enemyAttackEngine, //this step can be triggered only by this engine through the Next function
+                        /*to:   */new To //this step can lead only to one branch
                         { 
                             //this is the only engine that will be called when enemyAttackEngine triggers Next()
                             playerHealthEngine 
                         }  
                     },
                     { //second step
-                        playerHealthEngine, //this step can be triggered only by this engine through the Next function
-                        new To<DamageCondition> //once the playerHealthEngine calls step, all these engines will be called at once
-                            //depending by the condition a different set of engines will be triggered. The
-                            //order of the engines triggered is guaranteed.
+                        /*from: */playerHealthEngine, //this step can be triggered only by this engine through the Next function
+                        /*to:   */new To<DamageCondition> //once the playerHealthEngine calls the Step method,
+                            //all these engines in the list will be called
+                            //depending the condition. The order of the engines triggered is guaranteed.
                         { 
                             //these engines will be called when the Next function is called with the DamageCondition.damage set
                             {  DamageCondition.Damage, new IStep<DamageInfo, DamageCondition>[] { hudEngine, damageSoundEngine }  }, 
@@ -252,7 +250,7 @@ namespace Svelto.ECS.Example.Survive
 
         void BuildPlayerEntities(PrefabsDictionary prefabsDictionary)
         {
-            //Building entities dynamically should be always preferred
+            //Building entities explicitly should be always preferred
             //and MUST be used if an implementor doesn't need to be
             //a Monobehaviour. You should strive to create implementors
             //not as monobehaviours. Implementors as monobehaviours 
@@ -262,14 +260,11 @@ namespace Svelto.ECS.Example.Survive
             //a bad practice, use a Json file instead.
             var player = prefabsDictionary.Istantiate("Player");
             
-            List<IImplementor> implementors = new List<IImplementor>();
-            //fetching implementors as monobehaviours, used as bridge between
-            //Svelto.ECS and Unity3D
-            player.GetComponents(implementors);
-            //Add not monobehaviour implementors
-            implementors.Add(new PlayerInputImplementor());
-            HealthEntityStruct healthEntityStruct = new HealthEntityStruct(100);
-            var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), implementors.ToArray());
+            //The Player Entity is made of EntityViewStruct+Implementors as monobehaviours and 
+            //EntityStructs. The PlayerInputDataStruct doesn't need to be initialized (yay!!)
+            //but the HealthEntityStruct does. Here I show the official method to do it
+            var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), player.GetComponents<IImplementor>());
+            HealthEntityStruct healthEntityStruct = new HealthEntityStruct {currentHealth = 100};
             initializer.Init(ref healthEntityStruct);
 
             //unluckily the gun is parented in the original prefab, so there is no easy way to create it
@@ -292,7 +287,7 @@ namespace Svelto.ECS.Example.Survive
             //GameObjects to dynamically retrieve the Entity information attached to it.
             //Basically a GameObject can be used to hold all the information needed to create
             //an Entity and later queries to build the entitity itself.
-            //This allow to trigger a sort of polyformic code that can be re-used to 
+            //This allows to trigger a sort of polymorphic code that can be re-used to 
             //create several type of entities.
             
             IEntityDescriptorHolder[] entities = contextHolder.GetComponentsInChildren<IEntityDescriptorHolder>();
@@ -300,8 +295,8 @@ namespace Svelto.ECS.Example.Survive
             //However this common pattern in Svelto.ECS application exists to automatically
             //create entities from gameobjects already presented in the scene.
             //I still suggest to avoid this method though and create entities always
-            //manually. Basically EntityDescriptorHolder should be avoided
-            //whenver not strictly necessary.
+            //manually and explicitly. Basically EntityDescriptorHolder should be avoided
+            //whenever not strictly necessary.
 
             for (int i = 0; i < entities.Length; i++)
             {

@@ -16,19 +16,17 @@ namespace Svelto.ECS.Example.Survive.Enemies
             while (true)
             {
                 int count;
-                var enemyTargetEntityViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>(out count);
+                var enemyTargetEntityViews = entityViewsDB.QueryEntities<EnemyTargetEntityViewStruct>(out count);
 
                 if (count > 0)
                 {
                     var targetEntityView = enemyTargetEntityViews[0];
 
-                    var enemies = entityViewsDB.QueryEntities<EnemyEntityView>(out count);
+                    var enemies = entityViewsDB.QueryEntities<EnemyEntityViewStruct>(out count);
 
                     for (var i = 0; i < count; i++)
                     {
-                        var component = enemies[i].movementComponent;
-
-                        component.navMeshDestination = targetEntityView.targetPositionComponent.position;
+                        enemies[i].movementComponent.navMeshDestination = targetEntityView.targetPositionComponent.position;
                     }
                 }
 
@@ -38,7 +36,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void StopEnemyOnDeath(EGID targetID)
         {
-            entityViewsDB.ExecuteOnEntity(targetID, (ref EnemyEntityView entityView) =>
+            entityViewsDB.ExecuteOnEntity(targetID, (ref EnemyEntityViewStruct entityView) =>
             {
                 entityView.movementComponent.navMeshEnabled      = false;
                 entityView.movementComponent.setCapsuleAsTrigger = true;

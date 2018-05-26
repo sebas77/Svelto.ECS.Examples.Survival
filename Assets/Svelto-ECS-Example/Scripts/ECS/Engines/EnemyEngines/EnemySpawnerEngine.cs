@@ -71,7 +71,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             //A pure struct based entity doesn't need pooling because it 
                             //never allocates.
                             var fromGroupId = ECSGroups.EnemyGroup[spawnData.enemySpawnData.targetType];
-                            if (entityViewsDB.HasAny<EnemyEntityView>(fromGroupId))
+                            if (entityViewsDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                             {
                                 ReuseEnemy(fromGroupId, ref spawnData);
                             }
@@ -99,7 +99,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             entityViewsDB.ExecuteOnEntity(egid,
                                           (ref HealthEntityStruct healthStruct) => { healthStruct.currentHealth = 100; });
             entityViewsDB.ExecuteOnEntity(egid, ref spawnData,
-                                          (ref EnemyEntityView    entityView,
+                                          (ref EnemyEntityViewStruct    entityView,
                                            ref JSonEnemySpawnData spawnDataInfo) =>
                                           {
                                               int spawnPointIndex =

@@ -24,8 +24,8 @@ namespace Svelto.ECS.Example.Survive
             var initializer = _entityFactory.BuildEntity<EnemyEntityDescriptor>(go.GetInstanceID(), 
                                                                                 implementors);
                                                        
-            var playerTargetTypeEntityStruct = new PlayerTargetTypeEntityStruct(enemySpawnData.targetType);
-            var healthEntityStruct = new HealthEntityStruct(100);
+            var playerTargetTypeEntityStruct = new PlayerTargetTypeEntityStruct { targetType = enemySpawnData.targetType};
+            var healthEntityStruct = new HealthEntityStruct { currentHealth = 100 };
 
             initializer.Init(ref enemyAttackstruct);
             initializer.Init(ref healthEntityStruct);

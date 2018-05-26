@@ -1,24 +1,13 @@
-using UnityEngine;
-
 namespace Svelto.ECS.Example.Survive.Player
 {
     public struct PlayerEntityView : IEntityView
     {
-        public IPlayerInputComponent inputComponent;
-        
         public ISpeedComponent         speedComponent;
         public IRigidBodyComponent     rigidBodyComponent;
         public IPositionComponent      positionComponent;
         public IAnimationComponent     animationComponent;
         public ITransformComponent     transformComponent;
         public EGID ID { get; set; }
-    }
-
-    public interface IPlayerInputComponent
-    {
-        Vector3 input { get; set; }
-        Ray camRay { get; set; }
-        bool fire { get; set; }
     }
 }
 

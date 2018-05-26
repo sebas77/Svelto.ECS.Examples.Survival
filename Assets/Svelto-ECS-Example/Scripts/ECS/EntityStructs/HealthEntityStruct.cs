@@ -1,15 +1,8 @@
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public struct HealthEntityStruct : IImplementor, IEntityData
+    public struct HealthEntityStruct : IEntityData
     {
-        public int currentHealth { get; set; }
-
-        public HealthEntityStruct(int startingHealth) : this()
-        {
-            // Set the initial health of the player.
-            currentHealth = startingHealth;
-        }
-
+        public int currentHealth;
         public EGID ID { get; set; }
     }
 }

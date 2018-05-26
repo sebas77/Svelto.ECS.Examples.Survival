@@ -31,11 +31,12 @@ namespace Svelto.ECS.Example.Survive.Player
         {  
             int targetsCount;
             var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(out targetsCount);
+            var playerInputDatas = entityViewsDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
 
             while (true)
             {   
-                Movement(ref playerEntityViews[0]);
-                Turning(ref playerEntityViews[0]);
+                Movement(ref playerInputDatas[0], ref playerEntityViews[0]);
+                Turning(ref playerInputDatas[0], ref playerEntityViews[0]);
 
                 yield return null; //don't forget to yield or you will enter in an infinite loop!
             }
@@ -49,29 +50,30 @@ namespace Svelto.ECS.Example.Survive.Player
         /// the class Input.
         /// </summary>
         /// <param name="playerEntityView"></param>
-        void Movement(ref PlayerEntityView playerEntityView)
+        /// <param name="entityView"></param>
+        void Movement(ref PlayerInputDataStruct playerEntityView, ref PlayerEntityView entityView)
         {
             // Store the input axes.
-            Vector3 input = playerEntityView.inputComponent.input;
+            Vector3 input = playerEntityView.input;
             
             // Normalise the movement vector and make it proportional to the speed per second.
-            Vector3 movement = input.normalized * playerEntityView.speedComponent.movementSpeed * _time.deltaTime;
+            Vector3 movement = input.normalized * entityView.speedComponent.movementSpeed * _time.deltaTime;
 
             // Move the player to it's current position plus the movement.
-            playerEntityView.transformComponent.position = playerEntityView.positionComponent.position + movement;
+            entityView.transformComponent.position = entityView.positionComponent.position + movement;
         }
 
-        void Turning(ref PlayerEntityView playerEntityView)
+        void Turning(ref PlayerInputDataStruct playerEntityView, ref PlayerEntityView entityView)
         {
             // Create a ray from the mouse cursor on screen in the direction of the camera.
-            Ray camRay = playerEntityView.inputComponent.camRay;
+            Ray camRay = playerEntityView.camRay;
             
             // Perform the raycast and if it hits something on the floor layer...
             Vector3 point;
             if (_rayCaster.CheckHit(camRay, camRayLength, floorMask, out point) != -1)
             {
                 // Create a vector from the player to the point on the floor the raycast from the mouse hit.
-                Vector3 playerToMouse = point - playerEntityView.positionComponent.position;
+                Vector3 playerToMouse = point - entityView.positionComponent.position;
 
                 // Ensure the vector is entirely along the floor plane.
                 playerToMouse.y = 0f;
@@ -80,7 +82,7 @@ namespace Svelto.ECS.Example.Survive.Player
                 Quaternion newRotatation = Quaternion.LookRotation(playerToMouse);
 
                 // Set the player's rotation to this new rotation.
-                playerEntityView.transformComponent.rotation = newRotatation;
+                entityView.transformComponent.rotation = newRotatation;
             }
         }
 

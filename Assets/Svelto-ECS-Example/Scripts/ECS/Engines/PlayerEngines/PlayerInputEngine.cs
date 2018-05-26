@@ -27,18 +27,16 @@ namespace Svelto.ECS.Example.Survive.Player
             }
             
             int targetsCount;
-            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(out targetsCount);
+            var playerEntityViews = entityViewsDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
            
             while (true)
             {
                 float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
                 float v = CrossPlatformInputManager.GetAxisRaw("Vertical");
 
-                var playerInputComponent = playerEntityViews[0].inputComponent;
-                
-                playerInputComponent.input = new Vector3(h, 0f, v);
-                playerInputComponent.camRay = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-                playerInputComponent.fire = Input.GetButton("Fire1");
+                playerEntityViews[0].input = new Vector3(h, 0f, v);
+                playerEntityViews[0].camRay = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+                playerEntityViews[0].fire = Input.GetButton("Fire1");
                 
                 yield return null;
             }

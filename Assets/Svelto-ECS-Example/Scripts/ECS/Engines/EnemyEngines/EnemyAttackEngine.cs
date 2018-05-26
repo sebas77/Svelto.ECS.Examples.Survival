@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyAttackEngine : SingleEntityEngine<EnemyTargetEntityView>, IQueryingEntityViewEngine
+    public class EnemyAttackEngine : SingleEntityEngine<EnemyTargetEntityViewStruct>, IQueryingEntityViewEngine
     {
         public IEntityViewsDB entityViewsDB { set; private get; }
 
@@ -18,12 +18,12 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(CheckIfHittingEnemyTarget()).SetScheduler(StandardSchedulers.physicScheduler);
         }
 
-        protected override void Add(ref EnemyTargetEntityView entity)
+        protected override void Add(ref EnemyTargetEntityViewStruct entity)
         {
             _taskRoutine.Start();
         }
 
-        protected override void Remove(ref EnemyTargetEntityView entity)
+        protected override void Remove(ref EnemyTargetEntityViewStruct entity)
         {
             _taskRoutine.Stop();
         }
@@ -37,13 +37,13 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 // this is more than a sophistication, it actually the implementation
                 // of the rule that every engine must use its own set of
                 // EntityViews to promote encapsulation and modularity
-                while (entityViewsDB.HasAny<EnemyTargetEntityView>() == false || entityViewsDB.HasAny<EnemyAttackEntityView>() == false)
+                while (entityViewsDB.HasAny<EnemyTargetEntityViewStruct>() == false || entityViewsDB.HasAny<EnemyAttackEntityView>() == false)
                 {
                     yield return null;
                 }
                 
                 int targetsCount;
-                var targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityView>(out targetsCount);
+                var targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityViewStruct>(out targetsCount);
                 
                 int enemiesCount;
                 var enemiesAttackData = entityViewsDB.QueryEntities<EnemyAttackStruct>(out enemiesCount);

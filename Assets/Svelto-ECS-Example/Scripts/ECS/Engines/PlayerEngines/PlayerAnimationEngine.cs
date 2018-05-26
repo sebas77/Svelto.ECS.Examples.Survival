@@ -25,10 +25,11 @@ namespace Svelto.ECS.Example.Survive.Player
 
             int targetsCount;
             var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(out targetsCount);
+            var playerInputDatas = entityViewsDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
             
             while (true)
             {
-                var input = playerEntityViews[0].inputComponent.input;
+                var input = playerInputDatas[0].input;
 
                 // Create a boolean that is true if either of the input axes is non-zero.
                 bool walking = input.x != 0f || input.z != 0f;

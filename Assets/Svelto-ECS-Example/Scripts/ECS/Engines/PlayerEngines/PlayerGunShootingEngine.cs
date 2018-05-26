@@ -48,7 +48,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
             int count;
             var playerGunEntities = entityViewsDB.QueryEntities<GunEntityView>(out count);
-            var playerEntities = entityViewsDB.QueryEntities<PlayerEntityView>(out count);
+            var playerEntities = entityViewsDB.QueryEntities<PlayerInputDataStruct>(out count);
             
             while (true)
             {
@@ -56,7 +56,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
                 playerGunComponent.timer += _time.deltaTime;
                 
-                if (playerEntities[0].inputComponent.fire &&
+                if (playerEntities[0].fire &&
                     playerGunComponent.timer >= playerGunEntities[0].gunComponent.timeBetweenBullets)
                     Shoot(playerGunEntities[0]);
 
