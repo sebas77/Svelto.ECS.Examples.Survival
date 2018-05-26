@@ -23,7 +23,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         IEnumerator IntervaledTick()
         {
-//OK this is of fundamental importance: Never create implementors as Monobehaviour just to hold 
+//this is of fundamental importance: Never create implementors as Monobehaviour just to hold 
 //data (especially if read only data). Data should always been retrieved through a service layer
 //regardless the data source.
 //The benefit are numerous, including the fact that changing data source would require
@@ -56,7 +56,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             
                             //In this example every kind of enemy generates the same list of EntityViews
                             //therefore I always use the same EntityDescriptor. However if the 
-                            //different enemies had to create different EntityViews for differentaww
+                            //different enemies had to create different EntityViews for different
                             //engines, this would have been a good example where EntityDescriptorHolder
                             //could have been used to exploit the the kind of polymorphism explained
                             //in my articles.
