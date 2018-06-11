@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Svelto.ECS.Example.Survive.Enemies;
 using Svelto.ECS.Example.Survive.Player;
 using Svelto.ECS.Example.Survive.Player.Gun;
@@ -236,7 +235,7 @@ namespace Svelto.ECS.Example.Survive
         /// It is absolutely not necessary, but convienent in case you prefer this way
         /// </summary>
         /// <param name="contextHolder"></param>
-        void IUnityCompositionRoot.OnContextCreated(UnityContext contextHolder)
+        public void OnContextCreated(UnityContext contextHolder)
         {
             var prefabsDictionary = new PrefabsDictionary(Application.persistentDataPath + "/prefabs.json");
                 
@@ -310,11 +309,11 @@ namespace Svelto.ECS.Example.Survive
         }
 
         //part of Svelto.Context
-        void ICompositionRoot.OnContextInitialized()
+        public void OnContextInitialized()
         {}
         
         //part of Svelto.Context
-        void ICompositionRoot.OnContextDestroyed()
+        public void OnContextDestroyed()
         {   //final clean up
             _enginesRoot.Dispose();
             
