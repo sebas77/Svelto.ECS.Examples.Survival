@@ -81,7 +81,7 @@ PlayerSettings:
   resizableWindow: 1
   useMacAppStoreValidation: 0
   macAppStoreCategory: public.app-category.games
-  gpuSkinning: 0
+  gpuSkinning: 1
   graphicsJobs: 1
   xboxPIXTextureCapture: 0
   xboxEnableAvatar: 0
@@ -269,8 +269,8 @@ PlayerSettings:
   m_BuildTargetPlatformIcons: []
   m_BuildTargetBatching:
   - m_BuildTarget: Standalone
-    m_StaticBatching: 0
-    m_DynamicBatching: 0
+    m_StaticBatching: 1
+    m_DynamicBatching: 1
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: WindowsStandaloneSupport
     m_APIs: 1200000002000000
@@ -558,7 +558,7 @@ PlayerSettings:
   webGLCompressionFormat: 1
   webGLLinkerTarget: 0
   scriptingDefineSymbols:
-    1: CROSS_PLATFORM_INPUT
+    1: CROSS_PLATFORM_INPUT;PROFILER
     2: CROSS_PLATFORM_INPUT
     4: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     7: CROSS_PLATFORM_INPUT;MOBILE_INPUT
@@ -569,19 +569,20 @@ PlayerSettings:
     iOS: 2
   scriptingBackend:
     Android: 0
-    Metro: 1
+    Metro: 2
     Standalone: 0
     WP8: 2
     WebGL: 1
     iOS: 0
-  il2cppCompilerConfiguration: {}
+  il2cppCompilerConfiguration:
+    Standalone: 0
   incrementalIl2cppBuild: {}
   allowUnsafeCode: 0
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 0
   apiCompatibilityLevelPerPlatform:
-    Metro: 3
-    Standalone: 3
+    Metro: 1
+    Standalone: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: 201404-MiniShooter
@@ -590,7 +591,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: Unity Technologies
   metroCertificateIssuer: Unity Technologies
-  metroCertificateNotAfter: 80bfed8f5199d301
+  metroCertificateNotAfter: 80b957190114d501
   metroApplicationDescription: 2014_04 - MiniShooter
   wsaImages: {}
   metroTileShortName: 
@@ -684,7 +685,7 @@ PlayerSettings:
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled: {}
   facebookSdkVersion: 7.9.1
-  apiCompatibilityLevel: 3
+  apiCompatibilityLevel: 2
   cloudProjectId: 
   projectName: 
   organizationId: 

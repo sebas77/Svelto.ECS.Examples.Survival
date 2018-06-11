@@ -26,7 +26,7 @@ namespace Svelto.ECS.Example.Survive
     ///it's helpful to use in an environment where a Context is
     ///not formally present, like in Unity. 
     /// </summary>
-    public class Main : ICompositionRoot
+    public class Main : IUnityCompositionRoot
     {
         public Main()
         {
@@ -236,7 +236,7 @@ namespace Svelto.ECS.Example.Survive
         /// It is absolutely not necessary, but convienent in case you prefer this way
         /// </summary>
         /// <param name="contextHolder"></param>
-        void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
+        void IUnityCompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
             var prefabsDictionary = new PrefabsDictionary(Application.persistentDataPath + "/prefabs.json");
                 
