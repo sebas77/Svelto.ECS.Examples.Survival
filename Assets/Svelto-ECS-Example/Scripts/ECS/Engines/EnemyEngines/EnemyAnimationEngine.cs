@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-
 namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyAnimationEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>

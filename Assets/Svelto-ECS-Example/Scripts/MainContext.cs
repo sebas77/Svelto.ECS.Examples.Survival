@@ -300,7 +300,7 @@ namespace Svelto.ECS.Example.Survive
             for (int i = 0; i < entities.Length; i++)
             {
                 var entityDescriptorHolder = entities[i];
-                var entityDescriptor = entityDescriptorHolder.RetrieveDescriptor();
+                var entityDescriptor = entityDescriptorHolder.RetrieveDescriptorInfo();
                 _entityFactory.BuildEntity
                 (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(),
                     entityDescriptor.entityViewsToBuild,
