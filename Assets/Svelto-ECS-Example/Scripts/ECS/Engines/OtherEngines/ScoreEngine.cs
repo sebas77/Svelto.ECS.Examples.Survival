@@ -17,7 +17,7 @@ namespace Svelto.ECS.Example.Survive.HUD
             {
                 uint index;
                 PlayerTargetTypeEntityStruct playerTarget =
-                entityViewsDB.QueryEntities<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index)[index];
+                entityViewsDB.QueryEntitiesAndIndex<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index)[index];
                 
                 switch (playerTarget.targetType)
                 {

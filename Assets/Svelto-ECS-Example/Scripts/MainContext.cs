@@ -264,7 +264,7 @@ namespace Svelto.ECS.Example.Survive
             //but the HealthEntityStruct does. Here I show the official method to do it
             var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), player.GetComponents<IImplementor>());
             HealthEntityStruct healthEntityStruct = new HealthEntityStruct {currentHealth = 100};
-            initializer.Init(ref healthEntityStruct);
+            initializer.Init(healthEntityStruct);
 
             //unluckily the gun is parented in the original prefab, so there is no easy way to create it
             //explicitly, I have to create if from the existing gameobject.
@@ -300,10 +300,10 @@ namespace Svelto.ECS.Example.Survive
             for (int i = 0; i < entities.Length; i++)
             {
                 var entityDescriptorHolder = entities[i];
-                var entityDescriptor = entityDescriptorHolder.RetrieveDescriptorInfo();
+                var entityViewsToBuild = entityDescriptorHolder.GetEntitiesToBuild();
                 _entityFactory.BuildEntity
                 (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(),
-                    entityDescriptor.entityViewsToBuild,
+                    entityViewsToBuild,
                     (entityDescriptorHolder as MonoBehaviour).GetComponentsInChildren<IImplementor>());
             }
         }

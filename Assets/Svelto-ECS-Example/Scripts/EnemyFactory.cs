@@ -27,9 +27,9 @@ namespace Svelto.ECS.Example.Survive
             var playerTargetTypeEntityStruct = new PlayerTargetTypeEntityStruct { targetType = enemySpawnData.targetType};
             var healthEntityStruct = new HealthEntityStruct { currentHealth = 100 };
 
-            initializer.Init(ref enemyAttackstruct);
-            initializer.Init(ref healthEntityStruct);
-            initializer.Init(ref playerTargetTypeEntityStruct);
+            initializer.Init(enemyAttackstruct);
+            initializer.Init(healthEntityStruct);
+            initializer.Init(playerTargetTypeEntityStruct);
 
             var transform = go.transform;
             var spawnInfo = enemySpawnData.spawnPoints[spawnPointIndex];

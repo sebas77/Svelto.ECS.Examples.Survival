@@ -21,8 +21,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
         public void Step(ref DamageInfo token, DamageCondition condition)
         {
             uint index;
-            var entity = entityViewsDB.QueryEntities<EnemyEntityViewStruct>(token.entityDamagedID, out index)[index];
-            var playerTargetTypeEntityStructs = entityViewsDB.QueryEntities<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index);
+            var entity = entityViewsDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(token.entityDamagedID, out index)[index];
+            var playerTargetTypeEntityStructs = entityViewsDB.QueryEntitiesAndIndex<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index);
 
             _entityFunctions.SwapEntityGroup(token.entityDamagedID.entityID, ECSGroups.EnemyGroup[playerTargetTypeEntityStructs[index].targetType]);
             

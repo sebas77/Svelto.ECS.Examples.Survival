@@ -44,7 +44,7 @@ namespace Svelto.ECS.Example.Survive.Player
         void TriggerDeathAnimation(EGID targetID)
         {
             uint index;
-            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(targetID, out index);
+            var playerEntityViews = entityViewsDB.QueryEntitiesAndIndex<PlayerEntityView>(targetID, out index);
             
             playerEntityViews[index].animationComponent.playAnimation = "Die";
         }

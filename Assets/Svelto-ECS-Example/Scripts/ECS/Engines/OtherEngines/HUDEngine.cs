@@ -75,7 +75,7 @@ namespace Svelto.ECS.Example.Survive.HUD
                 damageComponent.imageColor = damageComponent.flashColor;
 
                 uint index;
-                guiEntityView.healthSliderComponent.value = entityViewsDB.QueryEntities<HealthEntityStruct>(damaged.entityDamagedID, out index)[index].currentHealth;
+                guiEntityView.healthSliderComponent.value = entityViewsDB.QueryEntitiesAndIndex<HealthEntityStruct>(damaged.entityDamagedID, out index)[index].currentHealth;
             }
         }
 

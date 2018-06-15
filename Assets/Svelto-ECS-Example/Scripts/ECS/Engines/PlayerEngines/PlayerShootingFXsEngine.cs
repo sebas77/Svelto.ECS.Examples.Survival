@@ -33,7 +33,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         void Shoot(int ID, bool targetHasBeenHit)
         {
             uint index;
-            var structs = entityViewsDB.QueryEntities<GunEntityView>(new EGID(ID), out index);
+            var structs = entityViewsDB.QueryEntitiesAndIndex<GunEntityView>(new EGID(ID), out index);
 
             var gunFXComponent = structs[index].gunFXComponent;
 
