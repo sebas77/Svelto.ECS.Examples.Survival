@@ -6,7 +6,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyAttackEngine : SingleEntityEngine<EnemyTargetEntityViewStruct>, IQueryingEntityViewEngine
     {
-        public IEntityViewsDB entityViewsDB { set; private get; }
+        public IEntityDB EntityDb { set; private get; }
 
         public void Ready()
         {}
@@ -37,17 +37,17 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 // this is more than a sophistication, it actually the implementation
                 // of the rule that every engine must use its own set of
                 // EntityViews to promote encapsulation and modularity
-                while (entityViewsDB.HasAny<EnemyTargetEntityViewStruct>() == false || entityViewsDB.HasAny<EnemyAttackEntityView>() == false)
+                while (EntityDb.HasAny<EnemyTargetEntityViewStruct>() == false || EntityDb.HasAny<EnemyAttackEntityView>() == false)
                 {
                     yield return null;
                 }
                 
                 int targetsCount;
-                var targetEntitieViews = entityViewsDB.QueryEntities<EnemyTargetEntityViewStruct>(out targetsCount);
+                var targetEntitieViews = EntityDb.QueryEntities<EnemyTargetEntityViewStruct>(out targetsCount);
                 
                 int enemiesCount;
-                var enemiesAttackData = entityViewsDB.QueryEntities<EnemyAttackStruct>(out enemiesCount);
-                var enemies = entityViewsDB.QueryEntities<EnemyAttackEntityView>(out enemiesCount);
+                var enemiesAttackData = EntityDb.QueryEntities<EnemyAttackStruct>(out enemiesCount);
+                var enemies = EntityDb.QueryEntities<EnemyAttackEntityView>(out enemiesCount);
                 
                 //this is more complex than needed code is just to show how you can use entity structs
                 //this case is banal, entity structs should be use to handle hundreds or thousands

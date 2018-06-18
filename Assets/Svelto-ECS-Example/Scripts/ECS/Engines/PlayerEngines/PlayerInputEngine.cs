@@ -11,7 +11,7 @@ namespace Svelto.ECS.Example.Survive.Player
     /// </summary>
     public class PlayerInputEngine:SingleEntityEngine<PlayerEntityView>, IQueryingEntityViewEngine
     {
-        public IEntityViewsDB entityViewsDB { get; set; }
+        public IEntityDB EntityDb { get; set; }
         public void Ready()
         {}
         public PlayerInputEngine()
@@ -21,13 +21,13 @@ namespace Svelto.ECS.Example.Survive.Player
 
         IEnumerator ReadInput()
         {
-            while (entityViewsDB.HasAny<PlayerEntityView>() == false)
+            while (EntityDb.HasAny<PlayerEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
             
             int targetsCount;
-            var playerEntityViews = entityViewsDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
+            var playerEntityViews = EntityDb.QueryEntities<PlayerInputDataStruct>(out targetsCount);
            
             while (true)
             {

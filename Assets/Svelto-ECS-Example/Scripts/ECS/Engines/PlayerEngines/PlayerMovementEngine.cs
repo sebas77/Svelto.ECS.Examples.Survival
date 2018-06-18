@@ -6,7 +6,7 @@ namespace Svelto.ECS.Example.Survive.Player
 {
     public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
     {
-        public IEntityViewsDB entityViewsDB { get; set; }
+        public IEntityDB EntityDb { get; set; }
         public void Ready()
         {}
         
@@ -30,8 +30,8 @@ namespace Svelto.ECS.Example.Survive.Player
         IEnumerator PhysicsTick()
         {  
             int targetsCount;
-            var playerEntityViews = entityViewsDB.QueryEntities<PlayerEntityView>(out targetsCount);
-            var playerInputDatas = entityViewsDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
+            var playerEntityViews = EntityDb.QueryEntities<PlayerEntityView>(out targetsCount);
+            var playerInputDatas = EntityDb.QueryEntities<PlayerInputDataStruct>(out targetsCount);
 
             while (true)
             {   
@@ -89,7 +89,7 @@ namespace Svelto.ECS.Example.Survive.Player
         void StopMovementOnDeath(EGID ID)
         {
             int count;
-            var playerEntityView = entityViewsDB.QueryEntities<PlayerEntityView>(out count)[0]; 
+            var playerEntityView = EntityDb.QueryEntities<PlayerEntityView>(out count)[0]; 
             playerEntityView.rigidBodyComponent.isKinematic = true;
         }
 

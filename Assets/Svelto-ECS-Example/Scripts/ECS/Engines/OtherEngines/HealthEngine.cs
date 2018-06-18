@@ -12,11 +12,11 @@ namespace Svelto.ECS.Example.Survive
             _damageSequence = damageSequence;
         }
 
-        public IEntityViewsDB entityViewsDB { set; private get; }
+        public IEntityDB EntityDb { set; private get; }
 
         public void Step(ref DamageInfo damage, int condition)
         {
-            entityViewsDB.ExecuteOnEntity(damage.entityDamagedID, ref damage,
+            EntityDb.ExecuteOnEntity(damage.entityDamagedID, ref damage,
                                           (ref HealthEntityStruct healthEntityStruct,
                                            ref DamageInfo         damageInfo) =>
                                           {

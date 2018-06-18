@@ -4,7 +4,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyMovementEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
     {
-        public IEntityViewsDB entityViewsDB { set; private get; }
+        public IEntityDB EntityDb { set; private get; }
 
         public void Ready()
         {
@@ -16,13 +16,13 @@ namespace Svelto.ECS.Example.Survive.Enemies
             while (true)
             {
                 int count;
-                var enemyTargetEntityViews = entityViewsDB.QueryEntities<EnemyTargetEntityViewStruct>(out count);
+                var enemyTargetEntityViews = EntityDb.QueryEntities<EnemyTargetEntityViewStruct>(out count);
 
                 if (count > 0)
                 {
                     var targetEntityView = enemyTargetEntityViews[0];
 
-                    var enemies = entityViewsDB.QueryEntities<EnemyEntityViewStruct>(out count);
+                    var enemies = EntityDb.QueryEntities<EnemyEntityViewStruct>(out count);
 
                     for (var i = 0; i < count; i++)
                     {
@@ -36,7 +36,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void StopEnemyOnDeath(EGID targetID)
         {
-            entityViewsDB.ExecuteOnEntity(targetID, (ref EnemyEntityViewStruct entityView) =>
+            EntityDb.ExecuteOnEntity(targetID, (ref EnemyEntityViewStruct entityView) =>
             {
                 entityView.movementComponent.navMeshEnabled      = false;
                 entityView.movementComponent.setCapsuleAsTrigger = true;

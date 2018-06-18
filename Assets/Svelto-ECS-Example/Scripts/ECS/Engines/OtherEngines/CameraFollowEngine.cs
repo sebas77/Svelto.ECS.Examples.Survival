@@ -38,14 +38,14 @@ namespace Svelto.ECS.Example.Survive.Camera
         
         IEnumerator PhysicUpdate()
         {
-            while (entityViewsDB.HasAny<CameraTargetEntityView>() == false || entityViewsDB.HasAny<CameraEntityView>() == false)
+            while (EntityDb.HasAny<CameraTargetEntityView>() == false || EntityDb.HasAny<CameraEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
             
             int count;
-            var cameraTargets = entityViewsDB.QueryEntities<CameraTargetEntityView>(out count);
-            var cameraEntities = entityViewsDB.QueryEntities<CameraEntityView>(out count);
+            var cameraTargets = EntityDb.QueryEntities<CameraTargetEntityView>(out count);
+            var cameraEntities = EntityDb.QueryEntities<CameraEntityView>(out count);
 
             float smoothing = 5.0f;
             
@@ -64,6 +64,6 @@ namespace Svelto.ECS.Example.Survive.Camera
 
         readonly ITime         _time;
         readonly ITaskRoutine  _taskRoutine;
-        public IEntityViewsDB entityViewsDB { get; set; }
+        public IEntityDB EntityDb { get; set; }
     }
 }
