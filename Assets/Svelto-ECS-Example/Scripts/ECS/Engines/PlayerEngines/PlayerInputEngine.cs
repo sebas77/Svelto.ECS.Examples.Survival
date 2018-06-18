@@ -9,9 +9,9 @@ namespace Svelto.ECS.Example.Survive.Player
     /// if you need to test input, you can mock this class
     /// alternativaly you can mock the implementor.
     /// </summary>
-    public class PlayerInputEngine:SingleEntityEngine<PlayerEntityView>, IQueryingEntityViewEngine
+    public class PlayerInputEngine:SingleEntityEngine<PlayerEntityView>, IQueryingEntitiesEngine
     {
-        public IEntityDB EntityDb { get; set; }
+        public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
         {}
         public PlayerInputEngine()
@@ -21,13 +21,13 @@ namespace Svelto.ECS.Example.Survive.Player
 
         IEnumerator ReadInput()
         {
-            while (EntityDb.HasAny<PlayerEntityView>() == false)
+            while (entitiesDB.HasAny<PlayerEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
             
             int targetsCount;
-            var playerEntityViews = EntityDb.QueryEntities<PlayerInputDataStruct>(out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
            
             while (true)
             {

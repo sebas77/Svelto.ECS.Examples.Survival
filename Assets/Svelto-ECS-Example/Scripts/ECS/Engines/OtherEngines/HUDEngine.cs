@@ -16,9 +16,9 @@ namespace Svelto.ECS.Example.Survive.HUD
     /// Therefore using the Add/Remove callbacks is not wrong, but I try to not
     /// promote their use. 
     /// </summary>
-    public class HUDEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
+    public class HUDEngine : IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
     {
-        public IEntityDB EntityDb { set; private get; }
+        public IEntitiesDB entitiesDB { set; private get; }
 
         public HUDEngine(ITime time)
         {
@@ -35,7 +35,7 @@ namespace Svelto.ECS.Example.Survive.HUD
             while (true)
             {
                 int hudEntityViewsCount;
-                var hudEntityViews = EntityDb.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
+                var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
                 for (int i = 0; i < hudEntityViewsCount; i++)
                 {
                     var damageComponent = hudEntityViews[i].damageImageComponent;
@@ -56,7 +56,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         void OnDeadEvent()
         {
             int hudEntityViewsCount;
-            var hudEntityViews = EntityDb.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
+            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
             for (int i = 0; i < hudEntityViewsCount; i++)
                 hudEntityViews[i].healthSliderComponent.value = 0;
 
@@ -66,7 +66,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         void UpdateSlider(DamageInfo damaged)
         {
             int hudEntityViewsCount;
-            var hudEntityViews = EntityDb.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
+            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
             for (int i = 0; i < hudEntityViewsCount; i++)
             {
                 var guiEntityView = hudEntityViews[i];
@@ -75,7 +75,7 @@ namespace Svelto.ECS.Example.Survive.HUD
                 damageComponent.imageColor = damageComponent.flashColor;
 
                 uint index;
-                guiEntityView.healthSliderComponent.value = EntityDb.QueryEntitiesAndIndex<HealthEntityStruct>(damaged.entityDamagedID, out index)[index].currentHealth;
+                guiEntityView.healthSliderComponent.value = entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>(damaged.entityDamagedID, out index)[index].currentHealth;
             }
         }
 
@@ -85,7 +85,7 @@ namespace Svelto.ECS.Example.Survive.HUD
             yield return _waitForSeconds;
 
             int hudEntityViewsCount;
-            var hudEntityViews = EntityDb.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
+            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
             for (int i = 0; i < hudEntityViewsCount; i++)
                 hudEntityViews[i].HUDAnimator.playAnimation = "GameOver";
 

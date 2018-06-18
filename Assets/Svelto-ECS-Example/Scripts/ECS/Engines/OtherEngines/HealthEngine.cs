@@ -2,7 +2,7 @@ using Svelto.ECS.Example.Survive.Player;
 
 namespace Svelto.ECS.Example.Survive
 {
-    public class HealthEngine : IQueryingEntityViewEngine, IStep<DamageInfo>
+    public class HealthEngine : IQueryingEntitiesEngine, IStep<DamageInfo>
     {
         public void Ready()
         { }
@@ -12,11 +12,11 @@ namespace Svelto.ECS.Example.Survive
             _damageSequence = damageSequence;
         }
 
-        public IEntityDB EntityDb { set; private get; }
+        public IEntitiesDB entitiesDB { set; private get; }
 
         public void Step(ref DamageInfo damage, int condition)
         {
-            EntityDb.ExecuteOnEntity(damage.entityDamagedID, ref damage,
+            entitiesDB.ExecuteOnEntity(damage.entityDamagedID, ref damage,
                                           (ref HealthEntityStruct healthEntityStruct,
                                            ref DamageInfo         damageInfo) =>
                                           {

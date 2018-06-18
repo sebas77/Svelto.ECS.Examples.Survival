@@ -5,9 +5,9 @@ using Svelto.Tasks;
 namespace Svelto.ECS.Example.Survive.Player.Gun
 {
     public class PlayerGunShootingEngine : MultiEntitiesEngine<GunEntityView, PlayerEntityView>, 
-        IQueryingEntityViewEngine
+        IQueryingEntitiesEngine
     {
-        public IEntityDB EntityDb { set; private get; }
+        public IEntitiesDB entitiesDB { set; private get; }
 
         public void Ready()
         {
@@ -41,14 +41,14 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
 
         IEnumerator Tick()
         {
-            while (EntityDb.HasAny<PlayerEntityView>() == false || EntityDb.HasAny<GunEntityView>() == false)
+            while (entitiesDB.HasAny<PlayerEntityView>() == false || entitiesDB.HasAny<GunEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
 
             int count;
-            var playerGunEntities = EntityDb.QueryEntities<GunEntityView>(out count);
-            var playerEntities = EntityDb.QueryEntities<PlayerInputDataStruct>(out count);
+            var playerGunEntities = entitiesDB.QueryEntities<GunEntityView>(out count);
+            var playerEntities = entitiesDB.QueryEntities<PlayerInputDataStruct>(out count);
             
             while (true)
             {
@@ -77,7 +77,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             if (entityHit != -1)
             {
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (EntityDb.Exists<PlayerTargetTypeEntityStruct>(new EGID(entityHit)))
+                if (entitiesDB.Exists<PlayerTargetTypeEntityStruct>(new EGID(entityHit)))
                 {
                     var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, new EGID(entityHit), EntityDamagedType.Enemy);
                     _enemyDamageSequence.Next(this, ref damageInfo);

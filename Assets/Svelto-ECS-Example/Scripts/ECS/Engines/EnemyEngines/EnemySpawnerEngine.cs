@@ -5,7 +5,7 @@ using Svelto.ECS.Example.Survive.Player;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemySpawnerEngine : IStep<EGID>, IQueryingEntityViewEngine
+    public class EnemySpawnerEngine : IStep<EGID>, IQueryingEntitiesEngine
     {
         public EnemySpawnerEngine(IEnemyFactory enemyFactory, IEntityFunctions entityFunctions)
         {
@@ -14,7 +14,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _numberOfEnemyToSpawn = 15;
         }
         
-        public IEntityDB EntityDb { get; set; }
+        public IEntitiesDB entitiesDB { get; set; }
 
         public void Ready()
         {
@@ -71,7 +71,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             //A pure struct based entity doesn't need pooling because it 
                             //never allocates.
                             var fromGroupId = ECSGroups.EnemyGroup[spawnData.enemySpawnData.targetType];
-                            if (EntityDb.HasAny<EnemyEntityViewStruct>(fromGroupId))
+                            if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                             {
                                 ReuseEnemy(fromGroupId, ref spawnData);
                             }
@@ -96,9 +96,9 @@ namespace Svelto.ECS.Example.Survive.Enemies
             var egid = _entityFunctions.SwapFirstEntityGroup(fromGroupId);
             
             //reset some components
-            EntityDb.ExecuteOnEntity(egid,
+            entitiesDB.ExecuteOnEntity(egid,
                                           (ref HealthEntityStruct healthStruct) => { healthStruct.currentHealth = 100; });
-            EntityDb.ExecuteOnEntity(egid, ref spawnData,
+            entitiesDB.ExecuteOnEntity(egid, ref spawnData,
                                           (ref EnemyEntityViewStruct    entityView,
                                            ref JSonEnemySpawnData spawnDataInfo) =>
                                           {

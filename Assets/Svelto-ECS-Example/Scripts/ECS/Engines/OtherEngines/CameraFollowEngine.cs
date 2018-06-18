@@ -7,7 +7,7 @@ namespace Svelto.ECS.Example.Survive.Camera
     //First step identify the entity type we want the engine to handle: CameraEntity
     //Second step name the engine according the behaviour and the entity: I.E.: CameraFollowTargetEngine
     //Third step start to write the code and create classes/fields as needed using refactoring tools 
-    public class CameraFollowTargetEngine : MultiEntitiesEngine<CameraEntityView, CameraTargetEntityView>, IQueryingEntityViewEngine
+    public class CameraFollowTargetEngine : MultiEntitiesEngine<CameraEntityView, CameraTargetEntityView>, IQueryingEntitiesEngine
     {
         public CameraFollowTargetEngine(ITime time)
         {
@@ -38,14 +38,14 @@ namespace Svelto.ECS.Example.Survive.Camera
         
         IEnumerator PhysicUpdate()
         {
-            while (EntityDb.HasAny<CameraTargetEntityView>() == false || EntityDb.HasAny<CameraEntityView>() == false)
+            while (entitiesDB.HasAny<CameraTargetEntityView>() == false || entitiesDB.HasAny<CameraEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
             
             int count;
-            var cameraTargets = EntityDb.QueryEntities<CameraTargetEntityView>(out count);
-            var cameraEntities = EntityDb.QueryEntities<CameraEntityView>(out count);
+            var cameraTargets = entitiesDB.QueryEntities<CameraTargetEntityView>(out count);
+            var cameraEntities = entitiesDB.QueryEntities<CameraEntityView>(out count);
 
             float smoothing = 5.0f;
             
@@ -64,6 +64,7 @@ namespace Svelto.ECS.Example.Survive.Camera
 
         readonly ITime         _time;
         readonly ITaskRoutine  _taskRoutine;
-        public IEntityDB EntityDb { get; set; }
+        
+        public IEntitiesDB entitiesDB { get; set; }
     }
 }

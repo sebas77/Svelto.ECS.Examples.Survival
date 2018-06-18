@@ -1,15 +1,15 @@
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyAnimationEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
+    public class EnemyAnimationEngine : IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
     {
-        public IEntityDB EntityDb { set; private get; }
+        public IEntitiesDB entitiesDB { set; private get; }
 
         public void Ready()
         {}
 
         void EntityDamaged(DamageInfo damageInfo)
         {
-            EntityDb.ExecuteOnEntity(damageInfo.entityDamagedID, ref damageInfo,
+            entitiesDB.ExecuteOnEntity(damageInfo.entityDamagedID, ref damageInfo,
                                               (ref EnemyEntityViewStruct entity, ref DamageInfo damage) =>
                                               {
                                                   entity.vfxComponent.position =
@@ -21,7 +21,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
         void TriggerTargetDeathAnimation()
         {
             int count;
-            var entity = EntityDb.QueryEntities<EnemyEntityViewStruct>(out count);
+            var entity = entitiesDB.QueryEntities<EnemyEntityViewStruct>(out count);
 
             for (int i = 0; i < count; i++)
                 entity[i].animationComponent.playAnimation = "PlayerDead";
@@ -29,7 +29,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         void TriggerDeathAnimation(EGID targetID)
         {
-            EntityDb.ExecuteOnEntity(targetID,
+            entitiesDB.ExecuteOnEntity(targetID,
                                               (ref EnemyEntityViewStruct entity) =>
                                               {
                                                   entity.animationComponent.playAnimation = "Dead";

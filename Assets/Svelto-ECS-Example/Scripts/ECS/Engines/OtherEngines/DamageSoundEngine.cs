@@ -1,8 +1,8 @@
 namespace Svelto.ECS.Example.Survive.Sound
 {
-    public class DamageSoundEngine : IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
+    public class DamageSoundEngine : IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
     {
-        public IEntityDB EntityDb { set; private get; }
+        public IEntitiesDB entitiesDB { set; private get; }
 
         public void Ready()
         {}
@@ -10,13 +10,13 @@ namespace Svelto.ECS.Example.Survive.Sound
         void TriggerDeathSound(EGID targetID)
         {
             uint index;
-            EntityDb.QueryEntitiesAndIndex<DamageSoundEntityView>(targetID, out index)[index].audioComponent.playOneShot = AudioType.death;
+            entitiesDB.QueryEntitiesAndIndex<DamageSoundEntityView>(targetID, out index)[index].audioComponent.playOneShot = AudioType.death;
         }
 
         void TriggerDamageAudio(EGID sender)
         {
             uint index;
-            EntityDb.QueryEntitiesAndIndex<DamageSoundEntityView>(sender, out index)[index].audioComponent.playOneShot = AudioType.damage;
+            entitiesDB.QueryEntitiesAndIndex<DamageSoundEntityView>(sender, out index)[index].audioComponent.playOneShot = AudioType.damage;
         }
 
         public void Step(ref DamageInfo token, DamageCondition condition)

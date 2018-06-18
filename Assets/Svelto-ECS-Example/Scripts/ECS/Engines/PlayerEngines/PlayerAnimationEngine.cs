@@ -3,9 +3,9 @@ using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Player
 {
-    public class PlayerAnimationEngine : SingleEntityEngine<PlayerEntityView>, IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
+    public class PlayerAnimationEngine : SingleEntityEngine<PlayerEntityView>, IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
     {
-        public IEntityDB EntityDb { get; set; }
+        public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
         {
             _taskRoutine.Start();
@@ -18,14 +18,14 @@ namespace Svelto.ECS.Example.Survive.Player
         
         IEnumerator PhysicsTick()
         {
-            while (EntityDb.HasAny<PlayerEntityView>() == false)
+            while (entitiesDB.HasAny<PlayerEntityView>() == false)
             {
                 yield return null; //skip a frame
             }
 
             int targetsCount;
-            var playerEntityViews = EntityDb.QueryEntities<PlayerEntityView>(out targetsCount);
-            var playerInputDatas = EntityDb.QueryEntities<PlayerInputDataStruct>(out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityView>(out targetsCount);
+            var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
             
             while (true)
             {
@@ -44,7 +44,7 @@ namespace Svelto.ECS.Example.Survive.Player
         void TriggerDeathAnimation(EGID targetID)
         {
             uint index;
-            var playerEntityViews = EntityDb.QueryEntitiesAndIndex<PlayerEntityView>(targetID, out index);
+            var playerEntityViews = entitiesDB.QueryEntitiesAndIndex<PlayerEntityView>(targetID, out index);
             
             playerEntityViews[index].animationComponent.playAnimation = "Die";
         }

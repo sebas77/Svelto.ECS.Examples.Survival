@@ -4,7 +4,7 @@ using Svelto.ECS.Example.Survive.Player;
 
 namespace Svelto.ECS.Example.Survive.Enemies
 {
-    public class EnemyDeathEngine:IQueryingEntityViewEngine, IStep<DamageInfo, DamageCondition>
+    public class EnemyDeathEngine:IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
     {
         public EnemyDeathEngine(IEntityFunctions entityFunctions, ITime time, ISequencer enemyDeadSequencer)
         {
@@ -13,7 +13,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _enemyDeadSequencer = enemyDeadSequencer;
         }
         
-        public IEntityDB EntityDb { get; set; }
+        public IEntitiesDB entitiesDB { get; set; }
         
         public void Ready()
         {}
@@ -21,8 +21,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
         public void Step(ref DamageInfo token, DamageCondition condition)
         {
             uint index;
-            var entity = EntityDb.QueryEntitiesAndIndex<EnemyEntityViewStruct>(token.entityDamagedID, out index)[index];
-            var playerTargetTypeEntityStructs = EntityDb.QueryEntitiesAndIndex<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index);
+            var entity = entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(token.entityDamagedID, out index)[index];
+            var playerTargetTypeEntityStructs = entitiesDB.QueryEntitiesAndIndex<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index);
 
             _entityFunctions.SwapEntityGroup(token.entityDamagedID.entityID, ECSGroups.EnemyGroup[playerTargetTypeEntityStructs[index].targetType]);
             
