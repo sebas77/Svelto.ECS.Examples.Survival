@@ -29,9 +29,21 @@ namespace Svelto.ECS.Example.Survive
     {
         public Main()
         {
-            SetupEnginesAndEntities();
+            InitAssets();
+            SetupEngines();
+            SetupEntities();
         }
-/// <summary>
+
+        void InitAssets()
+        {
+            //Do not copy this. initially I thought it was a good idea to use
+            //Json serialization to replace resources, but it's less convenient
+            //than I thought
+            GameObject.Find("PrefabsSerializer").GetComponent<PrefabSerializer>().Init();
+            GameObject.Find("EnemySpawnerData").GetComponent<SpawningData>().Init();
+        }
+
+        /// <summary>
 /// Before to start a review of Svelto.ECS terminologies:
 /// - Entity:
 ///     it must be a real and concrete entity that you can explain
@@ -81,7 +93,7 @@ namespace Svelto.ECS.Example.Survive
 ///     defoines the EntityViews, EntityStructs and EntityViewStructs that must be generated once the
 ///     Entity is built
 /// </summary>
-        void SetupEnginesAndEntities()
+        void SetupEngines()
         {
             //The Engines Root is the core of Svelto.ECS. You must NEVER inject the EngineRoot
             //as it is, therefore the composition root must hold a reference or it will be 
@@ -229,26 +241,31 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(hudEngine);
             _enginesRoot.AddEngine(scoreEngine);
         }
+
         
         /// <summary>
-        /// This is a standard approach to create Entities from already existing GameObject in the scene
-        /// It is absolutely not necessary, but convienent in case you prefer this way
+        /// While until recently I thought that creating entities in the context
+        /// would be all right, I am coming to realise that engines
+        /// should always handle the creation of entities.
+        /// I will refactor this when the right time comes.
         /// </summary>
-        /// <param name="contextHolder"></param>
-        public void OnContextCreated(UnityContext contextHolder)
+        void SetupEntities()
         {
-            var prefabsDictionary = new PrefabsDictionary(Application.persistentDataPath + "/prefabs.json");
-                
-            BuildEntitiesFromScene(contextHolder);
-            //Entities can also be created dynamically in run-time
-            //using the entityFactory; You can, if you wish, create
-            //starting entities here.
-            BuildPlayerEntities(prefabsDictionary);
+            BuildPlayerEntities();
             BuildCameraEntity();
         }
-
-        void BuildPlayerEntities(PrefabsDictionary prefabsDictionary)
+        
+        public void OnContextCreated(UnityContext contextHolder)
         {
+            BuildEntitiesFromScene(contextHolder);
+        }
+
+        void BuildPlayerEntities()
+        {
+            var prefabsDictionary = new PrefabsDictionary();
+            
+            var player = prefabsDictionary.Istantiate("Player");
+
             //Building entities explicitly should be always preferred
             //and MUST be used if an implementor doesn't need to be
             //a Monobehaviour. You should strive to create implementors
@@ -257,29 +274,31 @@ namespace Svelto.ECS.Example.Survive
             //and Unity3D. Using implementor as monobehaviour
             //just to read serialized data from the editor, is also
             //a bad practice, use a Json file instead.
-            var player = prefabsDictionary.Istantiate("Player");
-            
             //The Player Entity is made of EntityViewStruct+Implementors as monobehaviours and 
             //EntityStructs. The PlayerInputDataStruct doesn't need to be initialized (yay!!)
             //but the HealthEntityStruct does. Here I show the official method to do it
             var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), player.GetComponents<IImplementor>());
-            HealthEntityStruct healthEntityStruct = new HealthEntityStruct {currentHealth = 100};
-            initializer.Init(healthEntityStruct);
+            initializer.Init(new HealthEntityStruct {currentHealth = 100});
 
             //unluckily the gun is parented in the original prefab, so there is no easy way to create it
             //explicitly, I have to create if from the existing gameobject.
             var gun = player.GetComponentInChildren<PlayerShootingImplementor>();
             
-            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(), new object[] {gun});
+            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(), new[] {gun});
         }
 
         void BuildCameraEntity()
         {
             var implementor = UnityEngine.Camera.main.gameObject.AddComponent<CameraImplementor>();
 
-            _entityFactory.BuildEntity<CameraEntityDescriptor>(UnityEngine.Camera.main.GetInstanceID(), new object[] {implementor});
+            _entityFactory.BuildEntity<CameraEntityDescriptor>(UnityEngine.Camera.main.GetInstanceID(), new[] {implementor});
         }
 
+        /// <summary>
+        /// This is a possible approach to create Entities from already existing GameObject in the scene
+        /// It is absolutely not necessary and I wouldn't rely on this in production
+        /// </summary>
+        /// <param name="contextHolder"></param>
         void BuildEntitiesFromScene(UnityContext contextHolder)
         {
             //An EntityDescriptorHolder is a special Svelto.ECS class created to exploit
@@ -308,7 +327,6 @@ namespace Svelto.ECS.Example.Survive
             }
         }
 
-        //part of Svelto.Context
         public void OnContextInitialized()
         {}
         

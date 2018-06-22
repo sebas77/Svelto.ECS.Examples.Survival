@@ -9,11 +9,9 @@ public class PrefabSerializer : MonoBehaviour
 
 	void Awake()
 	{
-		if (serializedOnce == false)
-		{
-			SerializeData();
-		}
+		Init();	
 	}
+	
 	public void SerializeData()
 	{
 		serializedOnce = true;
@@ -22,6 +20,14 @@ public class PrefabSerializer : MonoBehaviour
 
 		Utility.Console.Log(json);
 
-		System.IO.File.WriteAllText(Application.persistentDataPath+ "/prefabs.json", json);
+		System.IO.File.WriteAllText("prefabs.json", json);
+	}
+
+	public void Init()
+	{
+		if (serializedOnce == false)
+		{
+			SerializeData();
+		}
 	}
 }

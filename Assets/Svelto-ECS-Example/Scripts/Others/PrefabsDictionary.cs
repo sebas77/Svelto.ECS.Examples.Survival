@@ -8,9 +8,9 @@ namespace Svelto.ECS.Example.Survive
     {
         Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
 
-        public PrefabsDictionary(string file)
+        public PrefabsDictionary()
         {
-            string json = File.ReadAllText(file);
+            string json = File.ReadAllText("prefabs.json");
             
             var gameobjects = JsonHelper.getJsonArray<GameObject>(json);
 
@@ -18,7 +18,6 @@ namespace Svelto.ECS.Example.Survive
             {
                 prefabs[gameobjects[i].name] = gameobjects[i];
             }
-                
         }
 
         public GameObject Istantiate(string player)

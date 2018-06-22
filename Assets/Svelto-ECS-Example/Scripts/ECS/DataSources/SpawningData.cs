@@ -10,11 +10,7 @@ public class SpawningData : MonoBehaviour
 
     void Awake()
     {
-        if (serializedSpawnDataOnce == false)
-            SerializeSpawnData();
-
-        if (serializedAttackDataOnce == false)
-            SerializeAttackData();            
+        Init();       
     }
     
     public void SerializeSpawnData()
@@ -31,7 +27,7 @@ public class SpawningData : MonoBehaviour
 
         Utility.Console.Log(json);
 
-        File.WriteAllText(Application.persistentDataPath + "/EnemySpawningData.json", json);
+        File.WriteAllText("EnemySpawningData.json", json);
     }
     
     public void SerializeAttackData()
@@ -48,6 +44,15 @@ public class SpawningData : MonoBehaviour
 
         Utility.Console.Log(json);
 
-        File.WriteAllText(Application.persistentDataPath + "/EnemyAttackData.json", json);
+        File.WriteAllText("EnemyAttackData.json", json);
+    }
+
+    public void Init()
+    {
+        if (serializedSpawnDataOnce == false)
+            SerializeSpawnData();
+
+        if (serializedAttackDataOnce == false)
+            SerializeAttackData();
     }
 }

@@ -126,7 +126,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         static JSonEnemySpawnData[] ReadEnemySpawningDataServiceRequest()
         {
-            string json = File.ReadAllText(UnityEngine.Application.persistentDataPath + "/EnemySpawningData.json");
+            string json = File.ReadAllText("EnemySpawningData.json");
             
             JSonEnemySpawnData[] enemiestoSpawn = JsonHelper.getJsonArray<JSonEnemySpawnData>(json);
             
@@ -135,7 +135,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
         
         static JSonEnemyAttackData[] ReadEnemyAttackDataServiceRequest()
         {
-            string json = File.ReadAllText(UnityEngine.Application.persistentDataPath + "/EnemyAttackData.json");
+            string json = File.ReadAllText("EnemyAttackData.json");
             
             JSonEnemyAttackData[] enemiestoSpawn = JsonHelper.getJsonArray<JSonEnemyAttackData>(json);
             
@@ -147,7 +147,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _numberOfEnemyToSpawn++;
         }
 
-        readonly WaitForSecondsEnumerator   _waitForSecondsEnumerator = new WaitForSecondsEnumerator(SECONDS_BETWEEN_SPAWNS);
+        readonly WaitForSecondsEnumerator  _waitForSecondsEnumerator = new WaitForSecondsEnumerator(SECONDS_BETWEEN_SPAWNS);
         
         readonly IEnemyFactory _enemyFactory;
         readonly IEntityFunctions _entityFunctions;
