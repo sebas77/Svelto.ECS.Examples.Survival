@@ -43,7 +43,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 }
                 
                 int targetsCount;
-                var targetEntitieViews = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(out targetsCount);
+                var targetEntities = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(out targetsCount);
                 
                 int enemiesCount;
                 var enemiesAttackData = entitiesDB.QueryEntities<EnemyAttackStruct>(out enemiesCount);
@@ -57,7 +57,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 //a game using only entity structs, but entity structs make sense ONLY if they
                 //hold value types, so they come with a lot of limitations
 
-                for (int enemyIndex = enemiesCount - 1; enemyIndex >= 0; --enemyIndex)
+                for (int enemyIndex = 0; enemyIndex < enemiesCount; enemyIndex++)
                 {
                     var enemyAttackEntityView = enemies[enemyIndex];
                     
@@ -66,9 +66,9 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
                 for (int enemyTargetIndex = 0; enemyTargetIndex < targetsCount; enemyTargetIndex++)
                 {
-                    var targetEntityView = targetEntitieViews[enemyTargetIndex];
+                    var targetEntityView = targetEntities[enemyTargetIndex];
 
-                    for (int enemyIndex = enemiesCount - 1; enemyIndex >= 0; --enemyIndex)
+                    for (int enemyIndex = 0; enemyIndex < enemiesCount; enemyIndex++)
                     {
                         if (enemiesAttackData[enemyIndex].entityInRange.collides == true)
                         {
