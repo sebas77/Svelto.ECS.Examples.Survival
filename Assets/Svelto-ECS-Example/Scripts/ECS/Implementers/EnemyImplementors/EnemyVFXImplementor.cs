@@ -13,7 +13,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             play.NotifyOnValueSet(Play);
         }
 
-        void Play(int sender, bool value)
+        void Play(EGID sender, bool value)
         {
             if (value == true) particle.Play();
         }

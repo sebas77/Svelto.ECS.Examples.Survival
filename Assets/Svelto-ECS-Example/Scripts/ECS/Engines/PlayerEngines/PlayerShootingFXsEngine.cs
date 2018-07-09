@@ -30,7 +30,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         protected override void Remove(ref GunEntityView playerGunEntityView)
         {}
 
-        void Shoot(int ID, bool targetHasBeenHit)
+        void Shoot(EGID ID, bool targetHasBeenHit)
         {
             uint index;
             var structs = entitiesDB.QueryEntitiesAndIndex<GunEntityView>(new EGID(ID), out index);
