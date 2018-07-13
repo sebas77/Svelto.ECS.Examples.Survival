@@ -14,9 +14,9 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             _taskRoutine.Start();
         }
         
-        public PlayerGunShootingEngine(ISequencer damageSequence, IRayCaster rayCaster, ITime time)
+        public PlayerGunShootingEngine(EnemyDamageSequencer damageSequence, IRayCaster rayCaster, ITime time)
         {
-            _enemyDamageSequence   = damageSequence;
+            _playerTargetDamageSequence   = damageSequence;
             _rayCaster             = rayCaster;
             _time                  = time;
             _taskRoutine           = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Tick())
@@ -80,7 +80,8 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
                 if (entitiesDB.Exists<PlayerTargetTypeEntityStruct>(new EGID(entityHit)))
                 {
                     var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, new EGID(entityHit), EntityDamagedType.Enemy);
-                    _enemyDamageSequence.Next(this, ref damageInfo);
+                    //Todo: not to my self: using a sequencer here doesn't convince me, I have to come back to this for more pondering
+                    _playerTargetDamageSequence.Next(this, ref damageInfo);
 
                     playerGunComponent.lastTargetPosition = point;
                     playerGunHitComponent.targetHit.value = true;
@@ -92,10 +93,10 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             playerGunHitComponent.targetHit.value = false;
         }
 
-        readonly ISequencer    _enemyDamageSequence;
-        readonly IRayCaster    _rayCaster;
-        readonly ITime         _time;
-        readonly ITaskRoutine  _taskRoutine;
+        readonly EnemyDamageSequencer _playerTargetDamageSequence;
+        readonly IRayCaster            _rayCaster;
+        readonly ITime                 _time;
+        readonly ITaskRoutine          _taskRoutine;
 
         static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
         static readonly int ENEMY_MASK     = LayerMask.GetMask("Enemies");

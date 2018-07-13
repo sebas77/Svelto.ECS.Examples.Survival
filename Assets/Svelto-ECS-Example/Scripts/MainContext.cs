@@ -118,8 +118,8 @@ namespace Svelto.ECS.Example.Survive
             //in my articles). 2) filter a data token passed as parameter through
             //engines. The ISequencer is also not the common way to communicate
             //between engines
-            Sequencer playerDamageSequence = new Sequencer();
-            Sequencer enemyDamageSequence = new Sequencer();
+            PlayerDamageSequencer playerDamageSequence = new PlayerDamageSequencer();
+            EnemyDamageSequencer enemyDamageSequence = new EnemyDamageSequencer();
             
             //wrap non testable unity static classes, so that 
             //can be mocked if needed.
@@ -345,6 +345,14 @@ namespace Svelto.ECS.Example.Survive
         EnginesRoot    _enginesRoot;
         IEntityFactory _entityFactory;
  }
+
+    public class PlayerDamageSequencer : Sequencer
+    {
+    }
+
+    public class EnemyDamageSequencer : Sequencer
+    {
+    }
 
     /// <summary>
     ///At least One GameObject containing a UnityContext must be present in the scene.

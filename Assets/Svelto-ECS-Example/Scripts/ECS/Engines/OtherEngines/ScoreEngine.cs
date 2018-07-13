@@ -33,8 +33,6 @@ namespace Svelto.ECS.Example.Survive.HUD
                 }
             }
         }
-
-        ISequencer _damageSequence;
     }
 }
 

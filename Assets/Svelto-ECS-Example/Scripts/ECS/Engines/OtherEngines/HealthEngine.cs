@@ -7,7 +7,7 @@ namespace Svelto.ECS.Example.Survive
         public void Ready()
         { }
 
-        public HealthEngine(ISequencer damageSequence)
+        public HealthEngine(Sequencer damageSequence)
         {
             _damageSequence = damageSequence;
         }
@@ -37,6 +37,6 @@ namespace Svelto.ECS.Example.Survive
             
         }
 
-        readonly ISequencer  _damageSequence;
+        readonly Sequencer  _damageSequence;
     }
 }

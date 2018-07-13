@@ -11,7 +11,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
         public void Ready()
         {}
 
-        public EnemyAttackEngine(ISequencer enemyrDamageSequence, ITime time)
+        public EnemyAttackEngine(PlayerDamageSequencer enemyrDamageSequence, ITime time)
         {
             _targetDamageSequence = enemyrDamageSequence;
             _time = time;
@@ -98,7 +98,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
         }
 
 
-        readonly ISequencer            _targetDamageSequence;
+        readonly PlayerDamageSequencer _targetDamageSequence;
         readonly ITime                 _time;
         readonly ITaskRoutine          _taskRoutine;
     }

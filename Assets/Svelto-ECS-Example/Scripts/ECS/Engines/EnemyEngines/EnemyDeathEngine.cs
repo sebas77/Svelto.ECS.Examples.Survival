@@ -6,7 +6,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 {
     public class EnemyDeathEngine:IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
     {
-        public EnemyDeathEngine(IEntityFunctions entityFunctions, ITime time, ISequencer enemyDeadSequencer)
+        public EnemyDeathEngine(IEntityFunctions entityFunctions, ITime time, EnemyDamageSequencer enemyDeadSequencer)
         {
             _entityFunctions = entityFunctions;
             _time = time;
@@ -47,6 +47,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
         readonly IEntityFunctions _entityFunctions;
         readonly ITime            _time;
-        readonly ISequencer       _enemyDeadSequencer;
+        readonly EnemyDamageSequencer _enemyDeadSequencer;
     }
 }
