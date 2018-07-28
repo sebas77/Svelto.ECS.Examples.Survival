@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections;
 using Svelto.Tasks;
 
-namespace Svelto.ECS.Example.Survive.Player.Gun
+namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
 {
-    public class PlayerGunShootingFXsEngine : SingleEntityEngine<GunEntityView>, IQueryingEntitiesEngine
+    public class PlayerGunShootingFXsEngine : SingleEntityEngine<GunEntityViewStruct>, IQueryingEntitiesEngine
     {
         public IEntitiesDB entitiesDB { set; private get; }
 
@@ -21,19 +21,19 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         /// querying is always cleaner.
         /// </summary>
         /// <param name="playerGunEntityView"></param>
-        protected override void Add(ref GunEntityView playerGunEntityView)
+        protected override void Add(ref GunEntityViewStruct playerGunEntityView)
         {
             playerGunEntityView.gunHitTargetComponent.targetHit.NotifyOnValueSet(Shoot);
             _waitForSeconds = new WaitForSeconds(playerGunEntityView.gunComponent.timeBetweenBullets * playerGunEntityView.gunFXComponent.effectsDisplayTime);
         }
 
-        protected override void Remove(ref GunEntityView playerGunEntityView)
+        protected override void Remove(ref GunEntityViewStruct playerGunEntityView)
         {}
 
         void Shoot(int ID, bool targetHasBeenHit)
         {
             uint index;
-            var structs = entitiesDB.QueryEntitiesAndIndex<GunEntityView>(new EGID(ID), out index);
+            var structs = entitiesDB.QueryEntitiesAndIndex<GunEntityViewStruct>(new EGID(ID), out index);
 
             var gunFXComponent = structs[index].gunFXComponent;
 
@@ -81,7 +81,7 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
         void DisableEffects ()
         {
             int targetsCount;
-            var gunEntityViews = entitiesDB.QueryEntities<GunEntityView>(out targetsCount);
+            var gunEntityViews = entitiesDB.QueryEntities<GunEntityViewStruct>(out targetsCount);
 
             var fxComponent = gunEntityViews[0].gunFXComponent;
             // Disable the line renderer and the light.

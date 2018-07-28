@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using Svelto.Tasks.Enumerators;
 using System.IO;
-using Svelto.ECS.Example.Survive.Player;
+using Svelto.ECS.Example.Survive.Characters.Player;
 
-namespace Svelto.ECS.Example.Survive.Enemies
+namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemySpawnerEngine : IStep<EGID>, IQueryingEntitiesEngine
+    public class EnemySpawnerEngine : IStep<RespawnCondition>, IQueryingEntitiesEngine
     {
         public EnemySpawnerEngine(IEnemyFactory enemyFactory, IEntityFunctions entityFunctions)
         {
@@ -14,7 +15,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             _numberOfEnemyToSpawn = 15;
         }
         
-        public IEntitiesDB entitiesDB { get; set; }
+        public IEntitiesDB entitiesDB { private get; set; }
 
         public void Ready()
         {
@@ -70,7 +71,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
                             //Note, pooling make sense only for Entities that use implementors.
                             //A pure struct based entity doesn't need pooling because it 
                             //never allocates.
-                            var fromGroupId = ECSGroups.EnemyGroup[spawnData.enemySpawnData.targetType];
+                            var fromGroupId = (int)ECSGroups.enemyDisabledGroups + (int)spawnData.enemySpawnData.targetType;
                             if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                             {
                                 ReuseEnemy(fromGroupId, ref spawnData);
@@ -142,7 +143,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
             return enemiestoSpawn;
         }
         
-        public void Step(ref EGID token, int condition)
+        public void Step(RespawnCondition condition, EGID id)
         {
             _numberOfEnemyToSpawn++;
         }
@@ -155,5 +156,9 @@ namespace Svelto.ECS.Example.Survive.Enemies
         int     _numberOfEnemyToSpawn;
         
         const int SECONDS_BETWEEN_SPAWNS = 1;
+    }
+
+    public enum RespawnCondition
+    {
     }
 }

@@ -1,6 +1,8 @@
+using System;
 using Svelto.Tasks.Enumerators;
 using System.Collections;
-using Svelto.ECS.Example.Survive.Player;
+using Svelto.ECS.Example.Survive.Characters;
+using Svelto.ECS.Example.Survive.Characters.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,7 +18,7 @@ namespace Svelto.ECS.Example.Survive.HUD
     /// Therefore using the Add/Remove callbacks is not wrong, but I try to not
     /// promote their use. 
     /// </summary>
-    public class HUDEngine : IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
+    public class HUDEngine : IQueryingEntitiesEngine, IStep<PlayerDeathCondition>
     {
         public IEntitiesDB entitiesDB { set; private get; }
 
@@ -34,26 +36,69 @@ namespace Svelto.ECS.Example.Survive.HUD
         {
             while (true)
             {
-                int hudEntityViewsCount;
-                var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
-                for (int i = 0; i < hudEntityViewsCount; i++)
-                {
-                    var damageComponent = hudEntityViews[i].damageImageComponent;
+                entitiesDB.ExecuteOnEntities(ref _time, (ref HUDEntityView guiEntityView, ref ITime time) =>
+                      {
+                          var damageComponent = guiEntityView.damageImageComponent;
 
-                    damageComponent.imageColor = Color.Lerp(damageComponent.imageColor, Color.clear,
-                        damageComponent.speed * _time.deltaTime);
-                }
+                          damageComponent.imageColor =
+                              Color.Lerp(damageComponent.imageColor, Color.clear,
+                                         damageComponent.speed * time.deltaTime);
+                      });
+                
+                var value = entitiesDB;
+                FlashOnDamage(value);
                 
                 yield return null;
             }
         }
 
-        void OnDamageEvent(DamageInfo damaged)
+        //static so it helps to not capture this in the lambdas
+        static void FlashOnDamage(IEntitiesDB entitiesDb)
         {
-            UpdateSlider(damaged);
+            int numberOfPlayers;
+            var players = entitiesDb.QueryEntities<DamageablePlayerEntityStruct>(out numberOfPlayers);
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                uint index;
+
+                if (players[i].damaged == false) return;
+
+                var health =
+                    entitiesDb.QueryEntitiesAndIndex<HealthEntityStruct>
+                        (players[i].ID, out index)[index].currentHealth;
+
+                entitiesDb.ExecuteOnEntities(ref health,
+                                              (ref HUDEntityView guiEntityView,
+                                               ref int           refhealth) =>
+                                              {
+                                                  var damageComponent = guiEntityView.damageImageComponent;
+                                                  damageComponent.imageColor = damageComponent.flashColor;
+
+                                                  guiEntityView.healthSliderComponent.value = refhealth;
+                                              });
+            }
+        }
+        
+        //static so it helps to not capture this in the lambdas
+        void FlashOnDamageBinding(EGID id)
+        {
+            uint index;
+            var health =
+                    entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>
+                        (id, out index)[index].currentHealth;
+
+                entitiesDB.ExecuteOnEntities(ref health,
+                                             (ref HUDEntityView guiEntityView,
+                                              ref int           refhealth) =>
+                                             {
+                                                 var damageComponent = guiEntityView.damageImageComponent;
+                                                 damageComponent.imageColor = damageComponent.flashColor;
+
+                                                 guiEntityView.healthSliderComponent.value = refhealth;
+                                             });
         }
 
-        void OnDeadEvent()
+        void OnPlayerDeadEvent()
         {
             int hudEntityViewsCount;
             var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
@@ -61,22 +106,6 @@ namespace Svelto.ECS.Example.Survive.HUD
                 hudEntityViews[i].healthSliderComponent.value = 0;
 
             RestartLevelAfterFewSeconds().Run();
-        }
-
-        void UpdateSlider(DamageInfo damaged)
-        {
-            int hudEntityViewsCount;
-            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
-            for (int i = 0; i < hudEntityViewsCount; i++)
-            {
-                var guiEntityView = hudEntityViews[i];
-                var damageComponent = guiEntityView.damageImageComponent;
-
-                damageComponent.imageColor = damageComponent.flashColor;
-
-                uint index;
-                guiEntityView.healthSliderComponent.value = entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>(damaged.entityDamagedID, out index)[index].currentHealth;
-            }
         }
 
         IEnumerator RestartLevelAfterFewSeconds()
@@ -95,17 +124,21 @@ namespace Svelto.ECS.Example.Survive.HUD
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        public void Step(ref DamageInfo token, DamageCondition condition)
+        public void Step(PlayerDeathCondition condition, EGID id)
         {
-            if (condition == DamageCondition.Damage)
-                OnDamageEvent(token);
-            else
-            if (condition == DamageCondition.Dead)
-                OnDeadEvent();
+            OnPlayerDeadEvent();
         }
 
         readonly WaitForSecondsEnumerator  _waitForSeconds = new WaitForSecondsEnumerator(5);
-        readonly ITime                     _time;
+        ITime                     _time;
+    }
+
+    class DataBindsAttribute : Attribute
+    {
+        public DataBindsAttribute(Type healthEntityStruct)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

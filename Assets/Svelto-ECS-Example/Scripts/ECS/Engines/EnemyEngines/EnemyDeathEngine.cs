@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
-using Svelto.ECS.Example.Survive.Player;
 
-namespace Svelto.ECS.Example.Survive.Enemies
+namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemyDeathEngine:IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
+    public class EnemyDeathEngine:IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
     {
-        public EnemyDeathEngine(IEntityFunctions entityFunctions, ITime time, EnemyDamageSequencer enemyDeadSequencer)
+        public EnemyDeathEngine(IEntityFunctions entityFunctions, ITime time, EnemyDeathSequencer enemyDeadSequencer)
         {
             _entityFunctions = entityFunctions;
             _time = time;
@@ -18,15 +17,14 @@ namespace Svelto.ECS.Example.Survive.Enemies
         public void Ready()
         {}
         
-        public void Step(ref DamageInfo token, DamageCondition condition)
+        public void Step(EnemyDeathCondition condition, EGID id)
         {
             uint index;
-            var entity = entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(token.entityDamagedID, out index)[index];
-            var playerTargetTypeEntityStructs = entitiesDB.QueryEntitiesAndIndex<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index);
+            var entities = entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(id, out index);
 
-            _entityFunctions.SwapEntityGroup(token.entityDamagedID.entityID, ECSGroups.EnemyGroup[playerTargetTypeEntityStructs[index].targetType]);
+         //   _entityFunctions.SwapEntityGroup(id, ECSGroups.enemyDisabledGroups + entities[index].enemyType);
             
-            Sink(entity).Run();
+            Sink(entities[index]).Run();
         }
         
         IEnumerator Sink(EnemyEntityViewStruct entity)
@@ -41,12 +39,11 @@ namespace Svelto.ECS.Example.Survive.Enemies
                 yield return null;
             }
 
-            var entityId = entity.ID;
-            _enemyDeadSequencer.Next(this, ref entityId);
+            _enemyDeadSequencer.Next(this, entity.ID);
         }
 
         readonly IEntityFunctions _entityFunctions;
         readonly ITime            _time;
-        readonly EnemyDamageSequencer _enemyDeadSequencer;
+        readonly EnemyDeathSequencer _enemyDeadSequencer;
     }
 }

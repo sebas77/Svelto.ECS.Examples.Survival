@@ -2,7 +2,7 @@ using System.Collections;
 using Svelto.Tasks;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Enemies
+namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
     public class EnemyAttackEngine : SingleEntityEngine<EnemyTargetEntityViewStruct>, IQueryingEntitiesEngine
     {
@@ -11,9 +11,8 @@ namespace Svelto.ECS.Example.Survive.Enemies
         public void Ready()
         {}
 
-        public EnemyAttackEngine(PlayerDamageSequencer enemyrDamageSequence, ITime time)
+        public EnemyAttackEngine(ITime time)
         {
-            _targetDamageSequence = enemyrDamageSequence;
             _time = time;
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(CheckIfHittingEnemyTarget()).SetScheduler(StandardSchedulers.physicScheduler);
         }
@@ -82,11 +81,18 @@ namespace Svelto.ECS.Example.Survive.Enemies
                                 if (enemiesAttackData[enemyIndex].timer >= enemiesAttackData[enemyIndex].timeBetweenAttack)
                                 {
                                     enemiesAttackData[enemyIndex].timer = 0.0f;
-
-                                    var damageInfo = new DamageInfo(enemiesAttackData[enemyIndex].attackDamage, Vector3.zero,
-                                                                    targetEntityView.ID, EntityDamagedType.Player);
-
-                                    _targetDamageSequence.Next(this, ref damageInfo);
+                                    
+                                    var damageInfo = new DamageInfo(enemiesAttackData[enemyIndex]
+                                                                       .attackDamage,
+                                                                    Vector3.zero,
+                                                                    EntityDamagedType.Player);
+                
+                                    //note how the GameObject GetInstanceID is used to identify the entity as well
+                                    entitiesDB.ExecuteOnEntity(targetEntityView.ID, ref damageInfo,
+                                                               (ref EnemyTargetEntityViewStruct entity, ref DamageInfo info) => //
+                                                               {      //never catch external variables so that the lambda doesn't allocate
+                                                               //    entity.damageInfo = info;
+                                                               });
                                 }
                             }
                         }
@@ -98,7 +104,6 @@ namespace Svelto.ECS.Example.Survive.Enemies
         }
 
 
-        readonly PlayerDamageSequencer _targetDamageSequence;
         readonly ITime                 _time;
         readonly ITaskRoutine          _taskRoutine;
     }

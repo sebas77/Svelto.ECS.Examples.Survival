@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 using Svelto.Tasks;
 
-namespace Svelto.ECS.Example.Survive.Player.Gun
+namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
 {
-    public class PlayerGunShootingEngine : MultiEntitiesEngine<GunEntityView, PlayerEntityView>, 
+    public class PlayerGunShootingEngine : MultiEntitiesEngine<GunEntityViewStruct, PlayerEntityViewStruct>, 
         IQueryingEntitiesEngine
     {
         public IEntitiesDB entitiesDB { set; private get; }
@@ -14,40 +14,39 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             _taskRoutine.Start();
         }
         
-        public PlayerGunShootingEngine(EnemyDamageSequencer damageSequence, IRayCaster rayCaster, ITime time)
+        public PlayerGunShootingEngine(IRayCaster rayCaster, ITime time)
         {
-            _playerTargetDamageSequence   = damageSequence;
             _rayCaster             = rayCaster;
             _time                  = time;
             _taskRoutine           = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Tick())
                                                .SetScheduler(StandardSchedulers.physicScheduler);
         }
 
-        protected override void Add(ref GunEntityView entityView)
+        protected override void Add(ref GunEntityViewStruct entityView)
         {}
 
-        protected override void Remove(ref GunEntityView entityView)
+        protected override void Remove(ref GunEntityViewStruct entityView)
         {
             _taskRoutine.Stop();
         }
 
-        protected override void Add(ref PlayerEntityView entityView)
+        protected override void Add(ref PlayerEntityViewStruct entityView)
         {}
 
-        protected override void Remove(ref PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityViewStruct entityView)
         {
             _taskRoutine.Stop();
         }
 
         IEnumerator Tick()
         {
-            while (entitiesDB.HasAny<PlayerEntityView>() == false || entitiesDB.HasAny<GunEntityView>() == false)
+            while (entitiesDB.HasAny<PlayerEntityViewStruct>() == false || entitiesDB.HasAny<GunEntityViewStruct>() == false)
             {
                 yield return null; //skip a frame
             }
 
             int count;
-            var playerGunEntities = entitiesDB.QueryEntities<GunEntityView>(out count);
+            var playerGunEntities = entitiesDB.QueryEntities<GunEntityViewStruct>(out count);
             var playerEntities = entitiesDB.QueryEntities<PlayerInputDataStruct>(out count);
             
             while (true)
@@ -64,7 +63,12 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             }
         }
 
-        void Shoot(GunEntityView playerGunEntityView)
+        /// <summary>
+        /// Design note: shooting and find a target are possibly two different responsabilities
+        /// and probably would need two different engines. 
+        /// </summary>
+        /// <param name="playerGunEntityView"></param>
+        void Shoot(GunEntityViewStruct playerGunEntityView)
         {
             var playerGunComponent    = playerGunEntityView.gunComponent;
             var playerGunHitComponent = playerGunEntityView.gunHitTargetComponent;
@@ -72,28 +76,31 @@ namespace Svelto.ECS.Example.Survive.Player.Gun
             playerGunComponent.timer = 0;
 
             Vector3 point;
-            var     entityHit = _rayCaster.CheckHit(playerGunComponent.shootRay, playerGunComponent.range, ENEMY_LAYER, SHOOTABLE_MASK | ENEMY_MASK, out point);
+            var entityHit = _rayCaster.CheckHit(playerGunComponent.shootRay,
+                                                playerGunComponent.range,
+                                                ENEMY_LAYER,
+                                                SHOOTABLE_MASK | ENEMY_MASK,
+                                                out point);
             
             if (entityHit != -1)
             {
+                var damageInfo =
+                    new
+                        DamageInfo(playerGunComponent.damagePerShot,
+                                   point,
+                                   EntityDamagedType.Enemy);
+                
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                if (entitiesDB.Exists<PlayerTargetTypeEntityStruct>(new EGID(entityHit)))
-                {
-                    var damageInfo = new DamageInfo(playerGunComponent.damagePerShot, point, new EGID(entityHit), EntityDamagedType.Enemy);
-                    //Todo: not to my self: using a sequencer here doesn't convince me, I have to come back to this for more pondering
-                    _playerTargetDamageSequence.Next(this, ref damageInfo);
-
-                    playerGunComponent.lastTargetPosition = point;
-                    playerGunHitComponent.targetHit.value = true;
-
-                    return;
-                }
+                entitiesDB.ExecuteOnEntity(entityHit, ref damageInfo,
+                                               (ref TargetEntityViewStruct entity, ref DamageInfo info) => //
+                                               { //never catch external variables so that the lambda doesn't allocate
+                                                   entity.damageInfo = info;
+                                               });
             }
 
             playerGunHitComponent.targetHit.value = false;
         }
 
-        readonly EnemyDamageSequencer _playerTargetDamageSequence;
         readonly IRayCaster            _rayCaster;
         readonly ITime                 _time;
         readonly ITaskRoutine          _taskRoutine;

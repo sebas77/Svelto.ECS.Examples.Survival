@@ -1,9 +1,22 @@
-﻿using Svelto.ECS.Example.Survive.Player;
+﻿using Svelto.ECS.Example.Survive.HUD;
+using Svelto.ECS.Example.Survive.Characters.Player;
 using Svelto.ECS.Example.Survive.Sound;
 
-namespace Svelto.ECS.Example.Survive.Enemies
+namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    class EnemyEntityDescriptor : GenericEntityDescriptor<EnemyEntityViewStruct, EnemyAttackEntityView, DamageSoundEntityView, 
-        EnemyAttackStruct, HealthEntityStruct, PlayerTargetTypeEntityStruct>
-    {}
+    public class EnemyEntityDescriptor : IEntityDescriptor
+    {
+        static readonly IEntityBuilder[] _entitiesToBuild = {
+                                                                new EntityBuilder <EnemyEntityViewStruct>(),
+                                                                new EntityBuilder <EnemyAttackEntityView>(),
+                                                                new EntityBuilder <DamageSoundEntityView>(),
+                                                                new EntityBuilder <EnemyAttackStruct>(),
+                                                                new EntityBuilder <HealthEntityStruct>(),
+                                                                new EntityBuilder <ScoreValueEntityStruct>(), 
+                                                                new EntityBuilder <TargetEntityViewStruct>()};
+        public IEntityBuilder[] entitiesToBuild
+        {
+            get { return _entitiesToBuild; }
+        }
+    }
 }

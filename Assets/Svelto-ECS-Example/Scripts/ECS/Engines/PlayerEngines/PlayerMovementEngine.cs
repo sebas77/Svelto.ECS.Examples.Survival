@@ -1,10 +1,11 @@
 using System.Collections;
+using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Tasks;
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Player
+namespace Svelto.ECS.Example.Survive.Characters.Player
 {
-    public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityView>, IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
+    public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityViewStruct>, IQueryingEntitiesEngine, IStep<PlayerDeathCondition>
     {
         public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
@@ -17,12 +18,12 @@ namespace Svelto.ECS.Example.Survive.Player
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicsTick()).SetScheduler(StandardSchedulers.physicScheduler);
         }
 
-        protected override void Add(ref PlayerEntityView entityView)
+        protected override void Add(ref PlayerEntityViewStruct entityView)
         {
             _taskRoutine.Start();
         }
 
-        protected override void Remove(ref PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityViewStruct entityView)
         {
             _taskRoutine.Stop();
         }
@@ -30,7 +31,7 @@ namespace Svelto.ECS.Example.Survive.Player
         IEnumerator PhysicsTick()
         {  
             int targetsCount;
-            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityView>(out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(out targetsCount);
             var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
 
             while (true)
@@ -51,7 +52,7 @@ namespace Svelto.ECS.Example.Survive.Player
         /// </summary>
         /// <param name="playerEntityView"></param>
         /// <param name="entityView"></param>
-        void Movement(ref PlayerInputDataStruct playerEntityView, ref PlayerEntityView entityView)
+        void Movement(ref PlayerInputDataStruct playerEntityView, ref PlayerEntityViewStruct entityView)
         {
             // Store the input axes.
             Vector3 input = playerEntityView.input;
@@ -63,7 +64,7 @@ namespace Svelto.ECS.Example.Survive.Player
             entityView.transformComponent.position = entityView.positionComponent.position + movement;
         }
 
-        void Turning(ref PlayerInputDataStruct playerEntityView, ref PlayerEntityView entityView)
+        void Turning(ref PlayerInputDataStruct playerEntityView, ref PlayerEntityViewStruct entityView)
         {
             // Create a ray from the mouse cursor on screen in the direction of the camera.
             Ray camRay = playerEntityView.camRay;
@@ -89,13 +90,13 @@ namespace Svelto.ECS.Example.Survive.Player
         void StopMovementOnDeath(EGID ID)
         {
             int count;
-            var playerEntityView = entitiesDB.QueryEntities<PlayerEntityView>(out count)[0]; 
+            var playerEntityView = entitiesDB.QueryEntities<PlayerEntityViewStruct>(out count)[0]; 
             playerEntityView.rigidBodyComponent.isKinematic = true;
         }
 
-        public void Step(ref DamageInfo token, DamageCondition condition)
+        public void Step(PlayerDeathCondition condition, EGID id)
         {
-            StopMovementOnDeath(token.entityDamagedID);
+            StopMovementOnDeath(id);
         }
 
         readonly int floorMask = LayerMask.GetMask("Floor");    // A layer mask so that a ray can be cast just at gameobjects on the floor layer.

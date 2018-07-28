@@ -1,9 +1,10 @@
 using System.Collections;
+using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Tasks;
 
-namespace Svelto.ECS.Example.Survive.Player
+namespace Svelto.ECS.Example.Survive.Characters.Player
 {
-    public class PlayerAnimationEngine : SingleEntityEngine<PlayerEntityView>, IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
+    public class PlayerAnimationEngine : SingleEntityEngine<PlayerEntityViewStruct>, IQueryingEntitiesEngine, IStep<PlayerDeathCondition>
     {
         public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
@@ -18,13 +19,13 @@ namespace Svelto.ECS.Example.Survive.Player
         
         IEnumerator PhysicsTick()
         {
-            while (entitiesDB.HasAny<PlayerEntityView>() == false)
+            while (entitiesDB.HasAny<PlayerEntityViewStruct>() == false)
             {
                 yield return null; //skip a frame
             }
 
             int targetsCount;
-            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityView>(out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(out targetsCount);
             var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
             
             while (true)
@@ -44,20 +45,20 @@ namespace Svelto.ECS.Example.Survive.Player
         void TriggerDeathAnimation(EGID targetID)
         {
             uint index;
-            var playerEntityViews = entitiesDB.QueryEntitiesAndIndex<PlayerEntityView>(targetID, out index);
+            var playerEntityViews = entitiesDB.QueryEntitiesAndIndex<PlayerEntityViewStruct>(targetID, out index);
             
             playerEntityViews[index].animationComponent.playAnimation = "Die";
         }
 
-        public void Step(ref DamageInfo token, DamageCondition condition)
+        public void Step(PlayerDeathCondition condition, EGID id)
         {
-            TriggerDeathAnimation(token.entityDamagedID);
+            TriggerDeathAnimation(id);
         }
 
-        protected override void Add(ref PlayerEntityView entityView)
+        protected override void Add(ref PlayerEntityViewStruct entityView)
         {}
 
-        protected override void Remove(ref PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityViewStruct entityView)
         {
             _taskRoutine.Stop();
         }

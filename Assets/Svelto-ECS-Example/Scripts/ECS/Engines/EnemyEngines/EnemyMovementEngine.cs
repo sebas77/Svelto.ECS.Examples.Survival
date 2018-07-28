@@ -1,8 +1,9 @@
 using System.Collections;
+using Svelto.ECS.Example.Survive.HUD;
 
-namespace Svelto.ECS.Example.Survive.Enemies
+namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemyMovementEngine : IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
+    public class EnemyMovementEngine : IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
     {
         public IEntitiesDB entitiesDB { set; private get; }
 
@@ -43,9 +44,9 @@ namespace Svelto.ECS.Example.Survive.Enemies
             });
         }
 
-        public void Step(ref DamageInfo token, DamageCondition condition)
+        public void Step(EnemyDeathCondition condition, EGID id)
         {
-            StopEnemyOnDeath(token.entityDamagedID);
+            StopEnemyOnDeath(id);
         }
     }
 }

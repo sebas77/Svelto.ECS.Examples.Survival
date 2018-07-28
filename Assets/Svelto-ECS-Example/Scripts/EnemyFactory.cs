@@ -1,5 +1,6 @@
-using Svelto.ECS.Example.Survive.Enemies;
-using Svelto.ECS.Example.Survive.Player;
+using Svelto.ECS.Example.Survive.Characters.Enemies;
+using Svelto.ECS.Example.Survive.HUD;
+using Svelto.ECS.Example.Survive.Characters.Player;
 using Svelto.Factories;
 
 namespace Svelto.ECS.Example.Survive
@@ -24,12 +25,11 @@ namespace Svelto.ECS.Example.Survive
             var initializer = _entityFactory.BuildEntity<EnemyEntityDescriptor>(go.GetInstanceID(), 
                                                                                 implementors);
                                                        
-            var playerTargetTypeEntityStruct = new PlayerTargetTypeEntityStruct { targetType = enemySpawnData.targetType};
             var healthEntityStruct = new HealthEntityStruct { currentHealth = 100 };
 
             initializer.Init(enemyAttackstruct);
             initializer.Init(healthEntityStruct);
-            initializer.Init(playerTargetTypeEntityStruct);
+            initializer.Init(new ScoreValueEntityStruct { scoreValue = (int)enemySpawnData.targetType * 10 });
 
             var transform = go.transform;
             var spawnInfo = enemySpawnData.spawnPoints[spawnPointIndex];

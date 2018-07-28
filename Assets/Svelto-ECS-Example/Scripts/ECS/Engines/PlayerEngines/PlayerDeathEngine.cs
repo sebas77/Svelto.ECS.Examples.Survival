@@ -1,17 +1,39 @@
-﻿namespace Svelto.ECS.Example.Survive.Player
+﻿using System.Collections;
+using Svelto.ECS.Example.Survive.HUD;
+
+namespace Svelto.ECS.Example.Survive.Characters.Player
 {
-    public class PlayerDeathEngine:IEngine, IStep<DamageInfo, DamageCondition>
+    public class PlayerDeathEngine:IQueryingEntitiesEngine
     {
-        public PlayerDeathEngine(IEntityFunctions entityFunctions)
+        public PlayerDeathEngine(PlayerDeathSequencer playerDeathSequence)
         {
-            _entityFunctions = entityFunctions;
-        }
-        
-        public void Step(ref DamageInfo token, DamageCondition condition)
-        {
-            _entityFunctions.RemoveEntity(token.entityDamagedID);
+            _playerDeathSequence = playerDeathSequence;
         }
 
-        readonly IEntityFunctions _entityFunctions;
+        public void Ready()
+        {
+            CheckEnergy().Run();
+        }
+
+        IEnumerator CheckEnergy()
+        {
+            while (true)
+            {
+                int count;
+                var healths  = entitiesDB.QueryEntities<HealthEntityStruct>(out count);
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (healths[i].currentHealth <= 0)
+                        _playerDeathSequence.Next(this);
+                }
+
+                yield return null;
+            }
+        }
+
+        public IEntitiesDB entitiesDB { set; private get; }
+
+        readonly PlayerDeathSequencer _playerDeathSequence;
     }
 }

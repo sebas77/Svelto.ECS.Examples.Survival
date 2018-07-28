@@ -3,13 +3,13 @@ using Svelto.Tasks;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-namespace Svelto.ECS.Example.Survive.Player
+namespace Svelto.ECS.Example.Survive.Characters.Player
 {
     /// <summary>
     /// if you need to test input, you can mock this class
     /// alternativaly you can mock the implementor.
     /// </summary>
-    public class PlayerInputEngine:SingleEntityEngine<PlayerEntityView>, IQueryingEntitiesEngine
+    public class PlayerInputEngine:SingleEntityEngine<PlayerEntityViewStruct>, IQueryingEntitiesEngine
     {
         public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
@@ -21,7 +21,7 @@ namespace Svelto.ECS.Example.Survive.Player
 
         IEnumerator ReadInput()
         {
-            while (entitiesDB.HasAny<PlayerEntityView>() == false)
+            while (entitiesDB.HasAny<PlayerEntityViewStruct>() == false)
             {
                 yield return null; //skip a frame
             }
@@ -42,12 +42,12 @@ namespace Svelto.ECS.Example.Survive.Player
             }
         }
 
-        protected override void Add(ref PlayerEntityView entityView)
+        protected override void Add(ref PlayerEntityViewStruct entityView)
         {
             _taskRoutine.Start();
         }
 
-        protected override void Remove(ref PlayerEntityView entityView)
+        protected override void Remove(ref PlayerEntityViewStruct entityView)
         {
             _taskRoutine.Stop();
         }

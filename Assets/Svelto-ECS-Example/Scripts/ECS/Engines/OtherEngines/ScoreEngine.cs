@@ -1,14 +1,12 @@
-using Svelto.ECS.Example.Survive.Player;
-
 namespace Svelto.ECS.Example.Survive.HUD
 {
-    public class ScoreEngine : IQueryingEntitiesEngine, IStep<DamageInfo, DamageCondition>
+    public class ScoreEngine : IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
     {
         public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
         {}
         
-        public void Step(ref DamageInfo token, DamageCondition condition)
+        public void Step(EnemyDeathCondition condition, EGID id)
         {
             int hudEntityViewsCount;
             var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
@@ -16,23 +14,19 @@ namespace Svelto.ECS.Example.Survive.HUD
             if (hudEntityViewsCount > 0)
             {
                 uint index;
-                PlayerTargetTypeEntityStruct playerTarget =
-                entitiesDB.QueryEntitiesAndIndex<PlayerTargetTypeEntityStruct>(token.entityDamagedID, out index)[index];
+                var playerTargets =
+                entitiesDB.QueryEntitiesAndIndex<ScoreValueEntityStruct>(id, out index);
                 
-                switch (playerTarget.targetType)
-                {
-                    case PlayerTargetType.Bunny:
-                        hudEntityViews[0].scoreComponent.score += 10;
-                        break;
-                    case PlayerTargetType.Bear:
-                        hudEntityViews[0].scoreComponent.score += 20;
-                        break;
-                    case PlayerTargetType.Hellephant:
-                        hudEntityViews[0].scoreComponent.score += 30;
-                        break;
-                }
+                hudEntityViews[0].scoreComponent.score += playerTargets[index].scoreValue;
             }
         }
+    }
+
+    public struct ScoreValueEntityStruct:IEntityStruct
+    {
+        public int scoreValue;
+
+        public EGID ID { get; set; }
     }
 }
 

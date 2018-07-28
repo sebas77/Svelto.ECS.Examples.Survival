@@ -1,4 +1,4 @@
-namespace Svelto.ECS.Example.Survive.Enemies
+namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
     public struct EnemyEntityViewStruct:IEntityViewStruct
     {
@@ -21,7 +21,7 @@ namespace Svelto.ECS.Example.Survive.Enemies
 
     public struct EnemyTargetEntityViewStruct : IEntityViewStruct
     {
-        public IPositionComponent         targetPositionComponent;
+        public IPositionComponent targetPositionComponent;
         public EGID ID { get; set; }
     }
 }

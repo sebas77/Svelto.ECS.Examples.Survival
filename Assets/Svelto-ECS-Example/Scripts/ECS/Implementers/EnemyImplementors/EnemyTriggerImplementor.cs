@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Svelto.ECS.Example.Survive.Enemies
+namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
     //Implementors act as bridge between Svelto.ECS Engines and third party platforms.
     //This characteristic is of fundamental importance. If you need unity to communicate with the engines

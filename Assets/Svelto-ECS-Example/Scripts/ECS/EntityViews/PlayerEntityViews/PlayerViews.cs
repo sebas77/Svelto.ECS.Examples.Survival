@@ -1,6 +1,6 @@
-namespace Svelto.ECS.Example.Survive.Player
+namespace Svelto.ECS.Example.Survive.Characters.Player
 {
-    public struct PlayerEntityView : IEntityViewStruct
+    public struct PlayerEntityViewStruct : IEntityViewStruct
     {
         public ISpeedComponent         speedComponent;
         public IRigidBodyComponent     rigidBodyComponent;
@@ -11,9 +11,9 @@ namespace Svelto.ECS.Example.Survive.Player
     }
 }
 
-namespace Svelto.ECS.Example.Survive.Player.Gun
+namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
 {
-    public struct GunEntityView : IEntityViewStruct
+    public struct GunEntityViewStruct : IEntityViewStruct
     {
         public IGunAttributesComponent   gunComponent;
         public IGunFXComponent           gunFXComponent;

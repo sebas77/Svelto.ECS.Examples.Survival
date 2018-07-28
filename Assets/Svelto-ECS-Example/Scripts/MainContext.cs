@@ -1,6 +1,6 @@
-using Svelto.ECS.Example.Survive.Enemies;
-using Svelto.ECS.Example.Survive.Player;
-using Svelto.ECS.Example.Survive.Player.Gun;
+using Svelto.ECS.Example.Survive.Characters.Enemies;
+using Svelto.ECS.Example.Survive.Characters.Player;
+using Svelto.ECS.Example.Survive.Characters.Player.Gun;
 using Svelto.ECS.Example.Survive.Sound;
 using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Context;
@@ -118,8 +118,8 @@ namespace Svelto.ECS.Example.Survive
             //in my articles). 2) filter a data token passed as parameter through
             //engines. The ISequencer is also not the common way to communicate
             //between engines
-            PlayerDamageSequencer playerDamageSequence = new PlayerDamageSequencer();
-            EnemyDamageSequencer enemyDamageSequence = new EnemyDamageSequencer();
+            PlayerDeathSequencer playerDeathSequence = new PlayerDeathSequencer();
+            EnemyDeathSequencer enemyDeathSequence = new EnemyDeathSequencer();
             
             //wrap non testable unity static classes, so that 
             //can be mocked if needed.
@@ -128,17 +128,15 @@ namespace Svelto.ECS.Example.Survive
             
             //Player related engines. ALL the dependecies must be solved at this point
             //through constructor injection.
-            var playerHealthEngine = new HealthEngine(playerDamageSequence);
-            var playerShootingEngine = new PlayerGunShootingEngine(enemyDamageSequence, rayCaster, time);
+            var playerShootingEngine = new PlayerGunShootingEngine(rayCaster, time);
             var playerMovementEngine = new PlayerMovementEngine(rayCaster, time);
             var playerAnimationEngine = new PlayerAnimationEngine();
-            var playerDeathEngine = new PlayerDeathEngine(entityFunctions);
+            var playerDeathEngine = new PlayerDeathEngine(playerDeathSequence);
             
             //Enemy related engines
             var enemyAnimationEngine = new EnemyAnimationEngine();
             //HealthEngine is a different object for the enemy because it uses a different sequence
-            var enemyHealthEngine = new HealthEngine(enemyDamageSequence);
-            var enemyAttackEngine = new EnemyAttackEngine(playerDamageSequence, time);
+            var enemyAttackEngine = new EnemyAttackEngine(time);
             var enemyMovementEngine = new EnemyMovementEngine();
             
             //GameObjectFactory allows to create GameObjects without using the Static
@@ -151,7 +149,7 @@ namespace Svelto.ECS.Example.Survive
             //Factory is one of the few patterns that work very well with ECS. Its use is highly encuraged
             IEnemyFactory enemyFactory = new EnemyFactory(factory, _entityFactory);
             var enemySpawnerEngine = new EnemySpawnerEngine(enemyFactory, entityFunctions);
-            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time, enemyDamageSequence);
+            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time, enemyDeathSequence);
             
             //hud and sound engines
             var hudEngine = new HUDEngine(time);
@@ -160,82 +158,62 @@ namespace Svelto.ECS.Example.Survive
             
             //The ISequencer implementaton is very simple, but allows to perform
             //complex concatenation including loops and conditional branching.
-            playerDamageSequence.SetSequence(
+            //These two sequencers are a real stretch and are shown only as explanatory purpose. 
+            //Please do not see sequencers as a way to dispatch or broadcast events, they are meant only and exclusively
+            //to guarantee the order of execution of the involved engines.
+            //For this reason the use of sequencers is and must be actually rare, as perfectly encapsulated engines
+            //do not need to be executed in specific order.
+            playerDeathSequence.SetSequence(
                 new Steps //sequence of steps, this is a dictionary!
                 { 
-                    { //first step
-                        /*from: */enemyAttackEngine, //this step can be triggered only by this engine through the Next function
-                        /*to:   */new To //this step can lead only to one branch
+                    { 
+                        /*from: */playerDeathEngine, //when the player dies
+                        /*to:   */new To<PlayerDeathCondition>
+                                         //all these engines in the list will be called in order (which in this 
+                                         //case was not important at all, so stretched!!)
                         { 
-                            //this is the only engine that will be called when enemyAttackEngine triggers Next()
-                            playerHealthEngine 
+                            { playerMovementEngine, playerAnimationEngine, enemyAnimationEngine} 
+                        }  
+                    }  
+                }
+            );
+
+            enemyDeathSequence.SetSequence(
+                new Steps
+                { 
+                    { //first step
+                        enemyDeathEngine, 
+                        new To<EnemyDeathCondition>
+                        { 
+                            { scoreEngine, enemyMovementEngine, enemyAnimationEngine }
                         }  
                     },
                     { //second step
-                        /*from: */playerHealthEngine, //this step can be triggered only by this engine through the Next function
-                        /*to:   */new To<DamageCondition> //once the playerHealthEngine calls the Step method,
-                            //all these engines in the list will be called
-                            //depending the condition. The order of the engines triggered is guaranteed.
+                        enemyAnimationEngine, //after the death animation is actually finished
+                        new To<EnemyDeathCondition>
                         { 
-                            //these engines will be called when the Next function is called with the DamageCondition.damage set
-                            {  DamageCondition.Damage, new IStep<DamageInfo, DamageCondition>[] { hudEngine, damageSoundEngine }  }, 
-                            //these engines will be called when the Next function is called with the DamageCondition.dead set
-                            {  DamageCondition.Dead, new IStep<DamageInfo, DamageCondition>[] { 
-                                hudEngine, damageSoundEngine, 
-                                playerMovementEngine, playerAnimationEngine, 
-                                enemyAnimationEngine, playerDeathEngine }  } 
+                            enemySpawnerEngine //call the spawner engine
                         }  
                     }  
                 }
             );
 
-            enemyDamageSequence.SetSequence(
-                new Steps
-                { 
-                    { 
-                        playerShootingEngine, 
-                        new To
-                        { 
-                            //in every case go to enemyHealthEngine
-                            enemyHealthEngine
-                        }  
-                    },
-                    { 
-                        enemyHealthEngine, 
-                        new To<DamageCondition>
-                        { 
-                            {  DamageCondition.Damage, new IStep<DamageInfo, DamageCondition>[] { enemyAnimationEngine, damageSoundEngine }  },
-                            {  DamageCondition.Dead, new IStep<DamageInfo, DamageCondition>[] { scoreEngine, enemyMovementEngine, 
-                                enemyAnimationEngine, 
-                                damageSoundEngine, enemyDeathEngine  }  }
-                        }  
-                    },
-                    { 
-                        enemyDeathEngine, 
-                        new To
-                        { 
-                            enemySpawnerEngine
-                        }  
-                    }  
-                }
-            );
-
-            //Mandatory step to make engines work
+            //All the logic of the game must lie inside engines
             //Player engines
             _enginesRoot.AddEngine(playerMovementEngine);
             _enginesRoot.AddEngine(playerAnimationEngine);
             _enginesRoot.AddEngine(playerShootingEngine);
-            _enginesRoot.AddEngine(playerHealthEngine);
             _enginesRoot.AddEngine(new PlayerInputEngine());
             _enginesRoot.AddEngine(new PlayerGunShootingFXsEngine());
+            _enginesRoot.AddEngine(playerDeathEngine);
             //enemy engines
             _enginesRoot.AddEngine(enemySpawnerEngine);
             _enginesRoot.AddEngine(enemyAttackEngine);
             _enginesRoot.AddEngine(enemyMovementEngine);
             _enginesRoot.AddEngine(enemyAnimationEngine);
-            _enginesRoot.AddEngine(enemyHealthEngine);
             _enginesRoot.AddEngine(enemyDeathEngine);
             //other engines
+            _enginesRoot.AddEngine(new ApplyingDamageToTargetEntitiesEngine());
             _enginesRoot.AddEngine(new CameraFollowTargetEngine(time));
             _enginesRoot.AddEngine(damageSoundEngine);
             _enginesRoot.AddEngine(hudEngine);
@@ -346,13 +324,11 @@ namespace Svelto.ECS.Example.Survive
         IEntityFactory _entityFactory;
  }
 
-    public class PlayerDamageSequencer : Sequencer
-    {
-    }
+    public class PlayerDeathSequencer : Sequencer
+    {}
 
-    public class EnemyDamageSequencer : Sequencer
-    {
-    }
+    public class EnemyDeathSequencer : Sequencer
+    {}
 
     /// <summary>
     ///At least One GameObject containing a UnityContext must be present in the scene.
