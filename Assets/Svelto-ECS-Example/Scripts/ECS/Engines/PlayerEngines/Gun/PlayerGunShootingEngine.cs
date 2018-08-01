@@ -46,7 +46,9 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
             }
 
             int count;
+            //never changes
             var playerGunEntities = entitiesDB.QueryEntities<GunEntityViewStruct>(out count);
+            //never changes
             var playerEntities = entitiesDB.QueryEntities<PlayerInputDataStruct>(out count);
             
             while (true)
@@ -64,7 +66,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         }
 
         /// <summary>
-        /// Design note: shooting and find a target are possibly two different responsabilities
+        /// Design note: shooting and find a target are possibly two different responsibilities
         /// and probably would need two different engines. 
         /// </summary>
         /// <param name="playerGunEntityView"></param>
@@ -76,37 +78,37 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
             playerGunComponent.timer = 0;
 
             Vector3 point;
+            int instanceID;
             var entityHit = _rayCaster.CheckHit(playerGunComponent.shootRay,
                                                 playerGunComponent.range,
-                                                ENEMY_LAYER,
-                                                SHOOTABLE_MASK | ENEMY_MASK,
-                                                out point);
+                                                GAME_LAYERS.ENEMY_LAYER,
+                                                GAME_LAYERS.SHOOTABLE_MASK | GAME_LAYERS.ENEMY_MASK,
+                                                out point, out instanceID);
             
-            if (entityHit != -1)
+            if (entityHit)
             {
                 var damageInfo =
                     new
                         DamageInfo(playerGunComponent.damagePerShot,
-                                   point,
-                                   EntityDamagedType.Enemy);
+                                   point);
                 
                 //note how the GameObject GetInstanceID is used to identify the entity as well
-                entitiesDB.ExecuteOnEntity(entityHit, ref damageInfo,
-                                               (ref TargetEntityViewStruct entity, ref DamageInfo info) => //
+                if (instanceID != -1)
+                    entitiesDB.ExecuteOnEntity(instanceID, ref damageInfo,
+                                               (ref DamageableEntityStruct entity, ref DamageInfo info) => //
                                                { //never catch external variables so that the lambda doesn't allocate
                                                    entity.damageInfo = info;
                                                });
-            }
 
-            playerGunHitComponent.targetHit.value = false;
+                playerGunComponent.lastTargetPosition = point;
+                playerGunHitComponent.targetHit.value = true;
+            }
+            else
+                playerGunHitComponent.targetHit.value = false;
         }
 
         readonly IRayCaster            _rayCaster;
         readonly ITime                 _time;
         readonly ITaskRoutine          _taskRoutine;
-
-        static readonly int SHOOTABLE_MASK = LayerMask.GetMask("Shootable");
-        static readonly int ENEMY_MASK     = LayerMask.GetMask("Enemies");
-        static readonly int ENEMY_LAYER    = LayerMask.NameToLayer("Enemies");
     }
 }

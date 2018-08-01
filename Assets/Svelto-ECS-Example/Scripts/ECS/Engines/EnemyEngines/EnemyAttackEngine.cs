@@ -84,14 +84,13 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                                     
                                     var damageInfo = new DamageInfo(enemiesAttackData[enemyIndex]
                                                                        .attackDamage,
-                                                                    Vector3.zero,
-                                                                    EntityDamagedType.Player);
+                                                                    Vector3.zero);
                 
                                     //note how the GameObject GetInstanceID is used to identify the entity as well
                                     entitiesDB.ExecuteOnEntity(targetEntityView.ID, ref damageInfo,
-                                                               (ref EnemyTargetEntityViewStruct entity, ref DamageInfo info) => //
+                                                               (ref DamageableEntityStruct entity, ref DamageInfo info) => //
                                                                {      //never catch external variables so that the lambda doesn't allocate
-                                                               //    entity.damageInfo = info;
+                                                                   entity.damageInfo = info;
                                                                });
                                 }
                             }

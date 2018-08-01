@@ -9,10 +9,11 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         public ITransformComponent        transformComponent;
         public IPositionComponent         positionComponent;
         public IEnemySinkComponent        sinkSpeedComponent;
-        public IRigidBodyComponent        rigidBodyComponent;
+        public ILayerComponent            layerComponent;
+        
         public EGID ID { get; set; }
     }
-    
+
     public struct EnemyAttackEntityView:IEntityViewStruct
     {
         public IEnemyTriggerComponent    targetTriggerComponent;

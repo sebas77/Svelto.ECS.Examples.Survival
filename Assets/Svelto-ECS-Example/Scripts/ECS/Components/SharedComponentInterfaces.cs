@@ -27,6 +27,11 @@ namespace Svelto.ECS.Example.Survive
         new Vector3 position { set; }
         Quaternion rotation { set; }
     }
+    
+    public interface ILayerComponent
+    {
+        int layer { set; }
+    }
 
     public interface IRigidBodyComponent: IComponent
     {

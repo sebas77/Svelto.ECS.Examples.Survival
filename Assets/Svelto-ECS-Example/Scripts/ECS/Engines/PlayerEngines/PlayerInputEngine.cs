@@ -7,13 +7,14 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
 {
     /// <summary>
     /// if you need to test input, you can mock this class
-    /// alternativaly you can mock the implementor.
+    /// alternatively you can mock the implementor.
     /// </summary>
     public class PlayerInputEngine:SingleEntityEngine<PlayerEntityViewStruct>, IQueryingEntitiesEngine
     {
-        public IEntitiesDB entitiesDB { get; set; }
+        public IEntitiesDB entitiesDB { private get; set; }
         public void Ready()
         {}
+        
         public PlayerInputEngine()
         {
             _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(ReadInput());
@@ -51,7 +52,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         {
             _taskRoutine.Stop();
         }
-        
-        ITaskRoutine _taskRoutine;
+
+        readonly ITaskRoutine _taskRoutine;
     }
 }

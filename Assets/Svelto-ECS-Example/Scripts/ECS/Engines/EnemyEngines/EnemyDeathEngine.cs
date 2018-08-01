@@ -1,49 +1,66 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemyDeathEngine:IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
+    public class EnemyDeathEngine:IQueryingEntitiesEngine
     {
-        public EnemyDeathEngine(IEntityFunctions entityFunctions, ITime time, EnemyDeathSequencer enemyDeadSequencer)
+        public EnemyDeathEngine(IEntityFunctions entityFunctions, EnemyDeathSequencer enemyDeadSequencer)
         {
             _entityFunctions = entityFunctions;
-            _time = time;
+            
             _enemyDeadSequencer = enemyDeadSequencer;
         }
         
         public IEntitiesDB entitiesDB { get; set; }
-        
-        public void Ready()
-        {}
-        
-        public void Step(EnemyDeathCondition condition, EGID id)
-        {
-            uint index;
-            var entities = entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(id, out index);
 
-         //   _entityFunctions.SwapEntityGroup(id, ECSGroups.enemyDisabledGroups + entities[index].enemyType);
-            
-            Sink(entities[index]).Run();
+        public void Ready()
+        {
+            CheckIfDead().Run();
         }
         
-        IEnumerator Sink(EnemyEntityViewStruct entity)
+        IEnumerator CheckIfDead()
         {
-            DateTime afterTwoSec = DateTime.UtcNow.AddSeconds(2);
-
-            while (DateTime.UtcNow < afterTwoSec)
+            while (true)
             {
-                entity.transformComponent.position = 
-                    entity.positionComponent.position + -UnityEngine.Vector3.up * entity.sinkSpeedComponent.sinkAnimSpeed * _time.deltaTime;
+                int count;
+                //fetch all the enemies
+                var enemies = entitiesDB.QueryEntities<EnemyEntityStruct>(out count);
+                for (int i = 0; i < count; i++)
+                {
+                    uint index;
+
+                    //are they dead?
+                    if (entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>
+                            (enemies[i].ID, out index)[index].dead == true)
+                    {
+                        SetParametersForDeath(enemies[i].ID);
+                        
+                        //don't remove, but swap. This is how pooling is done in Svelto.
+                        //Pooling is not needed when just pure EntityStructs are generated, 
+                        //as they are allocation free.
+                        var newID = _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(enemies[i].ID, (int)ECSGroups.EnemyDisabledGroups + (int)enemies[i].enemyType);
+                        i--;
+                        count--;
+                                                
+                        _enemyDeadSequencer.Next(this, EnemyDeathCondition.Death, newID);
+                    }
+                }
 
                 yield return null;
             }
-
-            _enemyDeadSequencer.Next(this, entity.ID);
         }
 
-        readonly IEntityFunctions _entityFunctions;
-        readonly ITime            _time;
+        void SetParametersForDeath(EGID ID)
+        {
+            uint index;
+            var  enemyEntityViewStructs = entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(ID, out index);
+
+            enemyEntityViewStructs[index].layerComponent.layer                  = GAME_LAYERS.NOT_SHOOTABLE_MASK;
+            enemyEntityViewStructs[index].movementComponent.navMeshEnabled      = false;
+            enemyEntityViewStructs[index].movementComponent.setCapsuleAsTrigger = true;
+        }
+
+        readonly IEntityFunctions    _entityFunctions;
         readonly EnemyDeathSequencer _enemyDeadSequencer;
     }
 }

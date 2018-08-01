@@ -1,21 +1,22 @@
 using Svelto.ECS.Example.Survive.Characters.Enemies;
 using Svelto.ECS.Example.Survive.Characters.Player;
 using Svelto.ECS.Example.Survive.Characters.Player.Gun;
-using Svelto.ECS.Example.Survive.Sound;
 using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Context;
 using Svelto.ECS.Example.Survive.Camera;
+using Svelto.ECS.Example.Survive.Characters;
+using Svelto.ECS.Example.Survive.Characters.Sounds;
 using UnityEngine;
 using Svelto.ECS.Schedulers.Unity;
 using Svelto.Tasks;
 
 //Main is the Application Composition Root.
-//A Composition Root is the where all the depencies are 
+//A Composition Root is the where all the dependencies are 
 //created and injected (I talk a lot about this in my articles)
 //A composition root belongs to the Context, but
 //a context can have more than a composition root.
 //For example a factory is a composition root.
-//Furthemore an application can have more than a context
+//Furthermore an application can have more than a context
 //but this is more advanced and not part of this demo
 namespace Svelto.ECS.Example.Survive
 {
@@ -126,16 +127,15 @@ namespace Svelto.ECS.Example.Survive
             IRayCaster rayCaster = new RayCaster();
             ITime      time      = new Time();
             
-            //Player related engines. ALL the dependecies must be solved at this point
+            //Player related engines. ALL the dependencies must be solved at this point
             //through constructor injection.
             var playerShootingEngine = new PlayerGunShootingEngine(rayCaster, time);
             var playerMovementEngine = new PlayerMovementEngine(rayCaster, time);
             var playerAnimationEngine = new PlayerAnimationEngine();
-            var playerDeathEngine = new PlayerDeathEngine(playerDeathSequence);
+            var playerDeathEngine = new PlayerDeathEngine(playerDeathSequence, entityFunctions);
             
             //Enemy related engines
-            var enemyAnimationEngine = new EnemyAnimationEngine();
-            //HealthEngine is a different object for the enemy because it uses a different sequence
+            var enemyAnimationEngine = new EnemyAnimationEngine(time, enemyDeathSequence, entityFunctions);
             var enemyAttackEngine = new EnemyAttackEngine(time);
             var enemyMovementEngine = new EnemyMovementEngine();
             
@@ -146,23 +146,28 @@ namespace Svelto.ECS.Example.Survive
             //how dependency injection works and why solving dependencies
             //with static classes and singletons is a terrible mistake)
             GameObjectFactory factory = new GameObjectFactory();
-            //Factory is one of the few patterns that work very well with ECS. Its use is highly encuraged
+            //Factory is one of the few patterns that work very well with ECS. Its use is highly encouraged
             IEnemyFactory enemyFactory = new EnemyFactory(factory, _entityFactory);
             var enemySpawnerEngine = new EnemySpawnerEngine(enemyFactory, entityFunctions);
-            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, time, enemyDeathSequence);
+            var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, enemyDeathSequence);
             
             //hud and sound engines
             var hudEngine = new HUDEngine(time);
             var damageSoundEngine = new DamageSoundEngine();
             var scoreEngine = new ScoreEngine();
             
-            //The ISequencer implementaton is very simple, but allows to perform
+            //The ISequencer implementation is very simple, but allows to perform
             //complex concatenation including loops and conditional branching.
-            //These two sequencers are a real stretch and are shown only as explanatory purpose. 
+            //These two sequencers are a real stretch and are shown only for explanatory purposes. 
             //Please do not see sequencers as a way to dispatch or broadcast events, they are meant only and exclusively
             //to guarantee the order of execution of the involved engines.
             //For this reason the use of sequencers is and must be actually rare, as perfectly encapsulated engines
             //do not need to be executed in specific order.
+            //a Sequencer can: 
+            //- ensure the order of execution through one step only (one step executes in order several engines)
+            //- ensure the order of execution through several steps. Each engine inside each step has the responsibility
+            //to trigger the next step through the use of the Next() function
+            //- create paths with branches and loop using the Condition parameter.
             playerDeathSequence.SetSequence(
                 new Steps //sequence of steps, this is a dictionary!
                 { 
@@ -172,7 +177,7 @@ namespace Svelto.ECS.Example.Survive
                                          //all these engines in the list will be called in order (which in this 
                                          //case was not important at all, so stretched!!)
                         { 
-                            { playerMovementEngine, playerAnimationEngine, enemyAnimationEngine} 
+                            { PlayerDeathCondition.Death, playerMovementEngine, playerAnimationEngine, enemyAnimationEngine, damageSoundEngine, hudEngine} 
                         }  
                     }  
                 }
@@ -185,14 +190,16 @@ namespace Svelto.ECS.Example.Survive
                         enemyDeathEngine, 
                         new To<EnemyDeathCondition>
                         { 
-                            { scoreEngine, enemyMovementEngine, enemyAnimationEngine }
+                            //TIP: use GO To Type Declaration to go directly to the Class code of the 
+                            //engine instance
+                            { EnemyDeathCondition.Death, scoreEngine, enemyAnimationEngine }
                         }  
                     },
                     { //second step
                         enemyAnimationEngine, //after the death animation is actually finished
                         new To<EnemyDeathCondition>
                         { 
-                            enemySpawnerEngine //call the spawner engine
+                            { EnemyDeathCondition.Death, enemySpawnerEngine }//call the spawner engine
                         }  
                     }  
                 }
@@ -206,6 +213,7 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(new PlayerInputEngine());
             _enginesRoot.AddEngine(new PlayerGunShootingFXsEngine());
             _enginesRoot.AddEngine(playerDeathEngine);
+            
             //enemy engines
             _enginesRoot.AddEngine(enemySpawnerEngine);
             _enginesRoot.AddEngine(enemyAttackEngine);
@@ -215,6 +223,7 @@ namespace Svelto.ECS.Example.Survive
             //other engines
             _enginesRoot.AddEngine(new ApplyingDamageToTargetEntitiesEngine());
             _enginesRoot.AddEngine(new CameraFollowTargetEngine(time));
+            _enginesRoot.AddEngine(new DeathEngine());
             _enginesRoot.AddEngine(damageSoundEngine);
             _enginesRoot.AddEngine(hudEngine);
             _enginesRoot.AddEngine(scoreEngine);
@@ -297,7 +306,7 @@ namespace Svelto.ECS.Example.Survive
             for (int i = 0; i < entities.Length; i++)
             {
                 var entityDescriptorHolder = entities[i];
-                var entityViewsToBuild = entityDescriptorHolder.GetEntitiesToBuild();
+                var entityViewsToBuild = entityDescriptorHolder.GetDescriptor();
                 _entityFactory.BuildEntity
                 (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(),
                     entityViewsToBuild,

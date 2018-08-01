@@ -29,10 +29,11 @@ namespace Svelto.ECS.Example.Survive.HUD
 
         public void Ready()
         {
-            Tick().Run();
+            AnimateUI().Run();
+            CheckForDamage().Run();
         }
 
-        IEnumerator Tick()
+        IEnumerator AnimateUI()
         {
             while (true)
             {
@@ -45,69 +46,48 @@ namespace Svelto.ECS.Example.Survive.HUD
                                          damageComponent.speed * time.deltaTime);
                       });
                 
-                var value = entitiesDB;
-                FlashOnDamage(value);
                 
                 yield return null;
             }
         }
 
-        //static so it helps to not capture this in the lambdas
-        static void FlashOnDamage(IEntitiesDB entitiesDb)
+        /// <summary>
+        /// the damaged flag is polled. I am still torn about the
+        /// poll vs push problem, so more investigation is needed 
+        /// </summary>
+        /// <param name="entitiesDb"></param>
+        
+        IEnumerator CheckForDamage()
         {
-            int numberOfPlayers;
-            var players = entitiesDb.QueryEntities<DamageablePlayerEntityStruct>(out numberOfPlayers);
-            for (int i = 0; i < numberOfPlayers; i++)
+            while (true)
             {
-                uint index;
+                int numberOfPlayers;
+                var players = entitiesDB.QueryEntities<PlayerEntityStruct>(out numberOfPlayers);
+                for (int i = 0; i < numberOfPlayers; i++)
+                {
+                    uint index;
 
-                if (players[i].damaged == false) return;
+                    if (entitiesDB.QueryEntitiesAndIndex<DamageableEntityStruct>(players[i].ID, out index)[index].damaged == false) continue;
 
-                var health =
-                    entitiesDb.QueryEntitiesAndIndex<HealthEntityStruct>
-                        (players[i].ID, out index)[index].currentHealth;
+                    var health =
+                        entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>
+                            (players[i].ID, out index)[index].currentHealth;
 
-                entitiesDb.ExecuteOnEntities(ref health,
-                                              (ref HUDEntityView guiEntityView,
-                                               ref int           refhealth) =>
-                                              {
-                                                  var damageComponent = guiEntityView.damageImageComponent;
-                                                  damageComponent.imageColor = damageComponent.flashColor;
+                    entitiesDB.ExecuteOnEntities(ref health,
+                                                 (ref HUDEntityView guiEntityView,
+                                                  ref int           refhealth) =>
+                                                 {
+                                                     var damageComponent = guiEntityView.damageImageComponent;
+                                                     damageComponent.imageColor = damageComponent.flashColor;
 
-                                                  guiEntityView.healthSliderComponent.value = refhealth;
-                                              });
+                                                     guiEntityView.healthSliderComponent.value = refhealth;
+                                                 });
+                }
+
+                yield return null;
             }
         }
         
-        //static so it helps to not capture this in the lambdas
-        void FlashOnDamageBinding(EGID id)
-        {
-            uint index;
-            var health =
-                    entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>
-                        (id, out index)[index].currentHealth;
-
-                entitiesDB.ExecuteOnEntities(ref health,
-                                             (ref HUDEntityView guiEntityView,
-                                              ref int           refhealth) =>
-                                             {
-                                                 var damageComponent = guiEntityView.damageImageComponent;
-                                                 damageComponent.imageColor = damageComponent.flashColor;
-
-                                                 guiEntityView.healthSliderComponent.value = refhealth;
-                                             });
-        }
-
-        void OnPlayerDeadEvent()
-        {
-            int hudEntityViewsCount;
-            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
-            for (int i = 0; i < hudEntityViewsCount; i++)
-                hudEntityViews[i].healthSliderComponent.value = 0;
-
-            RestartLevelAfterFewSeconds().Run();
-        }
-
         IEnumerator RestartLevelAfterFewSeconds()
         {
             _waitForSeconds.Reset(5);
@@ -126,19 +106,16 @@ namespace Svelto.ECS.Example.Survive.HUD
 
         public void Step(PlayerDeathCondition condition, EGID id)
         {
-            OnPlayerDeadEvent();
+            int hudEntityViewsCount;
+            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(out hudEntityViewsCount);
+            for (int i = 0; i < hudEntityViewsCount; i++)
+                hudEntityViews[i].healthSliderComponent.value = 0;
+
+            RestartLevelAfterFewSeconds().Run();
         }
 
         readonly WaitForSecondsEnumerator  _waitForSeconds = new WaitForSecondsEnumerator(5);
         ITime                     _time;
-    }
-
-    class DataBindsAttribute : Attribute
-    {
-        public DataBindsAttribute(Type healthEntityStruct)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

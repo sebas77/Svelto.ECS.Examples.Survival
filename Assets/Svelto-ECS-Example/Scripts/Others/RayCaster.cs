@@ -2,43 +2,51 @@ using UnityEngine;
 
 public interface IRayCaster
 {
-    int CheckHit(Ray ray, float range, int layer, int mask, out Vector3 point);
-    int CheckHit(Ray ray, float range, int mask, out Vector3 point);
+    bool CheckHit(Ray ray, float range, int layer, int mask, out Vector3 point, out int instanceID);
+    bool CheckHit(Ray ray, float range, int mask, out Vector3 point);
 }
 
 public class RayCaster : IRayCaster
 {
-        public int CheckHit(Ray ray, float range, int layer, int mask, out Vector3 point)
+        public bool CheckHit(Ray ray, float range, int layer, int mask, out Vector3 point, out int instanceID)
         {
             RaycastHit shootHit;
-            Physics.Raycast(ray, 
-                out shootHit, range, mask);
-
-            point = shootHit.point;
-            if (shootHit.collider != null)
+            if (Physics.Raycast(ray,
+                                out shootHit, range, mask) == true)
             {
-                var colliderGameObject = shootHit.collider.gameObject;
-                if (colliderGameObject.layer == layer)
-                    return colliderGameObject.GetInstanceID();
+                point = shootHit.point;
+                if (shootHit.collider != null)
+                {
+                    var colliderGameObject = shootHit.collider.gameObject;
+
+                    if (colliderGameObject.layer == layer)
+                        instanceID = colliderGameObject.GetInstanceID();
+                    else
+                        instanceID = -1;
+                    
+                    return true;
+                }
             }
 
-            return -1;
+            point = new Vector3();
+            instanceID = -1;
+            return false;
         }        
         
-        public int CheckHit(Ray ray, float range, int mask, out Vector3 point)
+        public bool CheckHit(Ray ray, float range, int mask, out Vector3 point)
         {
             RaycastHit shootHit;
-            Physics.Raycast(ray, 
-                out shootHit, range, mask);
-
-            point = shootHit.point;
-            if (shootHit.collider != null)
+            if (Physics.Raycast(ray,
+                                out shootHit, range, mask) == true)
             {
-                var colliderGameObject = shootHit.collider.gameObject;
-
-                return colliderGameObject.GetInstanceID();
+                point = shootHit.point;
+                if (shootHit.collider != null)
+                {
+                    return true;
+                }
             }
 
-            return -1;
+            point = new Vector3();
+            return false;
         }        
     }

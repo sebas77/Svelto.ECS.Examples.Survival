@@ -42,17 +42,12 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
             }
         }
 
-        void TriggerDeathAnimation(EGID targetID)
-        {
-            uint index;
-            var playerEntityViews = entitiesDB.QueryEntitiesAndIndex<PlayerEntityViewStruct>(targetID, out index);
-            
-            playerEntityViews[index].animationComponent.playAnimation = "Die";
-        }
-
         public void Step(PlayerDeathCondition condition, EGID id)
         {
-            TriggerDeathAnimation(id);
+            uint index;
+            var  playerEntityViews = entitiesDB.QueryEntitiesAndIndex<PlayerEntityViewStruct>(id, out index);
+            
+            playerEntityViews[index].animationComponent.playAnimation = "Die";
         }
 
         protected override void Add(ref PlayerEntityViewStruct entityView)

@@ -1,12 +1,10 @@
-using System;
 using System.Collections;
 using Svelto.Tasks.Enumerators;
 using System.IO;
-using Svelto.ECS.Example.Survive.Characters.Player;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemySpawnerEngine : IStep<RespawnCondition>, IQueryingEntitiesEngine
+    public class EnemySpawnerEngine : IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
     {
         public EnemySpawnerEngine(IEnemyFactory enemyFactory, IEntityFunctions entityFunctions)
         {
@@ -67,11 +65,11 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                                 timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks
                             };
 
-                            //has a compatible entity previously disabled and can be reused?
+                            //has got a compatible entity previously disabled and can be reused?
                             //Note, pooling make sense only for Entities that use implementors.
-                            //A pure struct based entity doesn't need pooling because it 
-                            //never allocates.
-                            var fromGroupId = (int)ECSGroups.enemyDisabledGroups + (int)spawnData.enemySpawnData.targetType;
+                            //A pure struct based entity doesn't need pooling because it never allocates.
+                            //to simplify the logic, we use a recycle group for each entity type
+                            var fromGroupId = (int)ECSGroups.EnemyToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
                             if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                             {
                                 ReuseEnemy(fromGroupId, ref spawnData);
@@ -93,8 +91,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         void ReuseEnemy(int fromGroupId, ref JSonEnemySpawnData spawnData)
         {
-            //take an entity (with all its entity views and implementors) from the group
-            var egid = _entityFunctions.SwapFirstEntityGroup(fromGroupId);
+            //take the first entity (with all its entity views and implementors) from the group
+            var egid = _entityFunctions.SwapFirstEntityGroup<EnemyEntityDescriptor>(fromGroupId);
             
             //reset some components
             entitiesDB.ExecuteOnEntity(egid,
@@ -122,6 +120,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                                               entityView.animationComponent.reset();
                                               entityView.movementComponent.navMeshEnabled = true;
                                               entityView.movementComponent.setCapsuleAsTrigger = false;
+                                              entityView.layerComponent.layer = GAME_LAYERS.ENEMY_LAYER;
                                           });
         }
 
@@ -143,7 +142,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             return enemiestoSpawn;
         }
         
-        public void Step(RespawnCondition condition, EGID id)
+        public void Step(EnemyDeathCondition condition, EGID id)
         {
             _numberOfEnemyToSpawn++;
         }
@@ -156,9 +155,5 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         int     _numberOfEnemyToSpawn;
         
         const int SECONDS_BETWEEN_SPAWNS = 1;
-    }
-
-    public enum RespawnCondition
-    {
     }
 }

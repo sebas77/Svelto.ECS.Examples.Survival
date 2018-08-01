@@ -1,39 +1,48 @@
-﻿using System.Collections;
-using Svelto.ECS.Example.Survive.HUD;
+using System.Collections;
+using Svelto.ECS.Example.Survive.Characters;
+using Svelto.ECS.Example.Survive.Characters.Player;
 
-namespace Svelto.ECS.Example.Survive.Characters.Player
+namespace Svelto.ECS.Example.Survive
 {
-    public class PlayerDeathEngine:IQueryingEntitiesEngine
+    class PlayerDeathEngine : IQueryingEntitiesEngine
     {
-        public PlayerDeathEngine(PlayerDeathSequencer playerDeathSequence)
+        public PlayerDeathEngine(PlayerDeathSequencer playerDeathSequence, IEntityFunctions functions)
         {
             _playerDeathSequence = playerDeathSequence;
+            _functions = functions;
         }
 
+        public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
         {
-            CheckEnergy().Run();
+            CheckIfDead().Run();
         }
 
-        IEnumerator CheckEnergy()
+        IEnumerator CheckIfDead()
         {
             while (true)
             {
-                int count;
-                var healths  = entitiesDB.QueryEntities<HealthEntityStruct>(out count);
-
-                for (int i = 0; i < count; i++)
+                int numberOfPlayers;
+                var players = entitiesDB.QueryEntities<PlayerEntityStruct>(out numberOfPlayers);
+                for (int i = 0; i < numberOfPlayers; i++)
                 {
-                    if (healths[i].currentHealth <= 0)
-                        _playerDeathSequence.Next(this);
+                    uint index;
+
+                    if (entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>
+                            (players[i].ID, out index)[index].dead == true)
+                    {
+                        _playerDeathSequence.Next(this, PlayerDeathCondition.Death, players[i].ID);
+                        
+                        _functions.RemoveEntity<PlayerEntityDescriptor>(players[i].ID);
+                    }
                 }
 
                 yield return null;
             }
         }
-
-        public IEntitiesDB entitiesDB { set; private get; }
-
+        
         readonly PlayerDeathSequencer _playerDeathSequence;
+        readonly IEntityFunctions _functions;
+        
     }
 }

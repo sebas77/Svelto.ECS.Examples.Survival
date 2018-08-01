@@ -1,9 +1,8 @@
 using System.Collections;
-using Svelto.ECS.Example.Survive.HUD;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemyMovementEngine : IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
+    public class EnemyMovementEngine : IQueryingEntitiesEngine
     {
         public IEntitiesDB entitiesDB { set; private get; }
 
@@ -17,6 +16,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             while (true)
             {
                 int count;
+                //query all the enemies from the standard group (no disabled nor respawning)
                 var enemyTargetEntityViews = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(out count);
 
                 if (count > 0)
@@ -27,26 +27,17 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
                     for (var i = 0; i < count; i++)
                     {
-                        enemies[i].movementComponent.navMeshDestination = targetEntityView.targetPositionComponent.position;
+                        if ( enemies[i].movementComponent.navMeshEnabled == false)
+                            Utility.Console.Log("why "+enemies[i].ID.entityID);           
+                        {
+                            enemies[i].movementComponent.navMeshDestination =
+                                targetEntityView.targetPositionComponent.position;
+                        }
                     }
                 }
 
                 yield return null;
             }
-        }
-
-        void StopEnemyOnDeath(EGID targetID)
-        {
-            entitiesDB.ExecuteOnEntity(targetID, (ref EnemyEntityViewStruct entityView) =>
-            {
-                entityView.movementComponent.navMeshEnabled      = false;
-                entityView.movementComponent.setCapsuleAsTrigger = true;
-            });
-        }
-
-        public void Step(EnemyDeathCondition condition, EGID id)
-        {
-            StopEnemyOnDeath(id);
         }
     }
 }

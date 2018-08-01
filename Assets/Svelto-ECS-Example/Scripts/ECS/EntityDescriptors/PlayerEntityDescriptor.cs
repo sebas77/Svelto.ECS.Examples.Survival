@@ -1,5 +1,6 @@
 ﻿using Svelto.ECS.Example.Survive.Camera;
-using Svelto.ECS.Example.Survive.Sound;
+using Svelto.ECS.Example.Survive.Characters.Enemies;
+using Svelto.ECS.Example.Survive.Characters.Sounds;
 
 namespace Svelto.ECS.Example.Survive.Characters.Player
 {
@@ -7,11 +8,13 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
 	{
 		static readonly IEntityBuilder[] _entitiesToBuild =
 		{
+			new EntityBuilder<PlayerEntityStruct>(),
 			new EntityBuilder<PlayerEntityViewStruct>(),
-			new EntityBuilder<TargetEntityViewStruct>(),
+			new EntityBuilder<DamageableEntityStruct>(),
 			new EntityBuilder<DamageSoundEntityView>(),
 			new EntityBuilder<CameraTargetEntityView>(),
 			new EntityBuilder<HealthEntityStruct>(),
+			new EntityBuilder<EnemyTargetEntityViewStruct>(),
 			new EntityBuilder<PlayerInputDataStruct>()
 		};
 

@@ -4,15 +4,16 @@ using UnityEngine.AI;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemyMovementImplementor : MonoBehaviour, IImplementor, IEnemyMovementComponent, ITransformComponent, IRigidBodyComponent
+    public class EnemyMovementImplementor : MonoBehaviour, IImplementor, IEnemyMovementComponent, ITransformComponent, ILayerComponent
     {
         NavMeshAgent    _nav;                       // Reference to the nav mesh agent.
         CapsuleCollider _capsuleCollider;           // Reference to the capsule collider.
         Transform       _transform;
         Action          _removeAction;
-        Rigidbody       _rigidBody;
 
-        public bool navMeshEnabled { set { _nav.enabled = value; } }
+        public bool navMeshEnabled { set { _nav.enabled = value; }
+            get { return _nav.enabled; }
+        }
         public Vector3 navMeshDestination { set { _nav.destination = value;} }
         public bool setCapsuleAsTrigger { set {_capsuleCollider.isTrigger = value; } }
 
@@ -21,7 +22,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             _nav = GetComponent <NavMeshAgent> ();
             _capsuleCollider = GetComponent<CapsuleCollider>();
             _transform = transform;
-            _rigidBody = GetComponent<Rigidbody>();
         }
 
         public Vector3 position
@@ -35,6 +35,9 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             set { _transform.rotation = value; }
         }
 
-        public bool isKinematic { set {_rigidBody.isKinematic = value; } }
+        public int layer
+        {
+            set { gameObject.layer = value; }
+        }
     }
 }

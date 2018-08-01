@@ -1,5 +1,4 @@
 using System.Collections;
-using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Tasks;
 using UnityEngine;
 
@@ -71,7 +70,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
             
             // Perform the raycast and if it hits something on the floor layer...
             Vector3 point;
-            if (_rayCaster.CheckHit(camRay, camRayLength, floorMask, out point) != -1)
+            if (_rayCaster.CheckHit(camRay, camRayLength, floorMask, out point))
             {
                 // Create a vector from the player to the point on the floor the raycast from the mouse hit.
                 Vector3 playerToMouse = point - entityView.positionComponent.position;
@@ -87,23 +86,18 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
             }
         }
 
-        void StopMovementOnDeath(EGID ID)
+        public void Step(PlayerDeathCondition condition, EGID id)
         {
             int count;
             var playerEntityView = entitiesDB.QueryEntities<PlayerEntityViewStruct>(out count)[0]; 
             playerEntityView.rigidBodyComponent.isKinematic = true;
         }
 
-        public void Step(PlayerDeathCondition condition, EGID id)
-        {
-            StopMovementOnDeath(id);
-        }
-
         readonly int floorMask = LayerMask.GetMask("Floor");    // A layer mask so that a ray can be cast just at gameobjects on the floor layer.
         const float camRayLength = 100f;                        // The length of the ray from the camera into the scene.
 
-        IRayCaster   _rayCaster;
-        ITaskRoutine _taskRoutine;
-        ITime        _time;
+        readonly IRayCaster   _rayCaster;
+        readonly ITaskRoutine _taskRoutine;
+        readonly ITime        _time;
     }
 }

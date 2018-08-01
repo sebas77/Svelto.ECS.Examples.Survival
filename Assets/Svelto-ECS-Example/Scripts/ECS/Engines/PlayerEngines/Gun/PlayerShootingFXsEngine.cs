@@ -87,6 +87,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
             // Disable the line renderer and the light.
             fxComponent.lineEnabled = false;
             fxComponent.lightEnabled = false;
+            fxComponent.play = false;
         }
 
         ITaskRoutine   _taskRoutine;
