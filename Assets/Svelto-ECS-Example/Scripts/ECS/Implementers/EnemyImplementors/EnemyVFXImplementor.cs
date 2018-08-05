@@ -23,6 +23,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         {
             set { particle.transform.position = value; }
         }
-        public DispatchOnSet<bool> play { get; set; }
+        public DispatchOnSet<bool> play { get; private set; }
     }
 }

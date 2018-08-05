@@ -72,10 +72,12 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                             var fromGroupId = (int)ECSGroups.EnemyToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
                             if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                             {
+                                Utility.Console.Log("Recycle one ".FastConcat(spawnData.enemySpawnData.targetType));
                                 ReuseEnemy(fromGroupId, ref spawnData);
                             }
                             else
                             {
+                                Utility.Console.Log("New one");
                                 _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackstruct);
                             }
 
@@ -145,6 +147,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         public void Step(EnemyDeathCondition condition, EGID id)
         {
             _numberOfEnemyToSpawn++;
+            
+            Utility.Console.Log("Can spawn a new one");
         }
 
         readonly WaitForSecondsEnumerator  _waitForSecondsEnumerator = new WaitForSecondsEnumerator(SECONDS_BETWEEN_SPAWNS);
