@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Svelto.DataStructures;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
@@ -22,19 +23,27 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         IEnumerator CheckIfDead()
         {
             var enemyIterationInfo = new FasterList<EnemyIterationInfo>();
-            
+            var valueTuple = new ValueTuple<FasterList<EnemyIterationInfo>,
+                EGIDMapper<EnemyEntityViewStruct>> {Item1 = enemyIterationInfo};
+
             while (true)
             {
-                entitiesDB.ExecuteOnEntities(
-                        (ref EnemyEntityStruct enemyStruct, ref HealthEntityStruct healthEntityStruct) =>
+                while (entitiesDB.HasAny<EnemyEntityStruct>() == false) yield return null;
+
+                valueTuple.Item2 = entitiesDB.QueryMappedEntities<EnemyEntityViewStruct>();
+
+                entitiesDB.ExecuteOnEntities(ref valueTuple,
+                        (ref EnemyEntityStruct enemyStruct, 
+                         ref HealthEntityStruct healthEntityStruct, 
+                         ref ValueTuple<FasterList<EnemyIterationInfo>,  EGIDMapper<EnemyEntityViewStruct>> _parameters) =>
                              {
-                                 if (healthEntityStruct.dead == true)
-                                 {
-                                     SetParametersForDeath(healthEntityStruct.ID);
+                                 if (healthEntityStruct.dead != true) return;
+
+                                 uint index;
+                                 SetParametersForDeath(ref _parameters.Item2.entities(healthEntityStruct.ID, out index)[index]);
                                      
-                                     enemyIterationInfo.Add(new EnemyIterationInfo(healthEntityStruct.ID,
-                                                    (int) ECSGroups.EnemyDisabledGroups + (int) enemyStruct.enemyType));
-                                 }
+                                 _parameters.Item1.Add(new EnemyIterationInfo(healthEntityStruct.ID,
+                                                 (int) ECSGroups.EnemyDisabledGroups + (int) enemyStruct.enemyType));
                              });
 
                 for (int i = 0; i < enemyIterationInfo.Count; i++)
@@ -55,14 +64,11 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             }
         }
 
-        void SetParametersForDeath(EGID ID)
+        static void SetParametersForDeath(ref EnemyEntityViewStruct enemyEntityViewStruct)
         {
-            uint index;
-            var  enemyEntityViewStructs = entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(ID, out index);
-
-            enemyEntityViewStructs[index].layerComponent.layer                  = GAME_LAYERS.NOT_SHOOTABLE_MASK;
-            enemyEntityViewStructs[index].movementComponent.navMeshEnabled      = false;
-            enemyEntityViewStructs[index].movementComponent.setCapsuleAsTrigger = true;
+            enemyEntityViewStruct.layerComponent.layer                  = GAME_LAYERS.NOT_SHOOTABLE_MASK;
+            enemyEntityViewStruct.movementComponent.navMeshEnabled      = false;
+            enemyEntityViewStruct.movementComponent.setCapsuleAsTrigger = true;
         }
 
         readonly IEntityFunctions    _entityFunctions;
