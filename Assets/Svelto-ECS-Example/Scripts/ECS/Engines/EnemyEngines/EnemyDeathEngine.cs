@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Svelto.DataStructures;
+using Tuple = System.ValueTuple<Svelto.DataStructures.FasterList<Svelto.ECS.Example.Survive.Characters.Enemies.EnemyIterationInfo>, Svelto.ECS.EGIDMapper<Svelto.ECS.Example.Survive.Characters.Enemies.EnemyEntityViewStruct>>;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
@@ -23,8 +24,9 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         IEnumerator CheckIfDead()
         {
             var enemyIterationInfo = new FasterList<EnemyIterationInfo>();
-            var valueTuple = new ValueTuple<FasterList<EnemyIterationInfo>,
-                EGIDMapper<EnemyEntityViewStruct>> {Item1 = enemyIterationInfo};
+            //this struct will allow allocation 0 lambdas. When c# 7 can be used in Unity
+            //this will be less awkward thanks to the local functions
+            var valueTuple = new Tuple {Item1 = enemyIterationInfo};
 
             while (true)
             {
@@ -35,7 +37,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 entitiesDB.ExecuteOnEntities(ref valueTuple,
                         (ref EnemyEntityStruct enemyStruct, 
                          ref HealthEntityStruct healthEntityStruct, 
-                         ref ValueTuple<FasterList<EnemyIterationInfo>,  EGIDMapper<EnemyEntityViewStruct>> _parameters) =>
+                         ref Tuple _parameters) =>
                              {
                                  if (healthEntityStruct.dead != true) return;
 
