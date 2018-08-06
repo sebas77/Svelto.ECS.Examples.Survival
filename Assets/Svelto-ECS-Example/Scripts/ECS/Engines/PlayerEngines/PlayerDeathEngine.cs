@@ -28,8 +28,7 @@ namespace Svelto.ECS.Example.Survive
                 {
                     uint index;
 
-                    if (entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>
-                            (players[i].ID, out index)[index].dead == true)
+                    if (entitiesDB.QueryEntitiesAndIndex<HealthEntityStruct>(players[i].ID, out index)[index].dead)
                     {
                         _playerDeathSequence.Next(this, PlayerDeathCondition.Death, players[i].ID);
                         

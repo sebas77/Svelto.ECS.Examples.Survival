@@ -45,49 +45,48 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 //so the fastest solution is always to use custom enumerators. To be honest the hit is minimal
 //but it's better to not abuse it.                
                 yield return _waitForSecondsEnumerator;
-                {
-                    //cycle around the enemies to spawn and check if it can be spawned
-                    for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
-                    {
-                        if (spawningTimes[i] <= 0.0f)
-                        {
-                            var spawnData = enemiestoSpawn[i];
-                            
-                            //In this example every kind of enemy generates the same list of EntityViews
-                            //therefore I always use the same EntityDescriptor. However if the 
-                            //different enemies had to create different EntityViews for different
-                            //engines, this would have been a good example where EntityDescriptorHolder
-                            //could have been used to exploit the the kind of polymorphism explained
-                            //in my articles.
-                            EnemyAttackStruct enemyAttackstruct = new EnemyAttackStruct
-                            {
-                                attackDamage      = enemyAttackData[i].enemyAttackData.attackDamage,
-                                timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks
-                            };
+                
+                 //cycle around the enemies to spawn and check if it can be spawned
+                 for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
+                 {
+                     if (spawningTimes[i] <= 0.0f)
+                     {
+                         var spawnData = enemiestoSpawn[i];
+                         
+                         //In this example every kind of enemy generates the same list of EntityViews
+                         //therefore I always use the same EntityDescriptor. However if the 
+                         //different enemies had to create different EntityViews for different
+                         //engines, this would have been a good example where EntityDescriptorHolder
+                         //could have been used to exploit the the kind of polymorphism explained
+                         //in my articles.
+                         EnemyAttackStruct enemyAttackstruct = new EnemyAttackStruct
+                         {
+                             attackDamage      = enemyAttackData[i].enemyAttackData.attackDamage,
+                             timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks
+                         };
 
-                            //has got a compatible entity previously disabled and can be reused?
-                            //Note, pooling make sense only for Entities that use implementors.
-                            //A pure struct based entity doesn't need pooling because it never allocates.
-                            //to simplify the logic, we use a recycle group for each entity type
-                            var fromGroupId = (int)ECSGroups.EnemyToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
-                            if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
-                            {
-                                Utility.Console.Log("Recycle one ".FastConcat(spawnData.enemySpawnData.targetType));
-                                ReuseEnemy(fromGroupId, ref spawnData);
-                            }
-                            else
-                            {
-                                Utility.Console.Log("New one");
-                                _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackstruct);
-                            }
+                         //has got a compatible entity previously disabled and can be reused?
+                         //Note, pooling make sense only for Entities that use implementors.
+                         //A pure struct based entity doesn't need pooling because it never allocates.
+                         //to simplify the logic, we use a recycle group for each entity type
+                         var fromGroupId = (int)ECSGroups.EnemyToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
+                         if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
+                         {
+                             Utility.Console.Log("Recycle one ".FastConcat(spawnData.enemySpawnData.targetType));
+                             ReuseEnemy(fromGroupId, ref spawnData);
+                         }
+                         else
+                         {
+                             Utility.Console.Log("New one");
+                             _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackstruct);
+                         }
 
-                            spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
-                            _numberOfEnemyToSpawn--;
-                        }
+                         spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
+                         _numberOfEnemyToSpawn--;
+                     }
 
-                        spawningTimes[i] -= SECONDS_BETWEEN_SPAWNS;
-                    }
-                }
+                     spawningTimes[i] -= SECONDS_BETWEEN_SPAWNS;
+                 }
             }
         }
 
@@ -98,32 +97,24 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             
             //reset some components
             entitiesDB.ExecuteOnEntity(egid,
-                                          (ref HealthEntityStruct healthStruct) => { healthStruct.currentHealth = 100; });
+                                         (ref HealthEntityStruct healthStruct) => { healthStruct.currentHealth = 100;});
             entitiesDB.ExecuteOnEntity(egid, ref spawnData,
-                                          (ref EnemyEntityViewStruct    entityView,
-                                           ref JSonEnemySpawnData spawnDataInfo) =>
-                                          {
-                                              int spawnPointIndex =
-                                                  UnityEngine
-                                                     .Random
-                                                     .Range(0,
-                                                            spawnDataInfo.enemySpawnData.spawnPoints
-                                                                         .Length);
+                                         (ref EnemyEntityViewStruct    entityView,
+                                          ref JSonEnemySpawnData spawnDataInfo) =>
+                                         {
+                                             int spawnPointIndex = UnityEngine
+                                                    .Random.Range(0, spawnDataInfo.enemySpawnData.spawnPoints.Length);
 
-                                              var spawnInfo =
-                                                  spawnDataInfo.enemySpawnData.spawnPoints
-                                                      [spawnPointIndex];
+                                             var spawnInfo = spawnDataInfo.enemySpawnData.spawnPoints[spawnPointIndex];
 
-                                              entityView.transformComponent.position =
-                                                  spawnInfo.position;
-                                              entityView.transformComponent.rotation =
-                                                  spawnInfo.rotation;
+                                             entityView.transformComponent.position = spawnInfo.position;
+                                             entityView.transformComponent.rotation = spawnInfo.rotation;
 
-                                              entityView.animationComponent.reset();
-                                              entityView.movementComponent.navMeshEnabled = true;
-                                              entityView.movementComponent.setCapsuleAsTrigger = false;
-                                              entityView.layerComponent.layer = GAME_LAYERS.ENEMY_LAYER;
-                                          });
+                                             entityView.animationComponent.reset();
+                                             entityView.movementComponent.navMeshEnabled = true;
+                                             entityView.movementComponent.setCapsuleAsTrigger = false;
+                                             entityView.layerComponent.layer = GAME_LAYERS.ENEMY_LAYER;
+                                         });
         }
 
         static JSonEnemySpawnData[] ReadEnemySpawningDataServiceRequest()

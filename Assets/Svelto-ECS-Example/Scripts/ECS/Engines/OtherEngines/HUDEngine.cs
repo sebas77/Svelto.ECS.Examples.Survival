@@ -37,7 +37,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         {
             while (true)
             {
-                entitiesDB.ExecuteOnEntities(ref _time, (ref HUDEntityView guiEntityView, ref ITime time) =>
+                entitiesDB.ExecuteOnEntities(ref _time, (ref HUDEntityView guiEntityView, ref ITime time, int index) =>
                       {
                           var damageComponent = guiEntityView.damageImageComponent;
 
@@ -75,7 +75,7 @@ namespace Svelto.ECS.Example.Survive.HUD
 
                     entitiesDB.ExecuteOnEntities(ref health,
                                                  (ref HUDEntityView guiEntityView,
-                                                  ref int           refhealth) =>
+                                                  ref int refhealth, int innerIndex) =>
                                                  {
                                                      var damageComponent = guiEntityView.damageImageComponent;
                                                      damageComponent.imageColor = damageComponent.flashColor;
