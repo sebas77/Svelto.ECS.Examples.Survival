@@ -15,5 +15,7 @@ To know more about Svelto.ECS, please check my blog: http://www.sebaslab.com/
 
 The Plugins folder is a special foder in Unity. The code put inside it will be compiled in a separate dll (Assembly-CSharp-Editor-firstpass.dll). The main reason I like it this way, is that it enables the real meaning of the _internal_ keyword, which is used with intent inside the framework.
 
-**Note: The folders Svelto.ECS, Svelto.Tasks and Svelto.Common, where present, are submodules pointing to the relative repositories. If you find them empty, you need to initialize the submodules through the submodule command. You must initialize only the first level submodules, so do not run the recursive option. I am sorry if this is confusing, but it's the best solution I found with git. If you have troubles, please check some instructions here: https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki**
+# The project generates a lot of errors:
+
+Please don't download the zip file and unzip it. Unforunately I am using submodules and Github is not smart enough to include them in the zip file. The simplest way is to clone it and follow these instructions https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki
 
