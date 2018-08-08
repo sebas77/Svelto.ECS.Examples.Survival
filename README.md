@@ -17,5 +17,5 @@ The Plugins folder is a special foder in Unity. The code put inside it will be c
 
 # The project generates a lot of errors:
 
-Please don't download the zip file and unzip it. Unforunately I am using submodules and Github is not smart enough to include them in the zip file. The simplest way is to clone it and follow these instructions https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki
+Please don't download the zip file and unzip it. Unfortunately I am using submodules and Github is not smart enough to include them in the zip file. The simplest way is to clone it and follow these instructions https://github.com/sebas77/Svelto.ECS.Vanilla.Example/wiki
 
