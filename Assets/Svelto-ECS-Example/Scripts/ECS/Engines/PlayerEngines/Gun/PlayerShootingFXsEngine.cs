@@ -23,17 +23,17 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         /// <param name="playerGunEntityView"></param>
         protected override void Add(ref GunEntityViewStruct playerGunEntityView)
         {
-            playerGunEntityView.gunHitTargetComponent.targetHit.NotifyOnValueSet(Shoot);
+            playerGunEntityView.gunHitTargetComponent.targetHit.NotifyOnValueSet(PlayerHasShot);
             _waitForSeconds = new WaitForSeconds(playerGunEntityView.gunComponent.timeBetweenBullets * playerGunEntityView.gunFXComponent.effectsDisplayTime);
         }
 
         protected override void Remove(ref GunEntityViewStruct playerGunEntityView)
         {}
 
-        void Shoot(int ID, bool targetHasBeenHit)
+        void PlayerHasShot(int ID, bool targetHasBeenHit)
         {
             uint index;
-            var structs = entitiesDB.QueryEntitiesAndIndex<GunEntityViewStruct>(new EGID(ECSGroups.PlayerGroup, ID), out index);
+            var structs = entitiesDB.QueryEntitiesAndIndex<GunEntityViewStruct>(new EGID(ID, ECSGroups.Player), out index);
 
             var gunFXComponent = structs[index].gunFXComponent;
 
@@ -81,7 +81,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         void DisableEffects ()
         {
             int targetsCount;
-            var gunEntityViews = entitiesDB.QueryEntities<GunEntityViewStruct>(ECSGroups.PlayerGroup, out targetsCount);
+            var gunEntityViews = entitiesDB.QueryEntities<GunEntityViewStruct>(ECSGroups.Player, out targetsCount);
 
             var fxComponent = gunEntityViews[0].gunFXComponent;
             // Disable the line renderer and the light.

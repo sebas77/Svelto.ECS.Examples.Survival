@@ -38,14 +38,14 @@ namespace Svelto.ECS.Example.Survive.Camera
         
         IEnumerator PhysicUpdate()
         {
-            while (entitiesDB.HasAny<CameraTargetEntityView>(ECSGroups.ExtraStuffGroup) == false || entitiesDB.HasAny<CameraEntityView>(ECSGroups.ExtraStuffGroup) == false)
+            while (entitiesDB.HasAny<CameraTargetEntityView>(ECSGroups.CameraTarget) == false || entitiesDB.HasAny<CameraEntityView>(ECSGroups.ExtraStuff) == false)
             {
                 yield return null; //skip a frame
             }
             
             int count;
-            var cameraTargets = entitiesDB.QueryEntities<CameraTargetEntityView>(ECSGroups.ExtraStuffGroup, out count);
-            var cameraEntities = entitiesDB.QueryEntities<CameraEntityView>(ECSGroups.ExtraStuffGroup,out count);
+            var cameraTargets = entitiesDB.QueryEntities<CameraTargetEntityView>(ECSGroups.CameraTarget, out count);
+            var cameraEntities = entitiesDB.QueryEntities<CameraEntityView>(ECSGroups.ExtraStuff,out count);
 
             float smoothing = 5.0f;
             

@@ -24,19 +24,15 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         public void Step(EnemyDeathCondition condition, EGID id)
         {
-            entitiesDB.ExecuteOnEntity(id,
-                                       (ref EnemyEntityViewStruct entity) =>
-                                       {
-                                           Sink(entity).Run();
-                                           entity.animationComponent.playAnimation = "Dead";
-                                       });
+            uint index;
+            Sink(entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(id, out index)[index]).Run();
         }
 
         public void Step(PlayerDeathCondition condition, EGID id)
         {
             //is player is dead, the enemy cheers
             int count;
-            var entity = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemiesGroup, out count);
+            var entity = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemies, out count);
 
             for (var i = 0; i < count; i++)
                 entity[i].animationComponent.playAnimation = "PlayerDead";
@@ -47,16 +43,18 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             while (true)
             {
                 int numberOfEnemies;
-                var damageableEntityStructs = entitiesDB.QueryEntities<DamageableEntityStruct>(ECSGroups.ActiveEnemiesGroup, out numberOfEnemies);
-                var enemyEntityViewsStructs = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemiesGroup, out numberOfEnemies);
+                var damageableEntityStructs =
+                    entitiesDB.QueryEntities<DamageableEntityStruct>(ECSGroups.ActiveEnemies, out numberOfEnemies);
+                var enemyEntityViewsStructs =
+                    entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemies, out numberOfEnemies);
 
                 for (int i = 0; i < numberOfEnemies; i++)
                 {
                     if (damageableEntityStructs[i].damaged == false) continue;
 
-                    enemyEntityViewsStructs[i].vfxComponent.position   = damageableEntityStructs[i].damageInfo.damagePoint;
-                    enemyEntityViewsStructs[i].vfxComponent.play.value = true;
-                                               }
+                    enemyEntityViewsStructs[i].vfxComponent.position = damageableEntityStructs[i].damageInfo.damagePoint;
+                    enemyEntityViewsStructs[i].vfxComponent.play = true;
+                }
 
                 yield return null;
             }
@@ -64,6 +62,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         
         IEnumerator Sink(EnemyEntityViewStruct entity)
         {
+            entity.animationComponent.playAnimation = "Dead";
+            
             DateTime afterTwoSec = DateTime.UtcNow.AddSeconds(2);
 
             while (DateTime.UtcNow < afterTwoSec)
@@ -75,15 +75,15 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             }
 
             uint index;
-            int enemyType = (int) entitiesDB.QueryEntitiesAndIndex<EnemyEntityStruct>(entity.ID, out index)[index].enemyType;
+            PlayerTargetType enemyType = entitiesDB.QueryEntitiesAndIndex<EnemyEntityStruct>(entity.ID, out index)[index].enemyType;
             
-            _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(entity.ID, (int)ECSGroups.EnemiesToRecycleGroups + enemyType);
+            _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(entity.ID, (int)ECSGroups.EnemiesToRecycleGroups + (int)enemyType);
 
             _enemyDeadSequencer.Next(this, EnemyDeathCondition.Death, entity.ID);
         }
 
-        readonly ITime _time;
+        readonly ITime               _time;
         readonly EnemyDeathSequencer _enemyDeadSequencer;
-        readonly IEntityFunctions _entityFunctions;
+        readonly IEntityFunctions    _entityFunctions;
     }
 }

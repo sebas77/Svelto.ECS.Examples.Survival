@@ -17,11 +17,11 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             {
                 int count;
                 //query all the enemies from the standard group (no disabled nor respawning)
-                var enemyTargetEntityViews = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(ECSGroups.ActiveEnemiesGroup, out count);
+                var enemyTargetEntityViews = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(ECSGroups.EnemyTargets, out count);
 
                 if (count > 0)
                 {
-                    var enemies = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemiesGroup, out count);
+                    var enemies = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemies, out count);
 
                     for (var i = 0; i < count; i++)
                     {

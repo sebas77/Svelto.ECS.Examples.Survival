@@ -37,7 +37,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         {
             while (true)
             {
-                entitiesDB.ExecuteOnEntities(ECSGroups.ExtraStuffGroup, ref _time,
+                entitiesDB.ExecuteOnEntities(ECSGroups.ExtraStuff, ref _time,
                                              (ref HUDEntityView guiEntityView, ref ITime time, IEntitiesDB entitiesDb,
                                               int               index) =>
                       {
@@ -65,16 +65,16 @@ namespace Svelto.ECS.Example.Survive.HUD
             {
                 int numberOfPlayers;
                 var damageablePlayerEntities =
-                    entitiesDB.QueryEntities<DamageableEntityStruct>(ECSGroups.PlayerGroup, out numberOfPlayers);
+                    entitiesDB.QueryEntities<DamageableEntityStruct>(ECSGroups.Player, out numberOfPlayers);
                 var playerHealthEntities =
-                    entitiesDB.QueryEntities<HealthEntityStruct>(ECSGroups.PlayerGroup, out numberOfPlayers);
+                    entitiesDB.QueryEntities<HealthEntityStruct>(ECSGroups.Player, out numberOfPlayers);
                 for (int i = 0; i < numberOfPlayers; i++)
                 {
                     if (damageablePlayerEntities[i].damaged == false) continue;
 
                     //An engine should never assume how many entities will be used, so we iterate over all the
                     //HUDEntityViews even if we know there is just one
-                    entitiesDB.ExecuteOnEntities(ECSGroups.ExtraStuffGroup, ref playerHealthEntities[i].currentHealth,
+                    entitiesDB.ExecuteOnEntities(ECSGroups.ExtraStuff, ref playerHealthEntities[i].currentHealth,
                                                  (ref HUDEntityView guiEntityView, ref int refhealth,
                                                   IEntitiesDB       entitiesdb,    int     innerIndex) =>
                                                  {
@@ -96,7 +96,7 @@ namespace Svelto.ECS.Example.Survive.HUD
 
             int hudEntityViewsCount;
             var hudEntityViews =
-                entitiesDB.QueryEntities<HUDEntityView>(ECSGroups.ExtraStuffGroup, out hudEntityViewsCount);
+                entitiesDB.QueryEntities<HUDEntityView>(ECSGroups.ExtraStuff, out hudEntityViewsCount);
             for (int i = 0; i < hudEntityViewsCount; i++)
                 hudEntityViews[i].HUDAnimator.playAnimation = "GameOver";
 
@@ -110,7 +110,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         {
             int hudEntityViewsCount;
             var hudEntityViews =
-                entitiesDB.QueryEntities<HUDEntityView>(ECSGroups.ExtraStuffGroup, out hudEntityViewsCount);
+                entitiesDB.QueryEntities<HUDEntityView>(ECSGroups.ExtraStuff, out hudEntityViewsCount);
             for (int i = 0; i < hudEntityViewsCount; i++)
                 hudEntityViews[i].healthSliderComponent.value = 0;
 

@@ -33,7 +33,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
     public interface IEnemyVFXComponent: IComponent
     {
-        Vector3             position { set; }
-        DispatchOnSet<bool> play     { get; }
+        Vector3 position { set; }
+        bool    play     { set; }
     }
 }

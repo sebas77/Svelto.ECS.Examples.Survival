@@ -40,17 +40,17 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
 
         IEnumerator Tick()
         {
-            while (entitiesDB.HasAny<PlayerEntityViewStruct>(ECSGroups.PlayerGroup) == false ||
-                   entitiesDB.HasAny<GunEntityViewStruct>(ECSGroups.ExtraStuffGroup) == false)
+            while (entitiesDB.HasAny<PlayerEntityViewStruct>(ECSGroups.Player) == false ||
+                   entitiesDB.HasAny<GunEntityViewStruct>(ECSGroups.Player) == false)
             {
                 yield return null; //skip a frame
             }
 
             int count;
             //never changes
-            var playerGunEntities = entitiesDB.QueryEntities<GunEntityViewStruct>(ECSGroups.PlayerGroup, out count);
+            var playerGunEntities = entitiesDB.QueryEntities<GunEntityViewStruct>(ECSGroups.Player, out count);
             //never changes
-            var playerEntities = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.PlayerGroup, out count);
+            var playerEntities = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.Player, out count);
             
             while (true)
             {
@@ -95,7 +95,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
                 
                 //note how the GameObject GetInstanceID is used to identify the entity as well
                 if (instanceID != -1)
-                    entitiesDB.ExecuteOnEntity(ECSGroups.PlayerTargetsGroup, instanceID, ref damageInfo,
+                    entitiesDB.ExecuteOnEntity(instanceID, ECSGroups.PlayerTargets, ref damageInfo,
                                                (ref DamageableEntityStruct entity, ref DamageInfo info) => //
                                                { //never catch external variables so that the lambda doesn't allocate
                                                    entity.damageInfo = info;

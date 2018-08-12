@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
     //Implementors act as bridge between Svelto.ECS Engines and third party platforms.
-    //This characteristic is of fundamental importance. If you need unity to communicate with the engines
+    //This featureaw is of fundamental importance. If you need unity to communicate with the engines
     //you don't need to use awkward workarounds, simply create an implementor as Monobehaviour.
     //In this way you could use, inside the implementor, Unity callbacks, like OnTriggerEnter/OnTriggerExit
     //and change data according the Unity callback. Logic should not be used inside these callback,
@@ -15,12 +15,12 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         void OnTriggerEnter(Collider other)
         {
-            entityInRange = new EnemyCollisionData(new EGID(ECSGroups.ActiveEnemiesGroup, other.gameObject.GetInstanceID()), true);
+            entityInRange = new EnemyCollisionData(new EGID(other.gameObject.GetInstanceID(), ECSGroups.EnemyTargets), true);
         }
 
         void OnTriggerExit(Collider other)
         {
-            entityInRange = new EnemyCollisionData(new EGID(ECSGroups.ActiveEnemiesGroup, other.gameObject.GetInstanceID()), false);
+            entityInRange = new EnemyCollisionData(new EGID(other.gameObject.GetInstanceID(), ECSGroups.EnemyTargets), false);
         }
 
         bool    _targetInRange;

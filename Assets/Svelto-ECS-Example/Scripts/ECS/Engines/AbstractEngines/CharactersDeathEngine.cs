@@ -13,11 +13,12 @@ namespace Svelto.ECS.Example.Survive.Characters
         {
             while (true)
             {
-                entitiesDB.ExecuteOnAllEntities((ref HealthEntityStruct health, IEntitiesDB entitiesdb) =>
-                                   {
-                                       if (health.currentHealth <= 0)
-                                           health.dead = true;
-                                   });
+                entitiesDB.ExecuteOnAllEntities(ECSGroups.DamageableGroups,
+                                                (ref HealthEntityStruct health, IEntitiesDB entitiesdb, int index) =>
+                        {
+                            if (health.currentHealth <= 0)
+                                health.dead = true;
+                        });
 
                 yield return null;
             }

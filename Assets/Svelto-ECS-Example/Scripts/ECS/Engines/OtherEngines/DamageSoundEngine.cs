@@ -24,26 +24,19 @@ namespace Svelto.ECS.Example.Survive.Characters.Sounds
         {
             while (true)
             {
-                entitiesDB.ExecuteOnAllEntities((ref DamageableEntityStruct damagedEntity,
-                                                 IEntitiesDB            entitiesDB_) =>
+                foreach (var group in ECSGroups.DamageableGroups)
                 {
-                    uint index;
-                    
-                    if (damagedEntity.damaged == false) return;
+                    int count;
+                    var damageableEntities = entitiesDB.QueryEntities<DamageableEntityStruct>(group, out count);
+                    var damageSounds       = entitiesDB.QueryEntities<DamageSoundEntityView>(group, out count);
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (damageableEntities[i].damaged == false) continue;
 
-                    //This is when things get tricky. When iterating on an entity view, you can't 
-                    //ever assume that the index used during the iteration can be used as index
-                    //for another array of entity views, unless groups are used.
-                    //Since in this case we are iterating over ALL the damageableEntityStructs regardless
-                    //the group (enemies or player), I can't even know the index to use.
-                    //through the ID of the entity, I can know the group where the current entity is
-                    //but the only way to know the index of the entity in the array of enties is 
-                    //trhough mapping. The EntityID is so mapped to the correct group and index.
-                    entitiesDB_.QueryEntitiesAndIndex<DamageSoundEntityView>(damagedEntity.ID,
-                                                                            out index)[index]
-                              .audioComponent.playOneShot = AudioType.damage;
-                });
-                
+                        damageSounds[i].audioComponent.playOneShot = AudioType.damage;
+                    }
+                }
+
                 yield return null;
             }
         }

@@ -9,7 +9,7 @@ namespace Svelto.ECS.Example.Survive.HUD
         public void Step(EnemyDeathCondition condition, EGID id)
         {
             int hudEntityViewsCount;
-            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(ECSGroups.ExtraStuffGroup, out hudEntityViewsCount);
+            var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(ECSGroups.ExtraStuff, out hudEntityViewsCount);
 
             if (hudEntityViewsCount > 0)
             {

@@ -36,20 +36,19 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 // this is more than a sophistication, it actually the implementation
                 // of the rule that every engine must use its own set of
                 // EntityViews to promote encapsulation and modularity
-                while (entitiesDB.HasAny<EnemyTargetEntityViewStruct>(ECSGroups.PlayerGroup) == false ||
-                       entitiesDB.HasAny<EnemyAttackEntityView>(ECSGroups.ActiveEnemiesGroup) == false)
+                while (entitiesDB.HasAny<DamageableEntityStruct>(ECSGroups.EnemyTargets) == false ||
+                       entitiesDB.HasAny<EnemyAttackEntityView>(ECSGroups.ActiveEnemies) == false)
                 {
                     yield return null;
                 }
                 
                 int targetsCount;
-                var targetEntities =
-                    entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(ECSGroups.PlayerGroup,
+                var targetEntities = entitiesDB.QueryEntities<DamageableEntityStruct>(ECSGroups.EnemyTargets,
                                                                           out targetsCount);
                 
                 int enemiesCount;
-                var enemiesAttackData = entitiesDB.QueryEntities<EnemyAttackStruct>(ECSGroups.ActiveEnemiesGroup, out enemiesCount);
-                var enemies = entitiesDB.QueryEntities<EnemyAttackEntityView>(ECSGroups.ActiveEnemiesGroup, out enemiesCount);
+                var enemiesAttackData = entitiesDB.QueryEntities<EnemyAttackStruct>(ECSGroups.ActiveEnemies, out enemiesCount);
+                var enemies = entitiesDB.QueryEntities<EnemyAttackEntityView>(ECSGroups.ActiveEnemies, out enemiesCount);
                 
                 //this is more complex than needed code is just to show how you can use entity structs
                 //this case is banal, entity structs should be use to handle hundreds or thousands
@@ -71,7 +70,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
                     for (int enemyIndex = 0; enemyIndex < enemiesCount; enemyIndex++)
                     {
-                        if (enemiesAttackData[enemyIndex].entityInRange.collides == true)
+                        if (enemiesAttackData[enemyIndex].entityInRange.collides)
                         {
                             //the IEnemyTriggerComponent implementors sets a the collides boolean
                             //whenever anything enters in the trigger range, but there is not more logic
@@ -84,16 +83,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                                 {
                                     enemiesAttackData[enemyIndex].timer = 0.0f;
                                     
-                                    var damageInfo = new DamageInfo(enemiesAttackData[enemyIndex]
-                                                                       .attackDamage,
-                                                                    Vector3.zero);
-                
-                                    //note how the GameObject GetInstanceID is used to identify the entity as well
-                                    entitiesDB.ExecuteOnEntity(targetEntityView.ID, ref damageInfo,
-                                                               (ref DamageableEntityStruct entity, ref DamageInfo info) => //
-                                                               {      //never catch external variables so that the lambda doesn't allocate
-                                                                   entity.damageInfo = info;
-                                                               });
+                                    targetEntities[enemyTargetIndex].damageInfo = new DamageInfo(enemiesAttackData[enemyIndex].attackDamage,
+                                                                                                 Vector3.zero);
                                 }
                             }
                         }

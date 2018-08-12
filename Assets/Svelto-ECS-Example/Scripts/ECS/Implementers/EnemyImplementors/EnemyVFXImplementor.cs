@@ -7,22 +7,29 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
     {
         void Awake ()
         {
-            // Setting up the references.
             particle = GetComponentInChildren <ParticleSystem> ();
-            play = new DispatchOnSet<bool>(gameObject.GetInstanceID());
-            play.NotifyOnValueSet(Play);
         }
 
-        void Play(int sender, bool value)
+        /// <summary>
+        ///You may wonder if this is ECS. Svelto.ECS has some unique features to make it 
+        ///possible to write a whole game with it. One is to use implementors to wrap
+        ///preexisting platform functionalities, like the unity animaton system. 
+        ///Without this solution would not be possible to totally wrap pre-existing logic.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="value"></param>
+        public bool play
         {
-            if (value == true) particle.Play();
+            set
+            {
+                if (value == true)
+                {
+                    particle.Play();
+                }
+            }
         }
 
         public ParticleSystem  particle;         // Reference to the particle system that plays when the enemy is damaged.
-        public Vector3 position
-        {
-            set { particle.transform.position = value; }
-        }
-        public DispatchOnSet<bool> play { get; private set; }
+        public Vector3 position { set { particle.transform.position = value; } }
     }
 }

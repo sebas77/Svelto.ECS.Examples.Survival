@@ -102,7 +102,7 @@ namespace Svelto.ECS.Example.Survive
             //the UnitySumbmissionEntityViewScheduler is the scheduler that is used by the EnginesRoot to know
             //when to inject the EntityViews. You shouldn't use a custom one unless you know what you 
             //are doing or you are not working with Unity.
-            _enginesRoot = new EnginesRoot(new UnitySumbmissionEntityViewScheduler());
+            _enginesRoot = new EnginesRoot(new UnityEntitySubmissionScheduler());
             //Engines root can never be held by anything else than the context itself to avoid leaks
             //That's why the EntityFactory and EntityFunctions are generated.
             //The EntityFactory can be injected inside factories (or engine acting as factories)
@@ -221,9 +221,9 @@ namespace Svelto.ECS.Example.Survive
             _enginesRoot.AddEngine(enemyAnimationEngine);
             _enginesRoot.AddEngine(enemyDeathEngine);
             //other engines
-            _enginesRoot.AddEngine(new ApplyingDamageToTargetEntitiesEngine());
+            _enginesRoot.AddEngine(new ApplyingDamageToTargetsEngine());
             _enginesRoot.AddEngine(new CameraFollowTargetEngine(time));
-            _enginesRoot.AddEngine(new DeathEngine());
+            _enginesRoot.AddEngine(new CharactersDeathEngine());
             _enginesRoot.AddEngine(damageSoundEngine);
             _enginesRoot.AddEngine(hudEngine);
             _enginesRoot.AddEngine(scoreEngine);
@@ -264,21 +264,21 @@ namespace Svelto.ECS.Example.Survive
             //The Player Entity is made of EntityViewStruct+Implementors as monobehaviours and 
             //EntityStructs. The PlayerInputDataStruct doesn't need to be initialized (yay!!)
             //but the HealthEntityStruct does. Here I show the official method to do it
-            var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), player.GetComponents<IImplementor>());
+            var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), ECSGroups.Player, player.GetComponents<IImplementor>());
             initializer.Init(new HealthEntityStruct {currentHealth = 100});
 
             //unluckily the gun is parented in the original prefab, so there is no easy way to create it
             //explicitly, I have to create if from the existing gameobject.
             var gun = player.GetComponentInChildren<PlayerShootingImplementor>();
             
-            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(), new[] {gun});
+            _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(), ECSGroups.Player, new[] {gun});
         }
 
         void BuildCameraEntity()
         {
             var implementor = UnityEngine.Camera.main.gameObject.AddComponent<CameraImplementor>();
 
-            _entityFactory.BuildEntity<CameraEntityDescriptor>(UnityEngine.Camera.main.GetInstanceID(), new[] {implementor});
+            _entityFactory.BuildEntity<CameraEntityDescriptor>(UnityEngine.Camera.main.GetInstanceID(), ECSGroups.ExtraStuff, new[] {implementor});
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace Svelto.ECS.Example.Survive
                 var entityDescriptorHolder = entities[i];
                 var entityViewsToBuild = entityDescriptorHolder.GetDescriptor();
                 _entityFactory.BuildEntity
-                (((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(),
+                (new EGID(((MonoBehaviour) entityDescriptorHolder).gameObject.GetInstanceID(), ECSGroups.ExtraStuff),
                     entityViewsToBuild,
                     (entityDescriptorHolder as MonoBehaviour).GetComponentsInChildren<IImplementor>());
             }

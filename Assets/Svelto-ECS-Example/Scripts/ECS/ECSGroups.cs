@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace Svelto.ECS.Example.Survive
 {
     /// <summary>
@@ -11,16 +13,19 @@ namespace Svelto.ECS.Example.Survive
         /// Reserving 3 exclusive groups, one for each enemy type
         /// </summary>
         public static readonly ExclusiveGroup EnemiesToRecycleGroups = new ExclusiveGroup(3);
-        public static readonly ExclusiveGroup DisabledEnemiesGroups = new ExclusiveGroup(3);
+        public static readonly ExclusiveGroup DeadEnemiesGroups = new ExclusiveGroup(3);
         /// <summary>
         /// while the active enemies share the same group to optimize the memory layout
         /// </summary>
-        public static readonly ExclusiveGroup ActiveEnemiesGroup = new ExclusiveGroup();
-        public static readonly ExclusiveGroup PlayerGroup = new ExclusiveGroup();
-        public static readonly ExclusiveGroup ExtraStuffGroup = new ExclusiveGroup();
+        public static readonly ExclusiveGroup ActiveEnemies = new ExclusiveGroup();
+        public static readonly ExclusiveGroup Player = new ExclusiveGroup();
+        public static readonly ExclusiveGroup ExtraStuff = new ExclusiveGroup();
         
-        public static readonly ExclusiveGroup PlayerTargetsGroup = ActiveEnemiesGroup;
+        public static readonly ExclusiveGroup PlayerTargets = ActiveEnemies;
+        public static readonly ExclusiveGroup CameraTarget = Player;
+        public static readonly ExclusiveGroup EnemyTargets = Player;
         
-        public static readonly ExclusiveGroup[] TargetGroups = { ActiveEnemiesGroup, PlayerGroup };
+        public static readonly ExclusiveGroup[] TargetGroups = { ActiveEnemies, Player };
+        public static readonly ExclusiveGroup[] DamageableGroups = { ActiveEnemies, Player };
     }
 }

@@ -59,7 +59,7 @@ MonoBehaviour:
     spawnPoints:
     - {fileID: 4632516573451786, guid: ebe4d20d1dd279047bb9865a296b0390, type: 2}
     spawnTime: 3
-    targetType: 1
+    targetType: 0
   attackData:
     timeBetweenAttacks: 0.5
     attackDamage: 10
@@ -90,7 +90,7 @@ MonoBehaviour:
     spawnPoints:
     - {fileID: 4390937213714950, guid: 586348114209d8141a1c0fd09adb4231, type: 2}
     spawnTime: 15
-    targetType: 3
+    targetType: 2
   attackData:
     timeBetweenAttacks: 0.5
     attackDamage: 30
@@ -110,7 +110,7 @@ MonoBehaviour:
     spawnPoints:
     - {fileID: 4435085146943598, guid: 74c96b0351ea22b46a28ffcbf4ab44b5, type: 2}
     spawnTime: 3
-    targetType: 2
+    targetType: 1
   attackData:
     timeBetweenAttacks: 0.5
     attackDamage: 15

@@ -23,13 +23,13 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         IEnumerator ReadInput()
         {
             //wait for the player to spawn
-            while (entitiesDB.HasAny<PlayerEntityViewStruct>(ECSGroups.PlayerGroup) == false)
+            while (entitiesDB.HasAny<PlayerEntityViewStruct>(ECSGroups.Player) == false)
             {
                 yield return null; //skip a frame
             }
             
             int targetsCount;
-            var playerEntityViews = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.PlayerGroup, out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.Player, out targetsCount);
            
             while (true)
             {

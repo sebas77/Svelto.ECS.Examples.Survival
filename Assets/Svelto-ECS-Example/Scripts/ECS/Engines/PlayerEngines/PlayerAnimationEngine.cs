@@ -19,14 +19,14 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         IEnumerator PhysicsTick()
         {
             //wait for the player to spawn
-            while (entitiesDB.HasAny<PlayerEntityViewStruct>(ECSGroups.PlayerGroup) == false)
+            while (entitiesDB.HasAny<PlayerEntityViewStruct>(ECSGroups.Player) == false)
             {
                 yield return null; //skip a frame
             }
 
             int targetsCount;
-            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(ECSGroups.PlayerGroup, out targetsCount);
-            var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.PlayerGroup, out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(ECSGroups.Player, out targetsCount);
+            var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.Player, out targetsCount);
             
             while (true)
             {

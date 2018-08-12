@@ -21,12 +21,12 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         IEnumerator CheckIfDead()
         {
-            var enemyIterationInfo = new FasterList<EnemyIterationInfo>();
+            var enemyIterationInfo = new FasterList<EGID>();
 
             while (true)
             {
                 //wait for enemies to be created
-                while (entitiesDB.HasAny<EnemyEntityStruct>(ECSGroups.ActiveEnemiesGroup) == false) yield return null;
+                while (entitiesDB.HasAny<EnemyEntityStruct>(ECSGroups.ActiveEnemies) == false) yield return null;
 
                 //Very important: Since I use groups, I know that the entity queries are relative to the enemy
                 //entities and therefore the count value will be always the same. Choose your groups wisely. 
@@ -35,9 +35,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 //Groups assure that the number of entity view are the same in the same group, even if the entity view
                 //is shared with other entities in other groups.
                 int count;
-                var enemyEntitiesViews = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemiesGroup, out count);
-                var enemyEntitiesStructs = entitiesDB.QueryEntities<EnemyEntityStruct>(ECSGroups.ActiveEnemiesGroup, out count);
-                var enemyEntitiesHealth = entitiesDB.QueryEntities<HealthEntityStruct>(ECSGroups.ActiveEnemiesGroup, out count);
+                var enemyEntitiesViews = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemies, out count);
+                var enemyEntitiesHealth = entitiesDB.QueryEntities<HealthEntityStruct>(ECSGroups.ActiveEnemies, out count);
 
                 for (int i = 0; i < count; i++)
                 {
@@ -45,11 +44,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
                     SetParametersForDeath(ref enemyEntitiesViews[i]);
 
-                    enemyIterationInfo.Add(new EnemyIterationInfo(enemyEntitiesHealth[i].ID,
-                                                                 (int) ECSGroups
-                                                                    .DisabledEnemiesGroups +
-                                                                 (int) enemyEntitiesStructs[i]
-                                                                    .enemyType));
+                    enemyIterationInfo.Add(enemyEntitiesHealth[i].ID);
                 }
 
                 for (int i = 0; i < enemyIterationInfo.Count; i++)
@@ -58,8 +53,9 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                     //Pooling is not needed when just pure EntityStructs are generated as they are allocation free.
                     //The swap is necessary so that the enemy entity cannot be shot while it's dying
                     //the group works like a sort of state for the Enemy entity in this case.
-                    var newID = _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(enemyIterationInfo[i].ID,
-                                                                                        enemyIterationInfo[i].group);
+                    var newID = _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(enemyIterationInfo[i],
+                                                                                        (int) ECSGroups
+                                                                                           .DeadEnemiesGroups);
 
                     _enemyDeadSequencer.Next(this, EnemyDeathCondition.Death, newID);
                 }
@@ -79,18 +75,5 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         readonly IEntityFunctions    _entityFunctions;
         readonly EnemyDeathSequencer _enemyDeadSequencer;
-
-        struct EnemyIterationInfo
-        {
-            public readonly EGID ID;
-
-            public EnemyIterationInfo(EGID id, int group)
-            {
-                ID         = id;
-                this.group = group;
-            }
-
-            public int group { get; set; }
-        }
     }
 }

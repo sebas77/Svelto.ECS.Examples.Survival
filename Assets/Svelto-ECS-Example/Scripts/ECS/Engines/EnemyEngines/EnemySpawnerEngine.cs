@@ -72,12 +72,10 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                          var fromGroupId = (int)ECSGroups.EnemiesToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
                          if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                          {
-                             Utility.Console.Log("Recycle one ".FastConcat(spawnData.enemySpawnData.targetType));
                              ReuseEnemy(fromGroupId, ref spawnData);
                          }
                          else
                          {
-                             Utility.Console.Log("New one");
                              _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackstruct);
                          }
 
@@ -93,11 +91,14 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         void ReuseEnemy(int fromGroupId, ref JSonEnemySpawnData spawnData)
         {
             //take the first entity (with all its entity views and implementors) from the group
-            var egid = _entityFunctions.SwapFirstEntityGroup<EnemyEntityDescriptor>(fromGroupId, ECSGroups.ActiveEnemiesGroup);
+            var egid = _entityFunctions.SwapFirstEntityGroup<EnemyEntityDescriptor>(fromGroupId, (int)ECSGroups.ActiveEnemies);
             
-            //reset some components
+            //reset some components after the recycle
             entitiesDB.ExecuteOnEntity(egid,
-                                         (ref HealthEntityStruct healthStruct) => { healthStruct.currentHealth = 100;});
+                                         (ref HealthEntityStruct healthStruct) => { 
+                                             healthStruct.currentHealth = 100;
+                                             healthStruct.dead = false;
+                                         });
             entitiesDB.ExecuteOnEntity(egid, ref spawnData,
                                          (ref EnemyEntityViewStruct    entityView,
                                           ref JSonEnemySpawnData spawnDataInfo) =>
@@ -138,8 +139,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         public void Step(EnemyDeathCondition condition, EGID id)
         {
             _numberOfEnemyToSpawn++;
-            
-            Utility.Console.Log("Can spawn a new one");
         }
 
         readonly WaitForSecondsEnumerator  _waitForSecondsEnumerator = new WaitForSecondsEnumerator(SECONDS_BETWEEN_SPAWNS);

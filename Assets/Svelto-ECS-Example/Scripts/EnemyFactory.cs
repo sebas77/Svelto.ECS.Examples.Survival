@@ -23,11 +23,11 @@ namespace Svelto.ECS.Example.Survive
             var implementors = go.GetComponentsInChildren<IImplementor>();
             //using the GameObject GetInstanceID() will help to directly use the result of Unity functions
             //to index the entity in the Svelto database
-            var initializer = _entityFactory.BuildEntity<EnemyEntityDescriptor>(new EGID(ECSGroups.ActiveEnemiesGroup, go.GetInstanceID()), 
+            var initializer = _entityFactory.BuildEntity<EnemyEntityDescriptor>(new EGID(go.GetInstanceID(),ECSGroups.ActiveEnemies), 
                                                                                 implementors);
             initializer.Init(enemyAttackstruct);
             initializer.Init(new HealthEntityStruct { currentHealth = 100 });
-            initializer.Init(new ScoreValueEntityStruct { scoreValue = (int)enemySpawnData.targetType * 10 });
+            initializer.Init(new ScoreValueEntityStruct { scoreValue = (int)(enemySpawnData.targetType + 1) * 10 });
             initializer.Init(new EnemyEntityStruct { enemyType = enemySpawnData.targetType});
 
             var transform = go.transform;
