@@ -36,17 +36,20 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 // this is more than a sophistication, it actually the implementation
                 // of the rule that every engine must use its own set of
                 // EntityViews to promote encapsulation and modularity
-                while (entitiesDB.HasAny<EnemyTargetEntityViewStruct>() == false || entitiesDB.HasAny<EnemyAttackEntityView>() == false)
+                while (entitiesDB.HasAny<EnemyTargetEntityViewStruct>(ECSGroups.PlayerGroup) == false ||
+                       entitiesDB.HasAny<EnemyAttackEntityView>(ECSGroups.ActiveEnemiesGroup) == false)
                 {
                     yield return null;
                 }
                 
                 int targetsCount;
-                var targetEntities = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(out targetsCount);
+                var targetEntities =
+                    entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(ECSGroups.PlayerGroup,
+                                                                          out targetsCount);
                 
                 int enemiesCount;
-                var enemiesAttackData = entitiesDB.QueryEntities<EnemyAttackStruct>(out enemiesCount);
-                var enemies = entitiesDB.QueryEntities<EnemyAttackEntityView>(out enemiesCount);
+                var enemiesAttackData = entitiesDB.QueryEntities<EnemyAttackStruct>(ECSGroups.ActiveEnemiesGroup, out enemiesCount);
+                var enemies = entitiesDB.QueryEntities<EnemyAttackEntityView>(ECSGroups.ActiveEnemiesGroup, out enemiesCount);
                 
                 //this is more complex than needed code is just to show how you can use entity structs
                 //this case is banal, entity structs should be use to handle hundreds or thousands
@@ -55,7 +58,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 //cases where entity should be built fast! Theoretically is possible to create
                 //a game using only entity structs, but entity structs make sense ONLY if they
                 //hold value types, so they come with a lot of limitations
-
                 for (int enemyIndex = 0; enemyIndex < enemiesCount; enemyIndex++)
                 {
                     var enemyAttackEntityView = enemies[enemyIndex];

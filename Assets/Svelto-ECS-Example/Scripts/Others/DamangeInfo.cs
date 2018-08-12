@@ -4,12 +4,12 @@ namespace Svelto.ECS.Example.Survive
 {
     public struct DamageInfo
     {
-        public int damagePerShot;
+        public int shotDamageToApply;
         public Vector3 damagePoint { get; }
         
-        public DamageInfo(int damage, Vector3 point) : this()
+        public DamageInfo(int shotDamage, Vector3 point) : this()
         {
-            damagePerShot = damage;
+            shotDamageToApply = shotDamage;
             damagePoint = point;
         }
     }

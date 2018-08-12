@@ -21,7 +21,9 @@ namespace Svelto.ECS.Example.Survive
             // Create an instance of the enemy prefab at the randomly selected spawn point position and rotation.
             var go = _gameobjectFactory.Build(enemySpawnData.enemyPrefab);
             var implementors = go.GetComponentsInChildren<IImplementor>();
-            var initializer = _entityFactory.BuildEntity<EnemyEntityDescriptor>(go.GetInstanceID(), 
+            //using the GameObject GetInstanceID() will help to directly use the result of Unity functions
+            //to index the entity in the Svelto database
+            var initializer = _entityFactory.BuildEntity<EnemyEntityDescriptor>(new EGID(ECSGroups.ActiveEnemiesGroup, go.GetInstanceID()), 
                                                                                 implementors);
             initializer.Init(enemyAttackstruct);
             initializer.Init(new HealthEntityStruct { currentHealth = 100 });

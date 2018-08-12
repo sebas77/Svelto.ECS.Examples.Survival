@@ -30,8 +30,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         IEnumerator PhysicsTick()
         {  
             int targetsCount;
-            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(out targetsCount);
-            var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(ECSGroups.PlayerGroup, out targetsCount);
+            var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.PlayerGroup, out targetsCount);
 
             while (true)
             {   
@@ -89,7 +89,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         public void Step(PlayerDeathCondition condition, EGID id)
         {
             int count;
-            var playerEntityView = entitiesDB.QueryEntities<PlayerEntityViewStruct>(out count)[0]; 
+            var playerEntityView = entitiesDB.QueryEntities<PlayerEntityViewStruct>(ECSGroups.PlayerGroup, out count)[0]; 
             playerEntityView.rigidBodyComponent.isKinematic = true;
         }
 

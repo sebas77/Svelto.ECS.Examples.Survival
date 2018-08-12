@@ -1,5 +1,4 @@
 using System.Collections;
-using Svelto.ECS.Example.Survive.HUD;
 using Svelto.Tasks;
 
 namespace Svelto.ECS.Example.Survive.Characters.Player
@@ -19,14 +18,15 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         
         IEnumerator PhysicsTick()
         {
-            while (entitiesDB.HasAny<PlayerEntityViewStruct>() == false)
+            //wait for the player to spawn
+            while (entitiesDB.HasAny<PlayerEntityViewStruct>(ECSGroups.PlayerGroup) == false)
             {
                 yield return null; //skip a frame
             }
 
             int targetsCount;
-            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(out targetsCount);
-            var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(out targetsCount);
+            var playerEntityViews = entitiesDB.QueryEntities<PlayerEntityViewStruct>(ECSGroups.PlayerGroup, out targetsCount);
+            var playerInputDatas = entitiesDB.QueryEntities<PlayerInputDataStruct>(ECSGroups.PlayerGroup, out targetsCount);
             
             while (true)
             {

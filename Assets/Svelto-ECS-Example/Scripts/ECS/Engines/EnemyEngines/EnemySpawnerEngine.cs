@@ -69,7 +69,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                          //Note, pooling make sense only for Entities that use implementors.
                          //A pure struct based entity doesn't need pooling because it never allocates.
                          //to simplify the logic, we use a recycle group for each entity type
-                         var fromGroupId = (int)ECSGroups.EnemyToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
+                         var fromGroupId = (int)ECSGroups.EnemiesToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
                          if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                          {
                              Utility.Console.Log("Recycle one ".FastConcat(spawnData.enemySpawnData.targetType));
@@ -93,7 +93,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         void ReuseEnemy(int fromGroupId, ref JSonEnemySpawnData spawnData)
         {
             //take the first entity (with all its entity views and implementors) from the group
-            var egid = _entityFunctions.SwapFirstEntityGroup<EnemyEntityDescriptor>(fromGroupId);
+            var egid = _entityFunctions.SwapFirstEntityGroup<EnemyEntityDescriptor>(fromGroupId, ECSGroups.ActiveEnemiesGroup);
             
             //reset some components
             entitiesDB.ExecuteOnEntity(egid,

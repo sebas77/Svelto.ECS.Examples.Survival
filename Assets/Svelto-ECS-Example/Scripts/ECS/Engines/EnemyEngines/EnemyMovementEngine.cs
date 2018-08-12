@@ -17,22 +17,16 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             {
                 int count;
                 //query all the enemies from the standard group (no disabled nor respawning)
-                var enemyTargetEntityViews = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(out count);
+                var enemyTargetEntityViews = entitiesDB.QueryEntities<EnemyTargetEntityViewStruct>(ECSGroups.ActiveEnemiesGroup, out count);
 
                 if (count > 0)
                 {
-                    var targetEntityView = enemyTargetEntityViews[0];
-
-                    var enemies = entitiesDB.QueryEntities<EnemyEntityViewStruct>(out count);
+                    var enemies = entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.ActiveEnemiesGroup, out count);
 
                     for (var i = 0; i < count; i++)
                     {
-                        if ( enemies[i].movementComponent.navMeshEnabled == false)
-                            Utility.Console.Log("why "+enemies[i].ID.entityID);           
-                        {
-                            enemies[i].movementComponent.navMeshDestination =
-                                targetEntityView.targetPositionComponent.position;
-                        }
+                        enemies[i].movementComponent.navMeshDestination =
+                            enemyTargetEntityViews[0].targetPositionComponent.position;
                     }
                 }
 

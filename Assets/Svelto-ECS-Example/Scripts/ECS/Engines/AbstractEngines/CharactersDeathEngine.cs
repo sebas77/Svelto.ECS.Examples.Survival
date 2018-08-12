@@ -2,7 +2,7 @@
 
 namespace Svelto.ECS.Example.Survive.Characters
 {
-    public class DeathEngine:IQueryingEntitiesEngine
+    public class CharactersDeathEngine:IQueryingEntitiesEngine
     {
         public void Ready()
         {
@@ -13,14 +13,11 @@ namespace Svelto.ECS.Example.Survive.Characters
         {
             while (true)
             {
-                int count;
-                var healths  = entitiesDB.QueryEntities<HealthEntityStruct>(out count);
-
-                for (int i = 0; i < count; i++)
-                {
-                    if (healths[i].currentHealth <= 0)
-                        healths[i].dead = true;
-                }
+                entitiesDB.ExecuteOnAllEntities((ref HealthEntityStruct health, IEntitiesDB entitiesdb) =>
+                                   {
+                                       if (health.currentHealth <= 0)
+                                           health.dead = true;
+                                   });
 
                 yield return null;
             }

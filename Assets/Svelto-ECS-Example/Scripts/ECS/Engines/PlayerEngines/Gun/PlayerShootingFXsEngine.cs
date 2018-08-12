@@ -33,7 +33,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         void Shoot(int ID, bool targetHasBeenHit)
         {
             uint index;
-            var structs = entitiesDB.QueryEntitiesAndIndex<GunEntityViewStruct>(new EGID(ID), out index);
+            var structs = entitiesDB.QueryEntitiesAndIndex<GunEntityViewStruct>(new EGID(ECSGroups.PlayerGroup, ID), out index);
 
             var gunFXComponent = structs[index].gunFXComponent;
 
@@ -81,7 +81,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         void DisableEffects ()
         {
             int targetsCount;
-            var gunEntityViews = entitiesDB.QueryEntities<GunEntityViewStruct>(out targetsCount);
+            var gunEntityViews = entitiesDB.QueryEntities<GunEntityViewStruct>(ECSGroups.PlayerGroup, out targetsCount);
 
             var fxComponent = gunEntityViews[0].gunFXComponent;
             // Disable the line renderer and the light.
