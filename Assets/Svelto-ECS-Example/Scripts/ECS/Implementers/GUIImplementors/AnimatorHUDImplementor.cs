@@ -2,7 +2,7 @@
 
 namespace Svelto.ECS.Example.Survive.Implementors.HUD
 {
-    public class AnimatorHUDImplementor: MonoBehaviour, IImplementor, IAnimationComponent
+    public class AnimatorHUDImplementor : MonoBehaviour, IImplementor, IAnimationComponent
     {
         Animator        animator;
 
