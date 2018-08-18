@@ -8,7 +8,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
 	{
 		static readonly IEntityBuilder[] _entitiesToBuild =
 		{
-			new EntityBuilder<PlayerEntityStruct>(),
 			new EntityBuilder<PlayerEntityViewStruct>(),
 			new EntityBuilder<DamageableEntityStruct>(),
 			new EntityBuilder<DamageSoundEntityView>(),
