@@ -2,11 +2,6 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public interface IEnemySinkComponent : IComponent
-    {
-        float sinkAnimSpeed { get; }
-    }
-
     public interface IEnemyMovementComponent: IComponent
     {
         bool navMeshEnabled {  set; get; }

@@ -36,7 +36,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
                 bool walking = input.x != 0f || input.z != 0f;
 
                 // Tell the animator whether or not the player is walking.
-                playerEntityViews[0].animationComponent.setState("IsWalking", walking);
+                playerEntityViews[0].animationComponent.animationState = new AnimationState("IsWalking", walking);
 
                 yield return null;
             }

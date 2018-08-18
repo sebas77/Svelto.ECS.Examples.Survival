@@ -17,7 +17,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         public void Ready()
         {
-            IntervaledTick().Run();            
+            IntervaledTick().Run();
         }
 
         IEnumerator IntervaledTick()
@@ -38,7 +38,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
             for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
                 spawningTimes[i] = enemiestoSpawn[i].enemySpawnData.spawnTime;
-
+            
             while (true)
             {
 //Svelto.Tasks can yield Unity YieldInstructions but this comes with a performance hit
@@ -72,7 +72,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                          var fromGroupId = (int)ECSGroups.EnemiesToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
                          if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                          {
-                             ReuseEnemy(fromGroupId, ref spawnData);
+                             ReuseEnemy(fromGroupId, spawnData);
                          }
                          else
                          {
@@ -88,34 +88,40 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             }
         }
 
-        void ReuseEnemy(int fromGroupId, ref JSonEnemySpawnData spawnData)
+        /// <summary>
+        /// Reset all the component values when an Enemy is ready to be recycled.
+        /// it's important to not forget to reset all the states.
+        /// note that the only reason why we pool it the entities here is to reuse the implementors,
+        /// pure entity structs entities do not need pool and can be just recreated
+        /// </summary>
+        /// <param name="spawnData"></param>
+        /// <returns></returns>
+
+        void ReuseEnemy(int fromGroupId, JSonEnemySpawnData spawnData)
         {
-            //take the first entity (with all its entity views and implementors) from the group
-            var egid = _entityFunctions.SwapFirstEntityGroup<EnemyEntityDescriptor>(fromGroupId, (int)ECSGroups.ActiveEnemies);
-            
-            //reset some components after the recycle
-            entitiesDB.ExecuteOnEntity(egid,
-                                         (ref HealthEntityStruct healthStruct) => { 
-                                             healthStruct.currentHealth = 100;
-                                             healthStruct.dead = false;
-                                         });
-            entitiesDB.ExecuteOnEntity(egid, ref spawnData,
-                                         (ref EnemyEntityViewStruct    entityView,
-                                          ref JSonEnemySpawnData spawnDataInfo) =>
-                                         {
-                                             int spawnPointIndex = UnityEngine
-                                                    .Random.Range(0, spawnDataInfo.enemySpawnData.spawnPoints.Length);
+            int count;
+            var healths = entitiesDB.QueryEntities<HealthEntityStruct>(fromGroupId, out count);
+           
+            if (count > 0)
+            {
+                var enemystructs = entitiesDB.QueryEntities<EnemyEntityViewStruct>(fromGroupId, out count);
+                healths[0].currentHealth = 100;
+                healths[0].dead          = false;
 
-                                             var spawnInfo = spawnDataInfo.enemySpawnData.spawnPoints[spawnPointIndex];
+                int spawnPointIndex = UnityEngine
+                                     .Random.Range(0, spawnData.enemySpawnData.spawnPoints.Length);
 
-                                             entityView.transformComponent.position = spawnInfo.position;
-                                             entityView.transformComponent.rotation = spawnInfo.rotation;
+                var spawnInfo = spawnData.enemySpawnData.spawnPoints[spawnPointIndex];
 
-                                             entityView.animationComponent.reset();
-                                             entityView.movementComponent.navMeshEnabled = true;
-                                             entityView.movementComponent.setCapsuleAsTrigger = false;
-                                             entityView.layerComponent.layer = GAME_LAYERS.ENEMY_LAYER;
-                                         });
+                enemystructs[0].transformComponent.position = spawnInfo.position;
+                enemystructs[0].transformComponent.rotation = spawnInfo.rotation;
+                enemystructs[0].movementComponent.navMeshEnabled      = true;
+                enemystructs[0].movementComponent.setCapsuleAsTrigger = false;
+                enemystructs[0].layerComponent.layer                  = GAME_LAYERS.ENEMY_LAYER;
+                enemystructs[0].animationComponent.reset = true;
+                
+                _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(enemystructs[0].ID, (int)ECSGroups.ActiveEnemies);
+            }
         }
 
         static JSonEnemySpawnData[] ReadEnemySpawningDataServiceRequest()

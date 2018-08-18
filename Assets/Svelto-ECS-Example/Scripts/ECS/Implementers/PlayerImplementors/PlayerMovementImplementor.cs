@@ -5,42 +5,25 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
 {
     public class PlayerMovementImplementor : MonoBehaviour, IImplementor,
         IRigidBodyComponent,
-        IAnimationComponent,
         ICameraTargetComponent,
         ISpeedComponent,
         ITransformComponent
     {
         public float speed = 6f;            // The speed that the player will move at.
 
-        Animator anim;                      // Reference to the animator component.
-        Rigidbody playerRigidbody;          // Reference to the player's rigidbody.
-        Transform playerTransform;
-
-        public bool isKinematic { set { playerRigidbody.isKinematic = value; } }
-        public Quaternion rotation { set {playerRigidbody.MoveRotation(value);} }
-
-        public float       movementSpeed { get { return speed; } }
+        public bool isKinematic { set { _playerRigidbody.isKinematic = value; } }
+        public Quaternion rotation { set {_playerRigidbody.MoveRotation(value);} }
+        public float movementSpeed { get { return speed; } }
         
-        public void setState(string name, bool value)
-        {
-            anim.SetBool(name, value);
-        }
-
-        public void reset()
-        {
-            anim.Rebind();
-        }
-
-        public string playAnimation { set {anim.SetTrigger(value);} }
-
         void Awake ()
         {
-            // Set up references.
-            anim = GetComponent<Animator>();
-            playerRigidbody = GetComponent<Rigidbody>();
-            playerTransform = transform;
+            _playerRigidbody = GetComponent<Rigidbody>();
+            _playerTransform = transform;
         }
 
-        public Vector3 position { get { return playerTransform.position; }  set {playerRigidbody.MovePosition(value);} }
+        public Vector3 position { get { return _playerTransform.position; }  set {_playerRigidbody.MovePosition(value);} }
+        
+        Rigidbody _playerRigidbody; // Reference to the player's rigidbody.
+        Transform _playerTransform;
     }
 }

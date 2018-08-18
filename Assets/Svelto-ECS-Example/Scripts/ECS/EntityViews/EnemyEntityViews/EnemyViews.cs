@@ -8,7 +8,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         public IAnimationComponent        animationComponent;
         public ITransformComponent        transformComponent;
         public IPositionComponent         positionComponent;
-        public IEnemySinkComponent        sinkSpeedComponent;
         public ILayerComponent            layerComponent;
         
         public EGID ID { get; set; }

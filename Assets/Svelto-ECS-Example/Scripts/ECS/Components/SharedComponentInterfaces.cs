@@ -2,19 +2,11 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive
 {
-    //in order to avoid referencing directly the
-    //unity Animation class, we explicitly create
-    //setters that wrap the Animation class functions
-    //Functions can be created in components
-    //as long as they are used as setter and getter
-    //of pure data (without logic)
-    //this is especially true if you need to pass
-    //valuetype by reference
     public interface IAnimationComponent: IComponent
     {
-        void setState(string name, bool value);
-        void reset();
-        string playAnimation { set; }
+        string playAnimation { set; get; }
+        AnimationState animationState { set; }
+        bool reset { set; }
     }
 
     public interface IPositionComponent: IComponent

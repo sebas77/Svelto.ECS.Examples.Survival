@@ -192,7 +192,7 @@ namespace Svelto.ECS.Example.Survive
                         { 
                             //TIP: use GO To Type Declaration to go directly to the Class code of the 
                             //engine instance
-                            { EnemyDeathCondition.Death, scoreEngine, enemyAnimationEngine }
+                            { EnemyDeathCondition.Death, scoreEngine }
                         }  
                     },
                     { //second step

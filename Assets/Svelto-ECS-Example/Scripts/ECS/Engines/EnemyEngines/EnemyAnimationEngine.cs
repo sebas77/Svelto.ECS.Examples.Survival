@@ -6,7 +6,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
     public class EnemyAnimationEngine : IQueryingEntitiesEngine
                                       , IStep<PlayerDeathCondition>
-                                      , IStep<EnemyDeathCondition>
     {
         public IEntitiesDB entitiesDB { set; private get; }
 
@@ -19,13 +18,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         public void Ready()
         {
-            CheckForDamage().Run();
-        }
-
-        public void Step(EnemyDeathCondition condition, EGID id)
-        {
-            uint index;
-            Sink(entitiesDB.QueryEntitiesAndIndex<EnemyEntityViewStruct>(id, out index)[index]).Run();
+            AnimateOnDamage().Run();
+            AnimateOnDeath().Run();
         }
 
         public void Step(PlayerDeathCondition condition, EGID id)
@@ -38,7 +32,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 entity[i].animationComponent.playAnimation = "PlayerDead";
         }
         
-        IEnumerator CheckForDamage()
+        IEnumerator AnimateOnDamage()
         {
             while (true)
             {
@@ -60,26 +54,47 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             }
         }
         
-        IEnumerator Sink(EnemyEntityViewStruct entity)
+        IEnumerator AnimateOnDeath()
         {
-            entity.animationComponent.playAnimation = "Dead";
-            
-            DateTime afterTwoSec = DateTime.UtcNow.AddSeconds(2);
-
-            while (DateTime.UtcNow < afterTwoSec)
+            while (true)
             {
-                entity.transformComponent.position = 
-                    entity.positionComponent.position + -UnityEngine.Vector3.up * entity.sinkSpeedComponent.sinkAnimSpeed * _time.deltaTime;
+                int numberOfEnemies;
+                var enemyEntityViewsStructs =
+                    entitiesDB.QueryEntities<EnemyEntityViewStruct>(ECSGroups.DeadEnemiesGroups, out numberOfEnemies);
+                var enemyEntitySinkStructs =
+                    entitiesDB.QueryEntities<EnemySinkStruct>(ECSGroups.DeadEnemiesGroups, out numberOfEnemies);
+            
+                for (int i = 0; i < numberOfEnemies; i++)
+                {
+                    var animationComponent = enemyEntityViewsStructs[i].animationComponent;
+                    if (animationComponent.playAnimation != "Dead")
+                    {
+                        animationComponent.playAnimation = "Dead";
+                        enemyEntitySinkStructs[i].animationTime = DateTime.UtcNow.AddSeconds(2);
+                    }
+                    else
+                    {
+                        if (DateTime.UtcNow < enemyEntitySinkStructs[i].animationTime)
+                        {
+                            enemyEntityViewsStructs[i].transformComponent.position = 
+                                enemyEntityViewsStructs[i].positionComponent.position + -UnityEngine.Vector3.up * enemyEntitySinkStructs[i].sinkAnimSpeed * _time.deltaTime;
+                        }
+                        else
+                        {
+                            var enemyStructs =
+                                entitiesDB.QueryEntities<EnemyEntityStruct>(
+                                    ECSGroups.DeadEnemiesGroups, out numberOfEnemies);
+                            _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(
+                                enemyEntityViewsStructs[i].ID,
+                                (int) ECSGroups.EnemiesToRecycleGroups + (int) enemyStructs[i].enemyType);
+
+                            _enemyDeadSequencer.Next(this, EnemyDeathCondition.Death, enemyEntityViewsStructs[i].ID);
+                        }
+                    }
+                }
 
                 yield return null;
             }
-
-            uint index;
-            PlayerTargetType enemyType = entitiesDB.QueryEntitiesAndIndex<EnemyEntityStruct>(entity.ID, out index)[index].enemyType;
-            
-            _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(entity.ID, (int)ECSGroups.EnemiesToRecycleGroups + (int)enemyType);
-
-            _enemyDeadSequencer.Next(this, EnemyDeathCondition.Death, entity.ID);
         }
 
         readonly ITime               _time;
