@@ -177,7 +177,10 @@ namespace Svelto.ECS.Example.Survive
                                          //all these engines in the list will be called in order (which in this 
                                          //case was not important at all, so stretched!!)
                         { 
-                            { PlayerDeathCondition.Death, playerMovementEngine, playerAnimationEngine, enemyAnimationEngine, damageSoundEngine, hudEngine} 
+                            {
+                                PlayerDeathCondition.Death, playerMovementEngine, playerAnimationEngine,
+                                enemyAnimationEngine, damageSoundEngine, hudEngine
+                            } 
                         }  
                     }  
                 }
@@ -231,10 +234,9 @@ namespace Svelto.ECS.Example.Survive
 
         
         /// <summary>
-        /// While until recently I thought that creating entities in the context
-        /// would be all right, I am coming to realise that engines
-        /// should always handle the creation of entities.
-        /// I will refactor this when the right time comes.
+        /// While until recently I thought that creating entities in the context would be all right, I am coming to
+        /// realise that engines should always handle the creation of entities. I will refactor this when the right
+        /// time comes.
         /// </summary>
         void SetupEntities()
         {
@@ -253,22 +255,18 @@ namespace Svelto.ECS.Example.Survive
             
             var player = prefabsDictionary.Istantiate("Player");
 
-            //Building entities explicitly should be always preferred
-            //and MUST be used if an implementor doesn't need to be
-            //a Monobehaviour. You should strive to create implementors
-            //not as monobehaviours. Implementors as monobehaviours 
-            //are meant only to function as bridge between Svelto.ECS
-            //and Unity3D. Using implementor as monobehaviour
-            //just to read serialized data from the editor, is also
-            //a bad practice, use a Json file instead.
-            //The Player Entity is made of EntityViewStruct+Implementors as monobehaviours and 
-            //EntityStructs. The PlayerInputDataStruct doesn't need to be initialized (yay!!)
-            //but the HealthEntityStruct does. Here I show the official method to do it
+            //Building entities explicitly should be always preferred and MUST be used if an implementor doesn't need to
+            //be a Monobehaviour. You should strive to create implementors not as monobehaviours. Implementors as
+            //monobehaviours are meant only to function as bridge between Svelto.ECS and Unity3D. Using implementor as
+            //monobehaviour just to read serialized data from the editor, is also a bad practice, use a Json file
+            //instead. The Player Entity is made of EntityViewStruct+Implementors as monobehaviours and EntityStructs.
+            //The PlayerInputDataStruct doesn't need to be initialized (yay!!) but the HealthEntityStruct does.
+            //Here I show the official method to do it
             var initializer = _entityFactory.BuildEntity<PlayerEntityDescriptor>(player.GetInstanceID(), ECSGroups.Player, player.GetComponents<IImplementor>());
             initializer.Init(new HealthEntityStruct {currentHealth = 100});
 
-            //unluckily the gun is parented in the original prefab, so there is no easy way to create it
-            //explicitly, I have to create if from the existing gameobject.
+            //unluckily the gun is parented in the original prefab, so there is no easy way to create it explicitly, I
+            //have to create if from the existing gameobject.
             var gun = player.GetComponentInChildren<PlayerShootingImplementor>();
             
             _entityFactory.BuildEntity<PlayerGunEntityDescriptor>(gun.gameObject.GetInstanceID(), ECSGroups.Player, new[] {gun});
