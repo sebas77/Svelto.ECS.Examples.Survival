@@ -26,7 +26,7 @@ namespace Svelto.ECS.Example.Survive
     ///it's helpful to use in an environment where a Context is
     ///not formally present, like in Unity. 
     /// </summary>
-    public class Main : IUnityCompositionRoot
+    public class Main : ICompositionRoot
     {
         public Main()
         {
@@ -244,9 +244,9 @@ namespace Svelto.ECS.Example.Survive
             BuildCameraEntity();
         }
         
-        public void OnContextCreated(UnityContext contextHolder)
+        public void OnContextCreated<T>(T contextHolder)
         {
-            BuildEntitiesFromScene(contextHolder);
+            BuildEntitiesFromScene(contextHolder as UnityContext);
         }
 
         void BuildPlayerEntities()

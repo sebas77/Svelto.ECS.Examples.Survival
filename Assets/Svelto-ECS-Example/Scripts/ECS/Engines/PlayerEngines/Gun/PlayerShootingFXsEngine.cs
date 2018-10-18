@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
+using System.Diagnostics;
 using Svelto.Tasks;
+using Svelto.Tasks.Enumerators;
 
 namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
 {
@@ -17,14 +19,15 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
 
         /// <summary>
         /// Using the Add/Remove method to hold a local reference of an entity
-        /// is not necessary. Do it only if you find covenient, otherwise
+        /// is not necessary. Do it only if you find convenient, otherwise
         /// querying is always cleaner.
         /// </summary>
         /// <param name="playerGunEntityView"></param>
         protected override void Add(ref GunEntityViewStruct playerGunEntityView)
         {
             playerGunEntityView.gunHitTargetComponent.targetHit.NotifyOnValueSet(PlayerHasShot);
-            _waitForSeconds = new WaitForSeconds(playerGunEntityView.gunComponent.timeBetweenBullets * playerGunEntityView.gunFXComponent.effectsDisplayTime);
+            
+            _waitForSeconds = new WaitForSecondsEnumerator(playerGunEntityView.gunComponent.timeBetweenBullets * playerGunEntityView.gunFXComponent.effectsDisplayTime);
         }
 
         protected override void Remove(ref GunEntityViewStruct playerGunEntityView)
@@ -71,9 +74,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         }
 
         IEnumerator DisableFXAfterTime()
-        {           
+        {   
             yield return _waitForSeconds;
-
             // ... disable the effects.
             DisableEffects();
         }
@@ -90,7 +92,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
             fxComponent.play = false;
         }
 
-        ITaskRoutine   _taskRoutine;
-        WaitForSeconds _waitForSeconds;
+        ITaskRoutine             _taskRoutine;
+        WaitForSecondsEnumerator _waitForSeconds;
     }
 }
