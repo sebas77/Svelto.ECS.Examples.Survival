@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Svelto.ECS.Example.Survive.Characters.Enemies;
 using Svelto.ECS.Example.Survive.Characters.Player;
 using Svelto.ECS.Example.Survive.Characters.Player.Gun;
@@ -102,7 +104,8 @@ namespace Svelto.ECS.Example.Survive
             //the UnitySumbmissionEntityViewScheduler is the scheduler that is used by the EnginesRoot to know
             //when to inject the EntityViews. You shouldn't use a custom one unless you know what you 
             //are doing or you are not working with Unity.
-            _enginesRoot = new EnginesRoot(new UnityEntitySubmissionScheduler());
+            _unityEntitySubmissionScheduler = new UnityEntitySubmissionScheduler();
+            _enginesRoot = new EnginesRoot(_unityEntitySubmissionScheduler);
             //Engines root can never be held by anything else than the context itself to avoid leaks
             //That's why the EntityFactory and EntityFunctions are generated.
             //The EntityFactory can be injected inside factories (or engine acting as factories)
@@ -145,9 +148,9 @@ namespace Svelto.ECS.Example.Survive
             //coupled with hard dependencies references (read my articles to understand
             //how dependency injection works and why solving dependencies
             //with static classes and singletons is a terrible mistake)
-            GameObjectFactory factory = new GameObjectFactory();
+            GameObjectFactory gameObjectFactory = new GameObjectFactory();
             //Factory is one of the few patterns that work very well with ECS. Its use is highly encouraged
-            IEnemyFactory enemyFactory = new EnemyFactory(factory, _entityFactory);
+            IEnemyFactory enemyFactory = new EnemyFactory(gameObjectFactory, _entityFactory);
             var enemySpawnerEngine = new EnemySpawnerEngine(enemyFactory, entityFunctions);
             var enemyDeathEngine = new EnemyDeathEngine(entityFunctions, enemyDeathSequence);
             
@@ -329,7 +332,8 @@ namespace Svelto.ECS.Example.Survive
 
         EnginesRoot    _enginesRoot;
         IEntityFactory _entityFactory;
- }
+        UnityEntitySubmissionScheduler _unityEntitySubmissionScheduler;
+    }
 
     public class PlayerDeathSequencer : Sequencer
     {}

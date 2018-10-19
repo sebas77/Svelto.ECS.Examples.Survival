@@ -59,7 +59,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                          //engines, this would have been a good example where EntityDescriptorHolder
                          //could have been used to exploit the the kind of polymorphism explained
                          //in my articles.
-                         EnemyAttackStruct enemyAttackstruct = new EnemyAttackStruct
+                         EnemyAttackStruct enemyAttackStruct = new EnemyAttackStruct
                          {
                              attackDamage      = enemyAttackData[i].enemyAttackData.attackDamage,
                              timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks
@@ -69,14 +69,15 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                          //Note, pooling make sense only for Entities that use implementors.
                          //A pure struct based entity doesn't need pooling because it never allocates.
                          //to simplify the logic, we use a recycle group for each entity type
-                         var fromGroupId = (int)ECSGroups.EnemiesToRecycleGroups + (int)spawnData.enemySpawnData.targetType;
+                         var fromGroupId = (int)ECSGroups.EnemiesToRecycleGroups + 
+                                           (int)spawnData.enemySpawnData.targetType;
                          if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
                          {
                              ReuseEnemy(fromGroupId, spawnData);
                          }
                          else
                          {
-                             _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackstruct);
+                             _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackStruct);
                          }
 
                          spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
@@ -108,13 +109,9 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 healths[0].currentHealth = 100;
                 healths[0].dead          = false;
 
-                int spawnPointIndex = UnityEngine
-                                     .Random.Range(0, spawnData.enemySpawnData.spawnPoints.Length);
+                var spawnInfo = spawnData.enemySpawnData.spawnPoint;
 
-                var spawnInfo = spawnData.enemySpawnData.spawnPoints[spawnPointIndex];
-
-                enemystructs[0].transformComponent.position = spawnInfo.position;
-                enemystructs[0].transformComponent.rotation = spawnInfo.rotation;
+                enemystructs[0].transformComponent.position = spawnInfo;
                 enemystructs[0].movementComponent.navMeshEnabled      = true;
                 enemystructs[0].movementComponent.setCapsuleAsTrigger = false;
                 enemystructs[0].layerComponent.layer                  = GAME_LAYERS.ENEMY_LAYER;

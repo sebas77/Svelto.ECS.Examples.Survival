@@ -41,3 +41,5 @@ UWP
 .idea
 Client/
 ClientIL2CPP/
+.vs/
+Logs/Packages-Update.log

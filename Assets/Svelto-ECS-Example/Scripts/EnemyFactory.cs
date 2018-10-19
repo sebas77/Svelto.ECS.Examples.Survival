@@ -17,7 +17,6 @@ namespace Svelto.ECS.Example.Survive
         public void Build(EnemySpawnData enemySpawnData, ref EnemyAttackStruct enemyAttackstruct)
         {
             // Find a random index between zero and one less than the number of spawn points.
-            int spawnPointIndex = UnityEngine.Random.Range(0, enemySpawnData.spawnPoints.Length);
             // Create an instance of the enemy prefab at the randomly selected spawn point position and rotation.
             var go = _gameobjectFactory.Build(enemySpawnData.enemyPrefab);
             var implementors = go.GetComponentsInChildren<IImplementor>();
@@ -32,10 +31,9 @@ namespace Svelto.ECS.Example.Survive
             initializer.Init(new EnemySinkStruct { sinkAnimSpeed = 2.5f}); //being lazy, should come from the json too
 
             var transform = go.transform;
-            var spawnInfo = enemySpawnData.spawnPoints[spawnPointIndex];
-                            
-            transform.position = spawnInfo.position;
-            transform.rotation = spawnInfo.rotation;
+            var spawnInfo = enemySpawnData.spawnPoint;
+                           
+            transform.position = spawnInfo;
         }
 
         readonly IGameObjectFactory _gameobjectFactory;
