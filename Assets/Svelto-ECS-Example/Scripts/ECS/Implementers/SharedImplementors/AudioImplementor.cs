@@ -11,7 +11,7 @@ namespace Svelto.ECS.Example.Survive.Implementors
 
         void Awake ()
         {// Setting up the references.
-            _audioSource = GetComponent <AudioSource> ();
+            _audioSource = GetComponent <AudioSource>();
         }
         
         public AudioType playOneShot

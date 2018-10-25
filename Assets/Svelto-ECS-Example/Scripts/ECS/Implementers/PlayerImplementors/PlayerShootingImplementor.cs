@@ -41,10 +41,10 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
             _transform = transform;
 
             // Set up the references.
-            _gunParticles = GetComponent<ParticleSystem> ();
-            _gunLine      = GetComponent<LineRenderer> ();
-            _gunAudio     = GetComponent<AudioSource> ();
-            _gunLight     = GetComponent<Light> ();
+            _gunParticles = GetComponent<ParticleSystem>();
+            _gunLine      = GetComponent<LineRenderer>();
+            _gunAudio     = GetComponent<AudioSource>();
+            _gunLight     = GetComponent<Light>();
 
             _targetHit = new DispatchOnSet<bool>(gameObject.GetInstanceID());
         }

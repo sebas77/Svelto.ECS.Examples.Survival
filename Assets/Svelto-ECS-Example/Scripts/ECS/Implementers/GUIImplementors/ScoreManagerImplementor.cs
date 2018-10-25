@@ -11,7 +11,7 @@ namespace Svelto.ECS.Example.Survive.Implementors.HUD
         void Awake ()
         {
             // Set up the reference.
-            _text = GetComponent <Text> ();
+            _text = GetComponent <Text>();
 
             // Reset the score.
             _score = 0;

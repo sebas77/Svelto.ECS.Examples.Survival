@@ -1,12 +1,12 @@
 namespace Svelto.ECS.Example.Survive.HUD
 {
-    public class ScoreEngine : IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
+    public class ScoreEngine : IQueryingEntitiesEngine, IStep
     {
         public IEntitiesDB entitiesDB { get; set; }
         public void Ready()
         {}
         
-        public void Step(EnemyDeathCondition condition, EGID id)
+        public void Step(EGID id)
         {
             int hudEntityViewsCount;
             var hudEntityViews = entitiesDB.QueryEntities<HUDEntityView>(ECSGroups.ExtraStuff, out hudEntityViewsCount);

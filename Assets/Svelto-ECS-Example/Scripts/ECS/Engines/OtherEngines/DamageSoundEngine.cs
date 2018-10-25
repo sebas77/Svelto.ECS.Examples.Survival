@@ -3,7 +3,7 @@ using Svelto.ECS.Example.Survive.Characters.Player;
 
 namespace Svelto.ECS.Example.Survive.Characters.Sounds
 {
-    public class DamageSoundEngine : IQueryingEntitiesEngine, IStep<PlayerDeathCondition>, IStep<EnemyDeathCondition>
+    public class DamageSoundEngine : IQueryingEntitiesEngine, IStep<PlayerDeathCondition>, IStep
     {
         public IEntitiesDB entitiesDB { set; private get; }
 
@@ -46,7 +46,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Sounds
             TriggerDeathSound(id);
         }
 
-        public void Step(EnemyDeathCondition condition, EGID id)
+        public void Step(EGID id)
         {
             TriggerDeathSound(id);
         }

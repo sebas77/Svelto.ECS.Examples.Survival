@@ -40,7 +40,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
                     SetParametersForDeath(ref enemyEntitiesViews[index]);
                     
-                    _enemyDeadSequencer.Next(this, EnemyDeathCondition.Death, enemyEntitiesViews[index].ID);
+                    _enemyDeadSequencer.Next(this, enemyEntitiesViews[index].ID);
 
                     _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(enemyEntitiesViews[index].ID, ECSGroups.DeadEnemiesGroups);
                 }

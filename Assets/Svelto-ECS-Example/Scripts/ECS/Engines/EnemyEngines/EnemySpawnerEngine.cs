@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
-    public class EnemySpawnerEngine : IQueryingEntitiesEngine, IStep<EnemyDeathCondition>
+    public class EnemySpawnerEngine : IQueryingEntitiesEngine, IStep
     {
         public EnemySpawnerEngine(IEnemyFactory enemyFactory, IEntityFunctions entityFunctions)
         {
@@ -71,14 +71,11 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                          //to simplify the logic, we use a recycle group for each entity type
                          var fromGroupId = (int)ECSGroups.EnemiesToRecycleGroups + 
                                            (int)spawnData.enemySpawnData.targetType;
+                         
                          if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
-                         {
                              ReuseEnemy(fromGroupId, spawnData);
-                         }
                          else
-                         {
                              _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackStruct);
-                         }
 
                          spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
                          _numberOfEnemyToSpawn--;
@@ -117,7 +114,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                 enemystructs[0].layerComponent.layer                  = GAME_LAYERS.ENEMY_LAYER;
                 enemystructs[0].animationComponent.reset = true;
                 
-                _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(enemystructs[0].ID, (int)ECSGroups.ActiveEnemies);
+                _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(enemystructs[0].ID, ECSGroups.ActiveEnemies);
             }
         }
 
@@ -139,7 +136,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
             return enemiestoSpawn;
         }
         
-        public void Step(EnemyDeathCondition condition, EGID id)
+        public void Step(EGID id)
         {
             _numberOfEnemyToSpawn++;
         }

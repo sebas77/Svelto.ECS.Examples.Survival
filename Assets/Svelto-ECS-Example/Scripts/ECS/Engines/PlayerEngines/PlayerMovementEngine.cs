@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace Svelto.ECS.Example.Survive.Characters.Player
 {
-    public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityViewStruct>, IQueryingEntitiesEngine, IStep<PlayerDeathCondition>
+    public class PlayerMovementEngine : SingleEntityEngine<PlayerEntityViewStruct>, IQueryingEntitiesEngine,
+                                        IStep<PlayerDeathCondition>
     {
-        public IEntitiesDB entitiesDB { get; set; }
+        public IEntitiesDB entitiesDB { private get; set; }
+        
         public void Ready()
         {}
         

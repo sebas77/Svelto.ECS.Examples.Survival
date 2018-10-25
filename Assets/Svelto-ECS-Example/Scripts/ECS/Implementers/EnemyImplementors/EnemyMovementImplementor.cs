@@ -19,7 +19,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
         void Awake ()
         {
-            _nav = GetComponent <NavMeshAgent> ();
+            _nav = GetComponent <NavMeshAgent>();
             _capsuleCollider = GetComponent<CapsuleCollider>();
             _transform = transform;
         }

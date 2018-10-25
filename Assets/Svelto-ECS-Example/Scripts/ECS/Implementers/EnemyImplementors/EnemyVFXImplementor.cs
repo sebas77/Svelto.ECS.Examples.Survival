@@ -7,7 +7,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
     {
         void Awake ()
         {
-            particle = GetComponentInChildren <ParticleSystem> ();
+            particle = GetComponentInChildren <ParticleSystem>();
         }
 
         /// <summary>

@@ -86,9 +86,9 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                                     ECSGroups.DeadEnemiesGroups, out numberOfEnemies);
                             _entityFunctions.SwapEntityGroup<EnemyEntityDescriptor>(
                                 enemyEntityViewsStructs[i].ID,
-                                (int) ECSGroups.EnemiesToRecycleGroups + (int) enemyStructs[i].enemyType);
+                                ECSGroups.EnemiesToRecycleGroups + (int) enemyStructs[i].enemyType);
 
-                            _enemyDeadSequencer.Next(this, EnemyDeathCondition.Death, enemyEntityViewsStructs[i].ID);
+                            _enemyDeadSequencer.Next(this, enemyEntityViewsStructs[i].ID);
                         }
                     }
                 }
