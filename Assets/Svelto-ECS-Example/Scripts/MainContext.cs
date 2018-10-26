@@ -181,11 +181,11 @@ namespace Svelto.ECS.Example.Survive
                               to = new To<PlayerDeathCondition>
                                   //all these engines in the list will be called in order (which in this 
                                   //case was not important at all, so stretched!!)
-                                  (
-                                   PlayerDeathCondition.Death, playerMovementEngine,
+                                  {
+                                      {PlayerDeathCondition.Death, playerMovementEngine,
                                    playerAnimationEngine,
-                                   enemyAnimationEngine, damageSoundEngine, hudEngine
-                                  )
+                                   enemyAnimationEngine, damageSoundEngine, hudEngine}
+                                  }
                           }
                          )
                     );
