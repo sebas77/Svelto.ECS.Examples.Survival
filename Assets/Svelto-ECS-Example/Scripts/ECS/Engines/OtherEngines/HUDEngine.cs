@@ -1,4 +1,3 @@
-using System;
 using Svelto.Tasks.Enumerators;
 using System.Collections;
 using Svelto.ECS.Example.Survive.Characters;
@@ -8,16 +7,6 @@ using UnityEngine.SceneManagement;
 
 namespace Svelto.ECS.Example.Survive.HUD
 {
-    /// <summary>
-    /// 
-    /// You may wonder why I use QueryEntityViews instead to hold a reference
-    /// of the only HudEntityView existing in the game or just using QueryEntityView.
-    /// This is for learning purposes. An engine shouldn't really have the concept
-    /// of how many entities are created. Using the QueryEntityView could be awkward
-    /// because the entity ID is needed.
-    /// Therefore using the Add/Remove callbacks is not wrong, but I try to not
-    /// promote their use. 
-    /// </summary>
     public class HUDEngine : IQueryingEntitiesEngine, IStep<PlayerDeathCondition>
     {
         public IEntitiesDB entitiesDB { set; private get; }
@@ -54,8 +43,8 @@ namespace Svelto.ECS.Example.Survive.HUD
         }
 
         /// <summary>
-        /// the damaged flag is polled. I am still torn about the
-        /// poll vs push problem, so more investigation is needed 
+        /// the damaged flag is polled. I am still torn about the poll vs push problem, so more investigation is needed
+        /// Maybe solved in future with the refactored version of DispatchOnSet/Change 
         /// </summary>
         /// <param name="entitiesDb"></param>
         
