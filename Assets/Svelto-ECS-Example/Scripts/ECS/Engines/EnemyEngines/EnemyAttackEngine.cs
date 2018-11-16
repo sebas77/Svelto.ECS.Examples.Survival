@@ -75,7 +75,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
                             //the IEnemyTriggerComponent implementors sets a the collides boolean
                             //whenever anything enters in the trigger range, but there is not more logic
                             //we have to check here if the colliding entity is actually an EnemyTarget
-                            if (enemiesAttackData[enemyIndex].entityInRange.otherEntityID.GID == targetEntityView.ID.GID)
+                            if (enemiesAttackData[enemyIndex].entityInRange.otherEntityID == targetEntityView.ID)
                             {
                                 enemiesAttackData[enemyIndex].timer += _time.deltaTime;
                                 
