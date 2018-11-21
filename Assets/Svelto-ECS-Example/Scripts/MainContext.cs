@@ -172,49 +172,15 @@ namespace Svelto.ECS.Example.Survive
             //- ensure the order of execution through several steps. Each engine inside each step has the responsibility
             //to trigger the next step through the use of the Next() function
             //- create paths with branches and loop using the Condition parameter.
-            playerDeathSequence.SetSequence(
-                     new Steps //sequence of steps, this is a dictionary!
-                         (
-                          new Step
-                          {
-                              from = playerDeathEngine, //when the player dies
-                              to = new To<PlayerDeathCondition>
-                                  //all these engines in the list will be called in order (which in this 
-                                  //case was not important at all, so stretched!!)
-                                  {
-                                      {PlayerDeathCondition.Death, playerMovementEngine,
-                                   playerAnimationEngine,
-                                   enemyAnimationEngine, damageSoundEngine, hudEngine}
-                                  }
-                          }
-                         )
-                    );
+            playerDeathSequence.SetSequence(playerDeathEngine,
+                                            playerMovementEngine,
+                                            playerAnimationEngine,
+                                            enemyAnimationEngine,
+                                            damageSoundEngine,
+                                            hudEngine);
 
-            enemyDeathSequence.SetSequence(
-                     new Steps //sequence of steps, this is a dictionary!
-                         (
-                          new Step
-                          {
-                              from = enemyDeathEngine,
-                              to = new To
-                                  (
-                                   //TIP: use GO To Type Declaration to go directly to the Class code of the 
-                                   //engine instance
-                                   scoreEngine, damageSoundEngine
-                                  )
-                          },
-                          new Step
-                          {
-                              //second step
-                              from = enemyAnimationEngine, 
-                              //after the death animation is actually finished
-                              to = new To
-                                  (
-                                   enemySpawnerEngine //call the spawner engine
-                                  )
-                          }
-                         )
-                    );
+            enemyDeathSequence.SetSequence(enemyDeathEngine, scoreEngine, damageSoundEngine, enemyAnimationEngine,
+                                           enemySpawnerEngine);
 
 
             //All the logic of the game must lie inside engines
@@ -329,15 +295,14 @@ namespace Svelto.ECS.Example.Survive
         {
         }
 
-        //part of Svelto.Context
         public void OnContextDestroyed()
         {
             //final clean up
             _enginesRoot.Dispose();
 
             //Tasks can run across level loading, so if you don't want
-            //that, the runners must be stopped explicitily.
-            //carefull because if you don't do it and 
+            //that, the runners must be stopped explicitly.
+            //careful because if you don't do it and 
             //unintentionally leave tasks running, you will cause leaks
             TaskRunner.StopAndCleanupAllDefaultSchedulers();
         }
@@ -345,14 +310,6 @@ namespace Svelto.ECS.Example.Survive
         EnginesRoot                    _enginesRoot;
         IEntityFactory                 _entityFactory;
         UnityEntitySubmissionScheduler _unityEntitySubmissionScheduler;
-    }
-
-    public class PlayerDeathSequencer : Sequencer<PlayerDeathSequencer>
-    {
-    }
-
-    public class EnemyDeathSequencer : Sequencer<EnemyDeathSequencer>
-    {
     }
 
     /// <summary>

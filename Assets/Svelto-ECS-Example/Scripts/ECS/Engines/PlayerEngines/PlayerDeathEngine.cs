@@ -4,7 +4,7 @@ using Svelto.ECS.Example.Survive.Characters.Player;
 
 namespace Svelto.ECS.Example.Survive
 {
-    class PlayerDeathEngine : IQueryingEntitiesEngine
+    public class PlayerDeathEngine : IQueryingEntitiesEngine
     {
         public PlayerDeathEngine(PlayerDeathSequencer playerDeathSequence, IEntityFunctions functions)
         {

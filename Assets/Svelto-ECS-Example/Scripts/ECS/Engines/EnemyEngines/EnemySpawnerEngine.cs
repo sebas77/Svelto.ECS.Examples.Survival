@@ -1,6 +1,7 @@
 using System.Collections;
 using Svelto.Tasks.Enumerators;
 using System.IO;
+using Svelto.Common;
 
 namespace Svelto.ECS.Example.Survive.Characters.Enemies
 {
@@ -38,6 +39,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
             for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
                 spawningTimes[i] = enemiestoSpawn[i].enemySpawnData.spawnTime;
+
+            _enemyFactory.Preallocate();
             
             while (true)
             {
@@ -45,44 +48,57 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 //so the fastest solution is always to use custom enumerators. To be honest the hit is minimal
 //but it's better to not abuse it.                
                 yield return _waitForSecondsEnumerator;
-                
-                 //cycle around the enemies to spawn and check if it can be spawned
-                 for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
-                 {
-                     if (spawningTimes[i] <= 0.0f)
-                     {
-                         var spawnData = enemiestoSpawn[i];
-                         
-                         //In this example every kind of enemy generates the same list of EntityViews
-                         //therefore I always use the same EntityDescriptor. However if the 
-                         //different enemies had to create different EntityViews for different
-                         //engines, this would have been a good example where EntityDescriptorHolder
-                         //could have been used to exploit the the kind of polymorphism explained
-                         //in my articles.
-                         EnemyAttackStruct enemyAttackStruct = new EnemyAttackStruct
-                         {
-                             attackDamage      = enemyAttackData[i].enemyAttackData.attackDamage,
-                             timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks
-                         };
 
-                         //has got a compatible entity previously disabled and can be reused?
-                         //Note, pooling make sense only for Entities that use implementors.
-                         //A pure struct based entity doesn't need pooling because it never allocates.
-                         //to simplify the logic, we use a recycle group for each entity type
-                         var fromGroupId = (int)ECSGroups.EnemiesToRecycleGroups + 
-                                           (int)spawnData.enemySpawnData.targetType;
-                         
-                         if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
-                             ReuseEnemy(fromGroupId, spawnData);
-                         else
-                             _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackStruct);
+                using (var profiler = new PlatformProfiler("EnemySpawning"))
+                {
+                    //cycle around the enemies to spawn and check if it can be spawned
+                    for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
+                    {
+                        if (spawningTimes[i] <= 0.0f)
+                        {
+                            var spawnData = enemiestoSpawn[i];
 
-                         spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
-                         _numberOfEnemyToSpawn--;
-                     }
+                            //In this example every kind of enemy generates the same list of EntityViews
+                            //therefore I always use the same EntityDescriptor. However if the 
+                            //different enemies had to create different EntityViews for different
+                            //engines, this would have been a good example where EntityDescriptorHolder
+                            //could have been used to exploit the the kind of polymorphism explained
+                            //in my articles.
+                            EnemyAttackStruct enemyAttackStruct = new EnemyAttackStruct
+                            {
+                                attackDamage      = enemyAttackData[i].enemyAttackData.attackDamage,
+                                timeBetweenAttack = enemyAttackData[i].enemyAttackData.timeBetweenAttacks
+                            };
 
-                     spawningTimes[i] -= SECONDS_BETWEEN_SPAWNS;
-                 }
+                            //has got a compatible entity previously disabled and can be reused?
+                            //Note, pooling make sense only for Entities that use implementors.
+                            //A pure struct based entity doesn't need pooling because it never allocates.
+                            //to simplify the logic, we use a recycle group for each entity type
+                            var fromGroupId = (int) ECSGroups.EnemiesToRecycleGroups +
+                                              (int) spawnData.enemySpawnData.targetType;
+
+                            if (entitiesDB.HasAny<EnemyEntityViewStruct>(fromGroupId))
+                            {
+                                using (profiler.Sample("Recycling"))
+                                {
+                                    ReuseEnemy(fromGroupId, spawnData);
+                                }
+                            }
+                            else
+                            {
+                                using (profiler.Sample("Building"))
+                                {
+                                    _enemyFactory.Build(spawnData.enemySpawnData, ref enemyAttackStruct);
+                                }
+                            }
+
+                            spawningTimes[i] = spawnData.enemySpawnData.spawnTime;
+                            _numberOfEnemyToSpawn--;
+                        }
+
+                        spawningTimes[i] -= SECONDS_BETWEEN_SPAWNS;
+                    }
+                }
             }
         }
 
