@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.IO;
 using Svelto.ECS.Example.Survive.Characters.Enemies;
 using Svelto.ECS.Example.Survive.Characters.Player;
 using Svelto.ECS.Example.Survive.Characters.Player.Gun;
