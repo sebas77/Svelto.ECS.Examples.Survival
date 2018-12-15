@@ -14,7 +14,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
         public EnemyAttackEngine(ITime time)
         {
             _time = time;
-            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(CheckIfHittingEnemyTarget()).SetScheduler(StandardSchedulers.physicScheduler);
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine(StandardSchedulers.physicScheduler);
+                _taskRoutine.SetEnumerator(CheckIfHittingEnemyTarget());
         }
 
         protected override void Add(ref EnemyTargetEntityViewStruct entity)
@@ -97,6 +98,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 
 
         readonly ITime                 _time;
-        readonly ITaskRoutine          _taskRoutine;
+        readonly ITaskRoutine<IEnumerator>          _taskRoutine;
     }
 }

@@ -17,7 +17,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         
         public PlayerInputEngine()
         {
-            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(ReadInput());
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine();
+            _taskRoutine.SetEnumerator(ReadInput());
         }
 
         IEnumerator ReadInput()
@@ -54,6 +55,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
             _taskRoutine.Stop();
         }
 
-        readonly ITaskRoutine _taskRoutine;
+        readonly ITaskRoutine<IEnumerator> _taskRoutine;
     }
 }
