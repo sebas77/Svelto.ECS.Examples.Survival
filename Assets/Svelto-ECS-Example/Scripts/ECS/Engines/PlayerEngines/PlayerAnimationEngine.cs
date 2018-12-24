@@ -13,7 +13,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         
         public PlayerAnimationEngine()
         {
-            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicsTick()).SetScheduler(StandardSchedulers.physicScheduler);
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine(StandardSchedulers.physicScheduler);
+                _taskRoutine.SetEnumerator(PhysicsTick());
         }
         
         IEnumerator PhysicsTick()
@@ -58,6 +59,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
             _taskRoutine.Stop();
         }
         
-        readonly ITaskRoutine _taskRoutine;
+        readonly ITaskRoutine<IEnumerator> _taskRoutine;
     }
 }

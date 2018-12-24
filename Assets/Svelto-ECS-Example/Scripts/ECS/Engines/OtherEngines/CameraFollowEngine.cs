@@ -12,7 +12,8 @@ namespace Svelto.ECS.Example.Survive.Camera
         public CameraFollowTargetEngine(ITime time)
         {
             _time = time;
-            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicUpdate()).SetScheduler(StandardSchedulers.physicScheduler);
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine(StandardSchedulers.physicScheduler);
+                                     _taskRoutine.SetEnumerator(PhysicUpdate());
         }
         
         public void Ready()
@@ -63,7 +64,7 @@ namespace Svelto.ECS.Example.Survive.Camera
         }
 
         readonly ITime         _time;
-        readonly ITaskRoutine  _taskRoutine;
+        readonly ITaskRoutine<IEnumerator>  _taskRoutine;
         
         public IEntitiesDB entitiesDB { get; set; }
     }

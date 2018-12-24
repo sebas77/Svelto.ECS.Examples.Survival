@@ -16,7 +16,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         {
             _rayCaster = raycaster;
             _time = time;
-            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(PhysicsTick()).SetScheduler(StandardSchedulers.physicScheduler);
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine(StandardSchedulers.physicScheduler);
+                _taskRoutine.SetEnumerator(PhysicsTick());
         }
 
         protected override void Add(ref PlayerEntityViewStruct entityView)
@@ -102,7 +103,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player
         const float camRayLength = 100f;                        // The length of the ray from the camera into the scene.
 
         readonly IRayCaster   _rayCaster;
-        readonly ITaskRoutine _taskRoutine;
+        readonly ITaskRoutine<IEnumerator> _taskRoutine;
         readonly ITime        _time;
     }
 }

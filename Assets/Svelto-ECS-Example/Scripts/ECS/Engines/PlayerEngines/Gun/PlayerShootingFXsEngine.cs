@@ -14,7 +14,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         {
             //In this case a taskroutine is used because we want to have control over when it starts
             //and we want to reuse it.
-            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumeratorProvider(DisableFXAfterTime);
+            _taskRoutine = TaskRunner.Instance.AllocateNewTaskRoutine();
+                _taskRoutine.SetEnumeratorProvider(DisableFXAfterTime);
         }
 
         /// <summary>
@@ -92,7 +93,7 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
             fxComponent.play = false;
         }
 
-        ITaskRoutine             _taskRoutine;
+        ITaskRoutine<IEnumerator>             _taskRoutine;
         WaitForSecondsEnumerator _waitForSeconds;
     }
 }

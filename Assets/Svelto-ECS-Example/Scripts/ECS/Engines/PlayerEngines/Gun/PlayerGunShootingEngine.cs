@@ -18,8 +18,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
         {
             _rayCaster             = rayCaster;
             _time                  = time;
-            _taskRoutine           = TaskRunner.Instance.AllocateNewTaskRoutine().SetEnumerator(Tick())
-                                               .SetScheduler(StandardSchedulers.physicScheduler);
+            _taskRoutine           = TaskRunner.Instance.AllocateNewTaskRoutine(StandardSchedulers.physicScheduler);
+            _taskRoutine.SetEnumerator(Tick());
         }
 
         protected override void Add(ref GunEntityViewStruct entityView)
@@ -110,6 +110,6 @@ namespace Svelto.ECS.Example.Survive.Characters.Player.Gun
 
         readonly IRayCaster            _rayCaster;
         readonly ITime                 _time;
-        readonly ITaskRoutine          _taskRoutine;
+        readonly ITaskRoutine<IEnumerator>          _taskRoutine;
     }
 }
