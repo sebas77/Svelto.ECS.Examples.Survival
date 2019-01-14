@@ -25,7 +25,7 @@ public class SpawningData : MonoBehaviour
 
         var json = JsonHelper.arrayToJson(spawningdata);
 
-        Svelto.Utilities.Console.Log(json);
+        Svelto.Console.Log(json);
 
         File.WriteAllText("EnemySpawningData.json", json);
     }
@@ -42,7 +42,7 @@ public class SpawningData : MonoBehaviour
 
         var json = JsonHelper.arrayToJson(attackData);
 
-        Svelto.Utilities.Console.Log(json);
+        Svelto.Console.Log(json);
 
         File.WriteAllText("EnemyAttackData.json", json);
     }

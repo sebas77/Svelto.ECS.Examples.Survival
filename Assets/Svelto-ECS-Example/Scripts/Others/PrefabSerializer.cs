@@ -18,7 +18,7 @@ public class PrefabSerializer : MonoBehaviour
 		
 		var json = JsonHelper.arrayToJson(prefabs);
 
-		Svelto.Utilities.Console.Log(json);
+		Svelto.Console.Log(json);
 
 		System.IO.File.WriteAllText("prefabs.json", json);
 	}
