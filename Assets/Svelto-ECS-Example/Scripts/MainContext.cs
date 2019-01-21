@@ -1,3 +1,7 @@
+#if !RELAXED_ECS
+#error currently this demo works only with RELAXED_ECS on 
+#endif
+
 using Svelto.ECS.Example.Survive.Characters.Enemies;
 using Svelto.ECS.Example.Survive.Characters.Player;
 using Svelto.ECS.Example.Survive.Characters.Player.Gun;

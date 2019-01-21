@@ -20,7 +20,8 @@ namespace Svelto.ECS.Example.Survive
         {
             // Find a random index between zero and one less than the number of spawn points.
             // Create an instance of the enemy prefab at the randomly selected spawn point position and rotation.
-            using (var profiler = new PlatformProfiler("BuildEnemy"))
+            var profiler = new PlatformProfiler();
+            using (profiler.StartNewSession("BuildEnemy"))
             {
                 GameObject go;
                 using (profiler.Sample("Build GameObject"))

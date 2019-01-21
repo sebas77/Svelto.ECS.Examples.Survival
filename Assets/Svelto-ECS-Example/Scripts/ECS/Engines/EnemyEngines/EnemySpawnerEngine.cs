@@ -49,7 +49,8 @@ namespace Svelto.ECS.Example.Survive.Characters.Enemies
 //but it's better to not abuse it.                
                 yield return _waitForSecondsEnumerator;
 
-                using (var profiler = new PlatformProfiler("EnemySpawning"))
+                var profiler = new PlatformProfiler();
+                using (profiler.StartNewSession("EnemySpawning"))
                 {
                     //cycle around the enemies to spawn and check if it can be spawned
                     for (int i = enemiestoSpawn.Length - 1; i >= 0 && _numberOfEnemyToSpawn > 0; --i)
